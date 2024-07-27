@@ -1,0 +1,369 @@
+﻿@model RegisterModel
+
+@using Nop.Core.Domain.Catalog
+
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Register").Text);
+
+}
+
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.RegisterTop, additionalData = Model })
+<section class="login-sec d-flex align-items-center justify-content-center">
+    <div class="container">
+        <div class="login-cart create-account  w-100 z9 position-relative">
+            <form asp-route="Register" asp-route-returnurl="@Context.Request.Query["ReturnUrl"]" id="login-form" method="post" autocomplete="off">
+                <div asp-validation-summary="ModelOnly" class="message-error"></div>
+                <input asp-for="IsDJ" type="hidden" id="IsDJ" />
+                <div class="login-hading text-center">
+                    Create Account
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="form-group mb-2">
+                            @if (Model.FirstNameEnabled)
+                            {
+                                <label class="mb-1 lable-text" asp-for="FirstName" asp-postfix=":" class="text-info"></label>
+                                <input class="input-text" type="text" asp-for="FirstName"  class="form-control" />
+                                @if (Model.FirstNameRequired)
+                                {
+                                    <nop-required />
+                                }
+                                <span asp-validation-for="FirstName"></span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="form-group mb-2">
+                            @if (Model.LastNameEnabled)
+                            {
+                                <label class="mb-1 lable-text" asp-for="LastName" asp-postfix=":" class="text-info"></label>
+                                <input class="input-text" type="text" asp-for="LastName" class="form-control" />
+                                @if (Model.LastNameRequired)
+                                {
+                                    <nop-required />
+                                }
+                                <span asp-validation-for="LastName"></span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="form-group mb-2">
+                            <label class="mb-1 lable-text" asp-for="DisplayName" asp-postfix=":" class="text-info"></label>
+                            <input class="input-text" type="text" asp-for="DisplayName" class="form-control" />
+                            <nop-required />
+                            <span asp-validation-for="DisplayName"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="form-group mb-2">
+                            <label class="mb-1 lable-text" asp-for="Email" asp-postfix=":" class="text-info"></label>
+                            <input class="input-text" type="text" asp-for="Email" class="form-control" />
+                            <nop-required />
+                            <span asp-validation-for="Email"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="form-group mb-2">
+                            <label class="mb-1 lable-text" asp-for="Password" asp-postfix=":" class="text-info"></label>
+                            <input class="input-text" type="password" asp-for="Password" class="form-control" />
+                            <nop-required />
+                            <span asp-validation-for="Password"></span>
+                        </div>
+                    </div>
+                    <div class="radio-box-and-label my-4">
+                        <label class="mb-1 lable-text fs14" class="text-info">DJ Yes or No:</label>
+                        <div class="radio-box d-flex align-items-center justify-content-between">
+                            <div class="radio-group position-relative">
+                                <input class="form-check-input position-absolute" type="radio" name="radio_check"
+                                       id="yes">
+                                <div class="yes-btn d-flex align-items-center justify-content-center">
+                                    Yes
+                                </div>
+                            </div>
+                            <div class="radio-group position-relative">
+                                <input class="form-check-input position-absolute" type="radio" name="radio_check"
+                                       id="no">
+                                <div class="yes-btn d-flex align-items-center justify-content-center">
+                                    NO
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="yes_wrapper mt-4">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4 col-midia">
+                            <label class="mb-1 lable-text fs14" for="bio-content"  asp-for="Bio" asp-postfix=":" class="text-info"></label>
+                            <textarea class="w-100 bio-message mb-2" id="bio-content" name="bio-content" asp-for="Bio"></textarea>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-midia">
+                            <label class="mb-1 lable-text fs14" class="text-info" asp-for="VendorLevelId" asp-postfix=":"></label>
+                            <select class="form-select mb-2" aria-label="Default select example" asp-for="VendorLevelId" asp-items="Model.AvailableVendorLevels"></select>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-midia">
+                            <label class="mb-1 lable-text fs14" class="text-info" asp-for="SelectedCategoryIds" asp-postfix=":"></label>
+                            <select class="w-100 multiple-select1 mb-2" id="multiple-select-box" asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" multiple></select>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $('#multiple-select-box').on('change', function () {
+                                    var $this = $(this);
+                                    var selectedOptions = $this.val();
+
+                                    if (selectedOptions.length > 3) {
+                                        // Get the last selected value
+                                        var lastSelectedValue = selectedOptions[selectedOptions.length - 1];
+
+                                        // Remove the last selected value
+                                        $this.find('option[value="' + lastSelectedValue + '"]').prop('selected', false);
+
+                                        // Show alert to the user
+                                        alert('You can only choose up to three genres. Please remove an existing one to add a new one.');
+
+                                        // Trigger change event to update the select box
+                                        $this.trigger('change');
+                                    }
+                                });
+                            });
+
+
+                        </script>
+
+                    </div>
+                    <h2 class="fs24 fw400">@T("Account.Fields.Package")</h2>
+                    <div class="packages-table-sec table-responsive mt-4">
+                        <table class="table packages-table">
+                            <thead class="thead-light packages-thead">
+                                <tr>
+                                    <th colspan="1"></th>
+                                    <th>@PackageType.Basic</th>
+                                    <th>@PackageType.Standard</th>
+                                    <th>@PackageType.Premium</th>
+                                </tr>
+                            </thead>
+                            <tbody class="packages-tbody">
+                                <tr>
+                                    <td colspan="1" class="td-border-none">@T("Account.Fields.Package.Price")</td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input class="input-text" type="text" asp-for="PackageModel.BasicPackage.Price" class="form-control" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input class="input-text" type="text" asp-for="PackageModel.StandardPackage.Price" class="form-control" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input class="input-text" type="text" asp-for="PackageModel.PremiumPackage.Price" class="form-control" />
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1" class="td-border-none">@T("Account.Fields.Package.Description")</td>
+                                    <td>
+                                        <div class="form-group">
+                                            <textarea class="form-control" cols="3" asp-for="PackageModel.BasicPackage.Description"></textarea>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <textarea class="form-control" cols="3" asp-for="PackageModel.StandardPackage.Description"></textarea>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <textarea class="form-control" cols="3" asp-for="PackageModel.PremiumPackage.Description"></textarea>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1" class="td-border-none">@T("Account.Fields.Package.SelectSongCount")</td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.BasicPackage.SongCountId" asp-items="Model.PackageModel.AvailableSongCounts"></select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.StandardPackage.SongCountId" asp-items="Model.PackageModel.AvailableSongCounts"></select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.SongCountId" asp-items="Model.PackageModel.AvailableSongCounts"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">@T("Account.Fields.Package.RecordingTime")</td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input class="input-text" type="text" asp-for="PackageModel.BasicPackage.RecordingTime" class="form-control" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input class="input-text" type="text" asp-for="PackageModel.StandardPackage.RecordingTime" class="form-control" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input class="input-text" type="text" asp-for="PackageModel.PremiumPackage.RecordingTime" class="form-control" />
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">@T("Account.Fields.Package.Revisions")</td>
+                                    <td>
+                                        <div class="form-checkbox-group">
+                                            <input class="checkbox1" type="checkbox" id="revisions-checked">
+                                            <label for="revisions-checked" class="checkbox-label"></label>
+                                            <div class="category-select-box delivery-method mt-2">
+                                                <select class="form-select" aria-label="Default select example" asp-for="PackageModel.BasicPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                    <td>
+                                        <div class="form-checkbox-group">
+                                            <input class="checkbox1" type="checkbox" id="revisions-checked1">
+                                            <label for="revisions-checked1" class="checkbox-label"></label>
+                                            <div class="category-select-box delivery-method mt-2">
+                                                <select class="form-select" aria-label="Default select example" asp-for="PackageModel.StandardPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                    <td>
+                                        <div class="form-checkbox-group">
+                                            <input class="checkbox1" type="checkbox" id="revisions-checked2">
+                                            <label for="revisions-checked2" class="checkbox-label"></label>
+                                            <div class="category-select-box delivery-method mt-2">
+                                                <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">@T("Account.Fields.Package.DeliveryMethod")</td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.BasicPackage.DeliveryMethodId" asp-items="Model.PackageModel.AvailableDeliveryMethods"></select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.StandardPackage.DeliveryMethodId" asp-items="Model.PackageModel.AvailableDeliveryMethods"></select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.DeliveryMethodId" asp-items="Model.PackageModel.AvailableDeliveryMethods"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1">@T("Account.Fields.Package.DeliveryTime")</td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.BasicPackage.DeliveryTimeDays" asp-items="Model.PackageModel.AvailableDeliveryDays"></select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.StandardPackage.DeliveryTimeDays" asp-items="Model.PackageModel.AvailableDeliveryDays"></select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="category-select-box">
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.DeliveryTimeDays" asp-items="Model.PackageModel.AvailableDeliveryDays"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="no_wrapper mt-4">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <div class="form-group mb-2">
+                                <label class="mb-1 lable-text fs14" class="text-info" asp-for="CategoryId" asp-postfix=":"></label>
+                                <select class="form-select mb-2" aria-label="Default select example" asp-for="CategoryId" asp-items="Model.AvailableCategories"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+                            <div class="form-group">
+                                <label class="mb-1 lable-text" asp-for="Event" class="text-info"></label>
+                                <input class="input-text" type="text" asp-for="Event" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="forgotandlogin-cmn w-50 m-auto">
+                        <!-- <a class="fs16 fw500 a-color a-color-h mt-3" href="forgot-password.html">Forgot Password?</a> -->
+                        <button class="loginbtn w-100 my-4" type="submit">Next</button>
+                    </div>
+                    @await Component.InvokeAsync(typeof(ExternalMethodsViewComponent), "ExternalAuthentication")
+                    <p class="an-account fs16 text-center mb-0">
+                        Don’t have an account? <a class="fs16 fw500 a-color opct" href="@Url.RouteUrl("Login")">Login</a>
+                    </p>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.RegisterBottom, additionalData = Model })
+
+<script asp-location="Footer">
+    $(document).ready(function () {
+        $("#yes").click(function () {
+            $(".yes_wrapper").show();
+            $("#IsDJ").val(true);
+        });
+        $("#no").click(function () {
+            $(".yes_wrapper").hide();
+            $("#IsDJ").val(false);
+        });
+
+        $("#no").click(function () {
+            $(".no_wrapper").show();
+        });
+        $("#yes").click(function () {
+            $(".no_wrapper").hide();
+        });
+
+        // $(".yes_wrapper").show();
+    });
+</script>
+<script asp-location="Footer">
+    const data = [
+        { id: 0, text: 'Item 1' },
+        { id: 1, text: 'Item 2' },
+        { id: 2, text: 'Item 3' }
+    ];
+    $(function () {
+        const select = $('#multiple-select-box');
+        const selectedId = $('#selectedId');
+        select.select2({
+            placeholder: 'Select an option',
+            data: data
+        })
+            .on('change', (event) => {
+                const selecions = select.select2('data')
+                    .map((element) => parseInt(element.id, 10));
+                selectedId.text(selecions.join(', '));
+            });
+    });
+
+</script>
