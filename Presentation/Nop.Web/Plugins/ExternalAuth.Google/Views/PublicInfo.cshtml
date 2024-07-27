@@ -1,0 +1,6 @@
+﻿@{
+    Layout = "";
+}
+
+<a class="me-4" asp-controller="authentication" asp-action="login" asp-route-returnurl="@Context.Request.Query["ReturnUrl"]"
+   asp-route-authentication="Google"><img src="~/themes/DisTwisters/content/img/google.png" alt=""></a>
