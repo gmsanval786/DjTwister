@@ -1065,7 +1065,7 @@ namespace Nop.Web.Areas.Admin.Factories
             }
 
             //insert special item for the default value
-            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, await _localizationService.GetResourceAsync("Account.Fields.ChooseExperience"));
+            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, await _localizationService.GetResourceAsync("Account.Fields.ChooseLevel"));
         }
 
         /// <summary>

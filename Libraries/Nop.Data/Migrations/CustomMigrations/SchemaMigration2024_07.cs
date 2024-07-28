@@ -9,7 +9,7 @@ using Nop.Core.Domain.Vendors;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2024-07-20 16:20:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
+    [NopMigration("2024-07-20 16:45:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07 : MigrationBase
     {
         #region Fields
@@ -126,7 +126,11 @@ namespace Nop.Data.Migrations.CustomMigrations
 
 
             string[] updateresources = {
-                                "Update  LocaleStringResource set ResourceValue='or continue with' where ResourceName='Account.AssociatedExternalAuth.Or' and LanguageId = 1"
+                    "Update  LocaleStringResource set ResourceValue='or continue with' where ResourceName='Account.AssociatedExternalAuth.Or' and LanguageId = 1",
+                    "Update  LocaleStringResource set ResourceValue='Genres' where ResourceName='Account.Fields.Genre' and LanguageId = 1",
+                    "Update  LocaleStringResource set ResourceValue='Cart' where ResourceName='ShoppingCart' and LanguageId = 1",
+                    "Update  LocaleStringResource set ResourceValue='Your Account' where ResourceName='Account.MyAccount' and LanguageId = 1",
+                    "Update  LocaleStringResource set ResourceValue='{0}' where ResourceName='ShoppingCart.HeaderQuantity' and LanguageId = 1",
             };
 
             foreach (var res in updateresources)

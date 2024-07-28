@@ -163,7 +163,7 @@ namespace Nop.Web.Models.Customer
         public IList<int> SelectedCategoryIds { get; set; }
         public IList<SelectListItem> AvailableCategories { get; set; }
 
-        [NopResourceDisplayName("Account.Fields.ChooseExperience")]
+        [NopResourceDisplayName("Account.Fields.ChooseLevel")]
         public int VendorLevelId { get; set; }
         public IList<SelectListItem> AvailableVendorLevels { get; set; }
 

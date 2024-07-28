@@ -726,6 +726,7 @@ namespace Nop.Web.Areas.Admin.Factories
                     model.Phone = customer.Phone;
                     model.Fax = customer.Fax;
                     model.TimeZoneId = customer.TimeZoneId;
+                    model.IsLock = customer.IsLock;
                     model.VatNumber = customer.VatNumber;
                     model.VatNumberStatusNote = await _localizationService.GetLocalizedEnumAsync(customer.VatNumberStatus);
                     model.LastActivityDate = await _dateTimeHelper.ConvertToUserTimeAsync(customer.LastActivityDateUtc, DateTimeKind.Utc);

@@ -2,12 +2,19 @@
 @using Nop.Core
 @inject ILocalizationService localizationService
 @inject IStoreContext storeContext
+@inject IWorkContext workContext
+@inject ICustomerService customerService
 
 @{
     Layout = "_ColumnsOne";
 }
 
-<body class="body-home">
+@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var customer = await customerService.IsRegisteredAsync(currentCustomer);
+}
+
+<div class="body-home">
     <section class="banner-sec d-flex align-items-center justify-content-center z9 position-relative max-width70">
         <div class="container">
             <h1 class="text-w fs80 text-center">Spark Your Savings on Electronics!</h1>
@@ -38,7 +45,10 @@
                 </select>
             </div>
             <div class="btn-group mt-5 d-flex align-items-center justify-content-between">
-                <button class="loginbtn dj-member-btn text-center" onclick="window.location.href='@Url.RouteUrl("Register")'" type="button">Become a Dj Member</button>
+                @if (!customer)
+                {
+                    <button class="loginbtn dj-member-btn text-center" onclick="window.location.href='@Url.RouteUrl("Register")'" type="button">Become a Dj Member</button>
+                }
                 <button class="loginbtn search-btn text-center" onclick="window.location.href='product-list.html'" type="button">Search</button>
             </div>
         </div>
@@ -397,4 +407,4 @@
         });
     </script>
 
-</body>
+</div>

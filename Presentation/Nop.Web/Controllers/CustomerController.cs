@@ -506,7 +506,9 @@ namespace Nop.Web.Controllers
                                 ? await _customerService.GetCustomerByUsernameAsync(customerUserName)
                                 : await _customerService.GetCustomerByEmailAsync(customerEmail);
 
-                            return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, model.RememberMe);
+                            bool vendor = await _customerService.IsVendorAsync(customer);
+
+                            return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, model.RememberMe, isVendor: vendor);
                         }
                     case CustomerLoginResults.MultiFactorAuthenticationRequired:
                         {
@@ -1162,8 +1164,16 @@ namespace Nop.Web.Controllers
                             //raise event       
                             await _eventPublisher.PublishAsync(new CustomerActivatedEvent(customer));
 
-                            returnUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
-                            return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, true);
+                            var currentVendor = await _workContext.GetCurrentVendorAsync();
+                            if(currentVendor != null)
+                            {
+                                return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, true, isVendor: true);
+                            }
+                            else
+                            {
+                                returnUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
+                                return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, true);
+                            }
 
                         default:
                             return RedirectToRoute("Homepage");
