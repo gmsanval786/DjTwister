@@ -1705,6 +1705,11 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(model => model.VendorsBlockItemsToDisplay_OverrideForStore, options => options.Ignore());
             CreateMap<VendorSettingsModel, VendorSettings>()
                 .ForMember(settings => settings.DefaultVendorPageSizeOptions, options => options.Ignore());
+
+            CreateMap<VendorPicture, VendorPictureModel>()
+                .ForMember(model => model.OverrideAltAttribute, options => options.Ignore())
+                .ForMember(model => model.OverrideTitleAttribute, options => options.Ignore())
+                .ForMember(model => model.PictureUrl, options => options.Ignore());
         }
 
         /// <summary>

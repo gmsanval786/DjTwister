@@ -2,10 +2,11 @@
 using Nop.Data.Mapping;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Vendors;
+using Nop.Core.Domain.Catalog;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2023-07-16 01:35:00:1037704", "SchemaMigration2024_07_Columns", MigrationProcessType.NoMatter)]
+    [NopMigration("2023-07-16 01:45:00:1037704", "SchemaMigration2024_07_Columns", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07_Columns : MigrationBase
     {
         #region Fields
@@ -56,6 +57,18 @@ namespace Nop.Data.Migrations.CustomMigrations
             {
                 Alter.Table(NameCompatibilityManager.GetTableName(typeof(Vendor)))
                     .AddColumn(nameof(Vendor.LevelId)).AsInt32().Nullable();
+            }
+
+            if (!Schema.Table(NameCompatibilityManager.GetTableName(typeof(Package))).Column(nameof(Package.VendorId)).Exists())
+            {
+                Alter.Table(NameCompatibilityManager.GetTableName(typeof(Package)))
+                    .AddColumn(nameof(Package.VendorId)).AsInt32().Nullable();
+            }
+
+            if (!Schema.Table(NameCompatibilityManager.GetTableName(typeof(Package))).Column(nameof(Package.AllowRevisions)).Exists())
+            {
+                Alter.Table(NameCompatibilityManager.GetTableName(typeof(Package)))
+                    .AddColumn(nameof(Package.AllowRevisions)).AsBoolean().Nullable();
             }
         }
 

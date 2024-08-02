@@ -11,6 +11,7 @@ using Nop.Services.Customers;
 using Nop.Services.Directory;
 using Nop.Services.Helpers;
 using Nop.Services.Localization;
+using Nop.Services.Media;
 using Nop.Services.Seo;
 using Nop.Services.Vendors;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
@@ -43,6 +44,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly VendorSettings _vendorSettings;
         private readonly IBaseAdminModelFactory _baseAdminModelFactory;
         private readonly ICategoryService _categoryService;
+        private readonly IPictureService _pictureService;
 
         #endregion
 
@@ -63,7 +65,8 @@ namespace Nop.Web.Areas.Admin.Factories
             IVendorService vendorService,
             VendorSettings vendorSettings,
             IBaseAdminModelFactory baseAdminModelFactory,
-            ICategoryService categoryService)
+            ICategoryService categoryService,
+            IPictureService pictureService)
         {
             _currencySettings = currencySettings;
             _currencyService = currencyService;
@@ -81,6 +84,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _vendorSettings = vendorSettings;
             _baseAdminModelFactory = baseAdminModelFactory;
             _categoryService = categoryService;
+            _pictureService = pictureService;
         }
 
         #endregion
@@ -330,6 +334,8 @@ namespace Nop.Web.Areas.Admin.Factories
 
                 //prepare nested search models
                 PrepareVendorNoteSearchModel(model.VendorNoteSearchModel, vendor);
+
+                PrepareVendorPictureSearchModel(model.VendorPictureSearchModel, vendor);
             }
 
             //set default values for the new model
@@ -407,6 +413,72 @@ namespace Nop.Web.Areas.Admin.Factories
                     vendorNoteModel.Note = _vendorService.FormatVendorNoteText(note);
 
                     return vendorNoteModel;
+                });
+            });
+
+            return model;
+        }
+
+        /// <summary>
+        /// Prepare product picture search model
+        /// </summary>
+        /// <param name="searchModel">Product picture search model</param>
+        /// <param name="product">Product</param>
+        /// <returns>Product picture search model</returns>
+        protected virtual VendorPictureSearchModel PrepareVendorPictureSearchModel(VendorPictureSearchModel searchModel, Vendor vendor)
+        {
+            if (searchModel == null)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            if (vendor == null)
+                throw new ArgumentNullException(nameof(vendor));
+
+            searchModel.VendorId = vendor.Id;
+
+            //prepare page parameters
+            searchModel.SetGridPageSize();
+
+            return searchModel;
+        }
+
+        /// <summary>
+        /// Prepare paged vendor picture list model
+        /// </summary>
+        /// <param name="searchModel">Vendor picture search model</param>
+        /// <param name="vendor">Vendor</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the vendor picture list model
+        /// </returns>
+        public virtual async Task<VendorPictureListModel> PrepareVendorPictureListModelAsync(VendorPictureSearchModel searchModel, Vendor vendor)
+        {
+            if (searchModel == null)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            if (vendor == null)
+                throw new ArgumentNullException(nameof(vendor));
+
+            //get vendor pictures
+            var vendorPictures = (await _vendorService.GetVendorPicturesByVendorIdAsync(vendor.Id)).ToPagedList(searchModel);
+
+            //prepare grid model
+            var model = await new VendorPictureListModel().PrepareToGridAsync(searchModel, vendorPictures, () =>
+            {
+                return vendorPictures.SelectAwait(async vendorPicture =>
+                {
+                    //fill in model values from the entity
+                    var vendorPictureModel = vendorPicture.ToModel<VendorPictureModel>();
+
+                    //fill in additional values (not existing in the entity)
+                    var picture = (await _pictureService.GetPictureByIdAsync(vendorPicture.PictureId))
+                        ?? throw new Exception("Picture cannot be loaded");
+
+                    vendorPictureModel.PictureUrl = (await _pictureService.GetPictureUrlAsync(picture)).Url;
+
+                    vendorPictureModel.OverrideAltAttribute = picture.AltAttribute;
+                    vendorPictureModel.OverrideTitleAttribute = picture.TitleAttribute;
+
+                    return vendorPictureModel;
                 });
             });
 

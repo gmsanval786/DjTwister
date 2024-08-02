@@ -1,4 +1,6 @@
-﻿@using Nop.Services.Localization
+﻿@model HomepageModel
+
+@using Nop.Services.Localization
 @using Nop.Core
 @inject ILocalizationService localizationService
 @inject IStoreContext storeContext
@@ -22,389 +24,59 @@
     </section>
     <section class="choose-category-sec py100 z9 position-relative max-width70">
         <div class="container">
-            <!-- <div class="dropdown category-dropdown">
-                  <button class="btn category-dropdownbtn dropdown-toggle w-100 d-flex align-items-center justify-content-between" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    Choose Category
-                  </button>
-                  <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
-                      <li><a class="dropdown-item" href="#">Item 1</a></li>
-                      <li><a class="dropdown-item" href="#">Item 2</a></li>
-                      <li><a class="dropdown-item" href="#">Item 3</a></li>
-                      <li><a class="dropdown-item" href="#">Item 4</a></li>
-                      <li><a class="dropdown-item" href="#">Item 5</a></li>
-                      <li><a class="dropdown-item" href="#">Item 6</a></li>
-                  </ul>
-              </div> -->
             <div class="category-select-box">
-                <label class="mb-2 lable-text text-white text-info">Choose Category:</label>
-                <select class="form-select mb-2" aria-label="Default select example">
-                    <option selected>Choose Category</option>
-                    <option value="1">Item 1</option>
-                    <option value="2">Item 2</option>
-                    <option value="3">Item 3</option>
-                </select>
+                <label class="mb-2 lable-text text-white text-info" asp-for="CategoryId" asp-postfix=":"></label>
+                <select class="form-select mb-2" aria-label="Default select example" asp-for="CategoryId" asp-items="Model.AvailableCategories"></select>
             </div>
             <div class="btn-group mt-5 d-flex align-items-center justify-content-between">
                 @if (!customer)
                 {
-                    <button class="loginbtn dj-member-btn text-center" onclick="window.location.href='@Url.RouteUrl("Register")'" type="button">Become a Dj Member</button>
+                    <button class="loginbtn dj-member-btn text-center" onclick="setLocation('@Url.RouteUrl("Register")')" type="button">Become a Dj Member</button>
                 }
-                <button class="loginbtn search-btn text-center" onclick="window.location.href='product-list.html'" type="button">Search</button>
+                <button class="loginbtn search-btn text-center" type="button">Search</button>
             </div>
         </div>
     </section>
     <section class="features-sec features-home-page py50 z9 position-relative">
-        <div class="container">
-            <div class="product-top-list-box">
-                <h2 class="product-shop-hading fs34 fw600 text-white">Featured Products</h2>
-                <!-- <form class="d-flex search-box ms-5">
-                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                  <button class="loginbtn" type="submit">Search</button>
-                </form> -->
-            </div>
-            <div class="features-slide">
-                <div class="product-cart">
-                    <a class="slid-itm1 d-block text-decoration" href="#">
-                        <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product1.jpg" alt="">
-                    </a>
-                    <div class="product-content-box mt-3">
-                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="product-detail.html">
-                            <div class="user-profile-box position-relative">
-                                <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product4.jpg" alt="">
-                                <div class="active-dots position-absolute"></div>
-                            </div>
-                            <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">Techweav</h3>
-                        </a>
-                        <p class="p-text fs14 fw400 description mb-2">
-                            It is a long established fact that a reader will be
-                            distracted by the
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
-                            </div>
-                            <p class="price text-black fs16 fw600 mb-2">$7,449</p>
-                        </div>
-                        <!-- <p class="experince-content mb-0 p-text fs14 fw400 d-flex align-items-center justify-content-between">
-                          Experience:<span class="text-black fs16 fw600">Intermidiate</span></p>
-                        <div class="genre-group d-flex align-items-center justify-content-between">
-                          <p class="genre-content mb-0 mt-2 text-black fs14 fw400">Genre:</p>
-                          <div class="genre-select">
-                            <span class="text-black fs16 fw600">Item 1,</span>
-                            <span class="text-black fs16 fw600">Item 1</span>
-                          </div>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="product-cart">
-                    <a class="slid-itm1 d-block text-decoration" href="#">
-                        <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product1.jpg" alt="">
-                    </a>
-                    <div class="product-content-box mt-3">
-                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="product-detail.html">
-                            <div class="user-profile-box position-relative">
-                                <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product4.jpg" alt="">
-                                <div class="active-dots position-absolute"></div>
-                            </div>
-                            <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">Techweav</h3>
-                        </a>
-                        <p class="p-text fs14 fw400 description mb-2">
-                            It is a long established fact that a reader will be
-                            distracted by the
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
-                            </div>
-                            <p class="price text-black fs16 fw600 mb-2">$7,449</p>
-                        </div>
-                        <!-- <p class="experince-content mb-0 p-text fs14 fw400 d-flex align-items-center justify-content-between">
-                          Experience:<span class="text-black fs16 fw600">Intermidiate</span></p>
-                        <div class="genre-group d-flex align-items-center justify-content-between">
-                          <p class="genre-content mb-0 mt-2 text-black fs14 fw400">Genre:</p>
-                          <div class="genre-select">
-                            <span class="text-black fs16 fw600">Item 1,</span>
-                            <span class="text-black fs16 fw600">Item 1</span>
-                          </div>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="product-cart">
-                    <a class="slid-itm1 d-block text-decoration" href="#">
-                        <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product1.jpg" alt="">
-                    </a>
-                    <div class="product-content-box mt-3">
-                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="product-detail.html">
-                            <div class="user-profile-box position-relative">
-                                <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product4.jpg" alt="">
-                                <div class="active-dots position-absolute"></div>
-                            </div>
-                            <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">Techweav</h3>
-                        </a>
-                        <p class="p-text fs14 fw400 description mb-2">
-                            It is a long established fact that a reader will be
-                            distracted by the
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
-                            </div>
-                            <p class="price text-black fs16 fw600 mb-2">$7,449</p>
-                        </div>
-                        <!-- <p class="experince-content mb-0 p-text fs14 fw400 d-flex align-items-center justify-content-between">
-                          Experience:<span class="text-black fs16 fw600">Intermidiate</span></p>
-                        <div class="genre-group d-flex align-items-center justify-content-between">
-                          <p class="genre-content mb-0 mt-2 text-black fs14 fw400">Genre:</p>
-                          <div class="genre-select">
-                            <span class="text-black fs16 fw600">Item 1,</span>
-                            <span class="text-black fs16 fw600">Item 1</span>
-                          </div>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="product-cart">
-                    <a class="slid-itm1 d-block text-decoration" href="#">
-                        <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product1.jpg" alt="">
-                    </a>
-                    <div class="product-content-box mt-3">
-                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="product-detail.html">
-                            <div class="user-profile-box position-relative">
-                                <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product4.jpg" alt="">
-                                <div class="active-dots position-absolute"></div>
-                            </div>
-                            <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">Techweav</h3>
-                        </a>
-                        <p class="p-text fs14 fw400 description mb-2">
-                            It is a long established fact that a reader will be
-                            distracted by the
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
-                            </div>
-                            <p class="price text-black fs16 fw600 mb-2">$7,449</p>
-                        </div>
-                        <!-- <p class="experince-content mb-0 p-text fs14 fw400 d-flex align-items-center justify-content-between">
-                          Experience:<span class="text-black fs16 fw600">Intermidiate</span></p>
-                        <div class="genre-group d-flex align-items-center justify-content-between">
-                          <p class="genre-content mb-0 mt-2 text-black fs14 fw400">Genre:</p>
-                          <div class="genre-select">
-                            <span class="text-black fs16 fw600">Item 1,</span>
-                            <span class="text-black fs16 fw600">Item 1</span>
-                          </div>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="product-cart">
-                    <a class="slid-itm1 d-block text-decoration" href="#">
-                        <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product1.jpg" alt="">
-                    </a>
-                    <div class="product-content-box mt-3">
-                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="product-detail.html">
-                            <div class="user-profile-box position-relative">
-                                <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product4.jpg" alt="">
-                                <div class="active-dots position-absolute"></div>
-                            </div>
-                            <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">Techweav</h3>
-                        </a>
-                        <p class="p-text fs14 fw400 description mb-2">
-                            It is a long established fact that a reader will be
-                            distracted by the
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
-                            </div>
-                            <p class="price text-black fs16 fw600 mb-2">$7,449</p>
-                        </div>
-                        <!-- <p class="experince-content mb-0 p-text fs14 fw400 d-flex align-items-center justify-content-between">
-                          Experience:<span class="text-black fs16 fw600">Intermidiate</span></p>
-                        <div class="genre-group d-flex align-items-center justify-content-between">
-                          <p class="genre-content mb-0 mt-2 text-black fs14 fw400">Genre:</p>
-                          <div class="genre-select">
-                            <span class="text-black fs16 fw600">Item 1,</span>
-                            <span class="text-black fs16 fw600">Item 1</span>
-                          </div>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="product-cart">
-                    <a class="slid-itm1 d-block text-decoration" href="#">
-                        <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product1.jpg" alt="">
-                    </a>
-                    <div class="product-content-box mt-3">
-                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="product-detail.html">
-                            <div class="user-profile-box position-relative">
-                                <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product4.jpg" alt="">
-                                <div class="active-dots position-absolute"></div>
-                            </div>
-                            <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">Techweav</h3>
-                        </a>
-                        <p class="p-text fs14 fw400 description mb-2">
-                            It is a long established fact that a reader will be
-                            distracted by the
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
-                            </div>
-                            <p class="price text-black fs16 fw600 mb-2">$7,449</p>
-                        </div>
-                        <!-- <p class="experince-content mb-0 p-text fs14 fw400 d-flex align-items-center justify-content-between">
-                          Experience:<span class="text-black fs16 fw600">Intermidiate</span></p>
-                        <div class="genre-group d-flex align-items-center justify-content-between">
-                          <p class="genre-content mb-0 mt-2 text-black fs14 fw400">Genre:</p>
-                          <div class="genre-select">
-                            <span class="text-black fs16 fw600">Item 1,</span>
-                            <span class="text-black fs16 fw600">Item 1</span>
-                          </div>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="product-cart">
-                    <a class="slid-itm1 d-block text-decoration" href="#">
-                        <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product1.jpg" alt="">
-                    </a>
-                    <div class="product-content-box mt-3">
-                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="product-detail.html">
-                            <div class="user-profile-box position-relative">
-                                <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product4.jpg" alt="">
-                                <div class="active-dots position-absolute"></div>
-                            </div>
-                            <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">Techweav</h3>
-                        </a>
-                        <p class="p-text fs14 fw400 description mb-2">
-                            It is a long established fact that a reader will be
-                            distracted by the
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
-                            </div>
-                            <p class="price text-black fs16 fw600 mb-2">$7,449</p>
-                        </div>
-                        <!-- <p class="experince-content mb-0 p-text fs14 fw400 d-flex align-items-center justify-content-between">
-                          Experience:<span class="text-black fs16 fw600">Intermidiate</span></p>
-                        <div class="genre-group d-flex align-items-center justify-content-between">
-                          <p class="genre-content mb-0 mt-2 text-black fs14 fw400">Genre:</p>
-                          <div class="genre-select">
-                            <span class="text-black fs16 fw600">Item 1,</span>
-                            <span class="text-black fs16 fw600">Item 1</span>
-                          </div>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="product-cart">
-                    <a class="slid-itm1 d-block text-decoration" href="#">
-                        <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product1.jpg" alt="">
-                    </a>
-                    <div class="product-content-box mt-3">
-                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="product-detail.html">
-                            <div class="user-profile-box position-relative">
-                                <img class="img-fluid" src="~/themes/DisTwisters/content/img/dj-product4.jpg" alt="">
-                                <div class="active-dots position-absolute"></div>
-                            </div>
-                            <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">Techweav</h3>
-                        </a>
-                        <p class="p-text fs14 fw400 description mb-2">
-                            It is a long established fact that a reader will be
-                            distracted by the
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
-                            </div>
-                            <p class="price text-black fs16 fw600 mb-2">$7,449</p>
-                        </div>
-                        <!-- <p class="experince-content mb-0 p-text fs14 fw400 d-flex align-items-center justify-content-between">
-                          Experience:<span class="text-black fs16 fw600">Intermidiate</span></p>
-                        <div class="genre-group d-flex align-items-center justify-content-between">
-                          <p class="genre-content mb-0 mt-2 text-black fs14 fw400">Genre:</p>
-                          <div class="genre-select">
-                            <span class="text-black fs16 fw600">Item 1,</span>
-                            <span class="text-black fs16 fw600">Item 1</span>
-                          </div>
-                        </div> -->
-                    </div>
-                </div>
-            </div>
+        <div id="dvVendors" class="container">
         </div>
     </section>
 
-    <!-- features-slide -->
     <script asp-location="Footer">
-        $('.features-slide').slick({
-            dots: false,
-            infinite: true,
-            autoplay: true,
-            speed: 300,
-            slidesToShow: 4,
-            slidesToScroll: 1,
-            prevArrow: '<button class="slide-arrow prev-arrow"></button>',
-            nextArrow: '<button class="slide-arrow next-arrow"></button>',
-            // prevArrow: false,
-            // nextArrow: false,
-            responsive: [
-                {
-                    breakpoint: 1199,
-                    settings: {
-                        slidesToShow: 3,
-                        slidesToScroll: 1,
-                        infinite: true,
-                        dots: false
-                    }
-                },
-                {
-                    breakpoint: 1024,
-                    settings: {
-                        slidesToShow: 2,
-                        slidesToScroll: 1,
-                        infinite: true,
-                        dots: false
-                    }
-                },
-                {
-                    breakpoint: 767,
-                    settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1
-                    }
-                },
-                {
-                    breakpoint: 600,
-                    settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1
-                    }
-                },
-                {
-                    breakpoint: 480,
-                    settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1
-                    }
-                }
-                // You can unslick at a given breakpoint now by adding:
-                // settings: "unslick"
-                // instead of a settings object
-            ]
-        });
-    </script>
 
+        $(document).ready(function () {
+            function loadVendors(categoryId) {
+
+                $(".strivingprogrammersloader").show();
+
+                $.ajax({
+                    url: '/Home/SearchVendors',
+                    type: 'POST',
+                    data: { categoryId: categoryId },
+                    success: function (response) {
+                        $('#dvVendors').html(response);
+                    },
+                    error: function (error) {
+                        console.error(error);
+                        $('#dvVendors').html('<div class="alert alert-danger">An error occurred.</div>');
+                    },
+                    complete: function () {
+                        $(".strivingprogrammersloader").fadeOut("slow");
+                    }
+                });
+            }
+
+            loadVendors(null);
+
+            $('.search-btn').click(function () {
+                var categoryId = $('#CategoryId').val();
+                loadVendors(categoryId);
+            });
+
+            $(window).on('load', function () {
+                $(".strivingprogrammersloader").fadeOut("slow");
+            });
+        });
+
+    </script>
 </div>

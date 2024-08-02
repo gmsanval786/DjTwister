@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Vendors;
+using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Areas.Admin.Models.Vendors;
 
 namespace Nop.Web.Areas.Admin.Factories
@@ -51,5 +53,16 @@ namespace Nop.Web.Areas.Admin.Factories
         /// The task result contains the vendor note list model
         /// </returns>
         Task<VendorNoteListModel> PrepareVendorNoteListModelAsync(VendorNoteSearchModel searchModel, Vendor vendor);
+
+        /// <summary>
+        /// Prepare paged vendor picture list model
+        /// </summary>
+        /// <param name="searchModel">Vendor picture search model</param>
+        /// <param name="vendor">Vendor</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the vendor picture list model
+        /// </returns>
+        Task<VendorPictureListModel> PrepareVendorPictureListModelAsync(VendorPictureSearchModel searchModel, Vendor vendor);
     }
 }

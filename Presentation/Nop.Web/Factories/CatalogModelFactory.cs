@@ -18,6 +18,7 @@ using Nop.Core.Domain.Forums;
 using Nop.Core.Domain.Media;
 using Nop.Core.Domain.Vendors;
 using Nop.Core.Events;
+using Nop.Data.Extensions;
 using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Customers;
@@ -32,6 +33,7 @@ using Nop.Web.Framework.Mvc.Routing;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Media;
+using Nop.Web.Models.Package;
 
 namespace Nop.Web.Factories
 {
@@ -68,6 +70,8 @@ namespace Nop.Web.Factories
         private readonly IWorkContext _workContext;
         private readonly MediaSettings _mediaSettings;
         private readonly VendorSettings _vendorSettings;
+        private readonly IPackageService _packageService;
+        private readonly IPriceFormatter _priceFormatter;
 
         #endregion
 
@@ -101,7 +105,9 @@ namespace Nop.Web.Factories
             IWebHelper webHelper,
             IWorkContext workContext,
             MediaSettings mediaSettings,
-            VendorSettings vendorSettings)
+            VendorSettings vendorSettings,
+            IPackageService packageService,
+            IPriceFormatter priceFormatter)
         {
             _blogSettings = blogSettings;
             _catalogSettings = catalogSettings;
@@ -132,6 +138,8 @@ namespace Nop.Web.Factories
             _workContext = workContext;
             _mediaSettings = mediaSettings;
             _vendorSettings = vendorSettings;
+            _packageService = packageService;
+            _priceFormatter = priceFormatter;
         }
 
         #endregion
@@ -1198,6 +1206,81 @@ namespace Nop.Web.Factories
                 CatalogProductsModel = await PrepareVendorProductsModelAsync(vendor, command)
             };
 
+            var categoryNames = new List<string>();
+            var categoryIds = (await _categoryService.GetVendorCategoriesByVendorIdAsync(vendor.Id, true))
+                    .Select(vendorCategory => vendorCategory.CategoryId).ToList();
+            
+            foreach (var categoryId in categoryIds)
+            {
+                var category = await _categoryService.GetCategoryByIdAsync(categoryId);
+                if (category is not null && !string.IsNullOrEmpty(category.Name))
+                    categoryNames.Add(category.Name);
+            }
+
+            model.Categories = String.Join(",", categoryNames);
+
+
+            //prepare picture model
+            var pictureSize = _mediaSettings.VendorThumbPictureSize;
+            var pictureCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NopModelCacheDefaults.VendorPictureModelKey,
+                vendor, pictureSize, true, await _workContext.GetWorkingLanguageAsync(), _webHelper.IsCurrentConnectionSecured(), await _storeContext.GetCurrentStoreAsync());
+            model.PictureModel = await _staticCacheManager.GetAsync(pictureCacheKey, async () =>
+            {
+                var picture = await _pictureService.GetPictureByIdAsync(vendor.PictureId);
+                string fullSizeImageUrl, imageUrl;
+
+                (fullSizeImageUrl, picture) = await _pictureService.GetPictureUrlAsync(picture);
+                (imageUrl, _) = await _pictureService.GetPictureUrlAsync(picture, pictureSize);
+
+                var pictureModel = new PictureModel
+                {
+                    FullSizeImageUrl = fullSizeImageUrl,
+                    ImageUrl = imageUrl,
+                    Title = string.Format(await _localizationService.GetResourceAsync("Media.Vendor.ImageLinkTitleFormat"), model.Name),
+                    AlternateText = string.Format(await _localizationService.GetResourceAsync("Media.Vendor.ImageAlternateTextFormat"), model.Name)
+                };
+
+                return pictureModel;
+            });
+
+            var packages = await _packageService.GetAllPackagesAsync(vendorId: vendor.Id);
+            foreach(var package in packages)
+            {
+                PackageModel packageModel = new PackageModel()
+                {
+                    VendorId = package.VendorId,
+                    Price = package.Price,
+                    Description = package.Description,
+                    RecordingTime = package.RecordingTime,
+                    PackageTypeId = package.PackageTypeId,
+                    SongCountId = package.SongCounts,
+                    RevisionId = package.Revisions,
+                    AllowRevisions = package.AllowRevisions,
+                    DeliveryMethodId = package.DeliveryMethodId,
+                    DeliveryTimeDays = package.DeliveryTimeDays
+                };
+
+                packageModel.StrAllowRevisions = package.AllowRevisions.ToYesAndNo();
+                packageModel.PriceVal = await _priceFormatter.FormatPriceAsync(package.Price, true, false);
+
+                model.PackageModel.Add(packageModel);
+            }
+
+            var vendorPictures = await _vendorService.GetVendorPicturesByVendorIdAsync(vendor.Id);
+            foreach (var vendorPicture in vendorPictures)
+            {
+                var picture = (await _pictureService.GetPictureByIdAsync(vendorPicture.PictureId));
+
+                var vendorPictureModel = new VendorPictureModel()
+                {
+                    PictureUrl = (await _pictureService.GetPictureUrlAsync(picture)).Url,
+                    OverrideAltAttribute = picture.AltAttribute,
+                    OverrideTitleAttribute = picture.TitleAttribute
+                };
+
+                model.VendorPictureModel.Add(vendorPictureModel);
+            }
+
             return model;
         }
 
@@ -1334,6 +1417,21 @@ namespace Nop.Web.Factories
 
                     return pictureModel;
                 });
+
+                var vendorPictures = await _vendorService.GetVendorPicturesByVendorIdAsync(vendor.Id);
+                foreach (var vendorPicture in vendorPictures)
+                {
+                    var picture = (await _pictureService.GetPictureByIdAsync(vendorPicture.PictureId));
+
+                    var vendorPictureModel = new VendorPictureModel()
+                    {
+                        PictureUrl = (await _pictureService.GetPictureUrlAsync(picture)).Url,
+                        OverrideAltAttribute = picture.AltAttribute,
+                        OverrideTitleAttribute = picture.TitleAttribute
+                    };
+
+                    vendorModel.VendorPictureModel.Add(vendorPictureModel);
+                }
 
                 model.Add(vendorModel);
             }

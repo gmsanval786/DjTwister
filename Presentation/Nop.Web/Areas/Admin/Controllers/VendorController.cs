@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Vendors;
+using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Customers;
 using Nop.Services.Localization;
@@ -44,6 +46,8 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IVendorAttributeService _vendorAttributeService;
         private readonly IVendorModelFactory _vendorModelFactory;
         private readonly IVendorService _vendorService;
+        private readonly ICategoryService _categoryService;
+        private readonly IWorkContext _workContext;
 
         #endregion
 
@@ -63,7 +67,9 @@ namespace Nop.Web.Areas.Admin.Controllers
             IVendorAttributeParser vendorAttributeParser,
             IVendorAttributeService vendorAttributeService,
             IVendorModelFactory vendorModelFactory,
-            IVendorService vendorService)
+            IVendorService vendorService,
+            ICategoryService categoryService,
+            IWorkContext workContext)
         {
             _addressAttributeParser = addressAttributeParser;
             _addressService = addressService;
@@ -80,6 +86,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             _vendorAttributeService = vendorAttributeService;
             _vendorModelFactory = vendorModelFactory;
             _vendorService = vendorService;
+            _categoryService = categoryService;
+            _workContext = workContext;
         }
 
         #endregion
@@ -202,6 +210,35 @@ namespace Nop.Web.Areas.Admin.Controllers
             }
 
             return attributesXml;
+        }
+
+        protected virtual async Task SaveVendorCategoryMappingsAsync(Vendor vendor, VendorModel model)
+        {
+            var existingVendorCategories = await _categoryService.GetVendorCategoriesByVendorIdAsync(vendor.Id, true);
+
+            //delete categories
+            foreach (var existingVendorCategory in existingVendorCategories)
+                if (!model.SelectedCategoryIds.Contains(existingVendorCategory.CategoryId))
+                    await _categoryService.DeleteVendorCategoryAsync(existingVendorCategory);
+
+            //add categories
+            foreach (var categoryId in model.SelectedCategoryIds)
+            {
+                if (_categoryService.FindVendorCategory(existingVendorCategories, vendor.Id, categoryId) == null)
+                {
+                    //find next display order
+                    var displayOrder = 1;
+                    var existingCategoryMapping = await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId, showHidden: true);
+                    if (existingCategoryMapping.Any())
+                        displayOrder = existingCategoryMapping.Max(x => x.DisplayOrder) + 1;
+                    await _categoryService.InsertVendorCategoryAsync(new VendorCategory
+                    {
+                        VendorId = vendor.Id,
+                        CategoryId = categoryId,
+                        DisplayOrder = displayOrder
+                    });
+                }
+            }
         }
 
         #endregion
@@ -372,6 +409,9 @@ namespace Nop.Web.Areas.Admin.Controllers
                 model.SeName = await _urlRecordService.ValidateSeNameAsync(vendor, model.SeName, vendor.Name, true);
                 await _urlRecordService.SaveSlugAsync(vendor, model.SeName, 0);
 
+                //categories
+                await SaveVendorCategoryMappingsAsync(vendor, model);
+
                 //address
                 var address = await _addressService.GetAddressByIdAsync(vendor.AddressId);
                 if (address == null)
@@ -461,6 +501,122 @@ namespace Nop.Web.Areas.Admin.Controllers
             _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Admin.Vendors.Deleted"));
 
             return RedirectToAction("List");
+        }
+
+        #endregion
+
+        #region Vendor pictures
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public virtual async Task<IActionResult> VendorPictureAdd(int vendorId, IFormCollection form)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageVendors))
+                return AccessDeniedView();
+
+            if (vendorId == 0)
+                throw new ArgumentException();
+
+            //try to get a product with the specified id
+            var vendor = await _vendorService.GetVendorByIdAsync(vendorId)
+                ?? throw new ArgumentException("No vendor found with the specified id");
+
+            var files = form.Files.ToList();
+            if (!files.Any())
+                return Json(new { success = false });
+
+            try
+            {
+                foreach (var file in files)
+                {
+                    //insert picture
+                    var picture = await _pictureService.InsertPictureAsync(file);
+
+                    await _pictureService.SetSeoFilenameAsync(picture.Id, await _pictureService.GetPictureSeNameAsync(vendor.Name));
+
+                    await _vendorService.InsertVendorPictureAsync(new VendorPicture
+                    {
+                        PictureId = picture.Id,
+                        VendorId = vendor.Id,
+                        DisplayOrder = 0
+                    });
+                }
+            }
+            catch (Exception exc)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"{await _localizationService.GetResourceAsync("Admin.Vendors.Multimedia.Pictures.Alert.PictureAdd")} {exc.Message}",
+                });
+            }
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> VendorPictureList(VendorPictureSearchModel searchModel)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageVendors))
+                return await AccessDeniedDataTablesJson();
+
+            //try to get a product with the specified id
+            var vendor = await _vendorService.GetVendorByIdAsync(searchModel.VendorId)
+                ?? throw new ArgumentException("No vendor found with the specified id");
+
+            //prepare model
+            var model = await _vendorModelFactory.PrepareVendorPictureListModelAsync(searchModel, vendor);
+
+            return Json(model);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> VendorPictureUpdate(VendorPictureModel model)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageVendors))
+                return AccessDeniedView();
+
+            //try to get a vendor picture with the specified id
+            var vendorPicture = await _vendorService.GetVendorPictureByIdAsync(model.Id)
+                ?? throw new ArgumentException("No product picture found with the specified id");
+
+            //try to get a picture with the specified id
+            var picture = await _pictureService.GetPictureByIdAsync(vendorPicture.PictureId)
+                ?? throw new ArgumentException("No picture found with the specified id");
+
+            await _pictureService.UpdatePictureAsync(picture.Id,
+                await _pictureService.LoadPictureBinaryAsync(picture),
+                picture.MimeType,
+                picture.SeoFilename,
+                model.OverrideAltAttribute,
+                model.OverrideTitleAttribute);
+
+            vendorPicture.DisplayOrder = model.DisplayOrder;
+            await _vendorService.UpdateVendorPictureAsync(vendorPicture);
+
+            return new NullJsonResult();
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> VendorPictureDelete(int id)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageVendors))
+                return AccessDeniedView();
+
+            //try to get a vendor picture with the specified id
+            var vendorPicture = await _vendorService.GetVendorPictureByIdAsync(id)
+               ?? throw new ArgumentException("No product picture found with the specified id");
+
+            var pictureId = vendorPicture.PictureId;
+            await _vendorService.DeleteVendorPictureAsync(vendorPicture);
+
+            //try to get a picture with the specified id
+            var picture = await _pictureService.GetPictureByIdAsync(pictureId)
+                ?? throw new ArgumentException("No picture found with the specified id");
+
+            await _pictureService.DeletePictureAsync(picture);
+
+            return new NullJsonResult();
         }
 
         #endregion

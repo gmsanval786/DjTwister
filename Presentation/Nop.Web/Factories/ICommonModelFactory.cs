@@ -131,5 +131,23 @@ namespace Nop.Web.Factories
         /// The task result contains the robots.txt file as string
         /// </returns>
         Task<string> PrepareRobotsTextFileAsync();
+
+        /// <summary>
+        /// Prepare the homepage model
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the homepage model
+        /// </returns>
+        Task<HomepageModel> PrepareHomepageModelAsync();
+
+        /// <summary>
+        /// Prepare the vendors model
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the vendors model
+        /// </returns>
+        Task<HomepageModel> PrepareVendorsModelAsync(HomepageModel model, int categoryId = 0);
     }
 }

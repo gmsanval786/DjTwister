@@ -14,6 +14,11 @@ namespace Nop.Core.Domain.Catalog
         public int PackageTypeId { get; set; }
 
         /// <summary>
+        /// Gets or sets the vendor identifier
+        /// </summary>
+        public int VendorId { get; set; }
+
+        /// <summary>
         /// Gets or sets the package type identifier
         /// </summary>
         public decimal Price { get; set; }
@@ -37,6 +42,11 @@ namespace Nop.Core.Domain.Catalog
         /// Gets or sets a the revisions
         /// </summary>
         public int Revisions { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the revision allow
+        /// </summary>
+        public bool AllowRevisions { get; set; }
 
         /// <summary>
         /// Gets or sets the delivery method identifier

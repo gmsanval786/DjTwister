@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core.Domain.Catalog;
+using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Areas.Admin.Models.Common;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
@@ -25,6 +26,9 @@ namespace Nop.Web.Areas.Admin.Models.Vendors
             Locales = new List<VendorLocalizedModel>();
             AssociatedCustomers = new List<VendorAssociatedCustomerModel>();
             VendorNoteSearchModel = new VendorNoteSearchModel();
+            VendorPictureModels = new List<VendorPictureModel>();
+            AddPictureModel = new VendorPictureModel();
+            VendorPictureSearchModel = new VendorPictureSearchModel();
 
             SelectedCategoryIds = new List<int>();
             AvailableCategories = new List<SelectListItem>();
@@ -111,6 +115,11 @@ namespace Nop.Web.Areas.Admin.Models.Vendors
         public VendorNoteSearchModel VendorNoteSearchModel { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
+
+        //pictures
+        public VendorPictureModel AddPictureModel { get; set; }
+        public IList<VendorPictureModel> VendorPictureModels { get; set; }
+        public VendorPictureSearchModel VendorPictureSearchModel { get; set; }
 
         #endregion
 

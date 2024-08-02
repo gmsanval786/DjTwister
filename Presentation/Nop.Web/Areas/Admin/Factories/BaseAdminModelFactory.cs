@@ -531,7 +531,7 @@ namespace Nop.Web.Areas.Admin.Factories
             }
 
             //insert special item for the default value
-            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText);
+            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, await _localizationService.GetResourceAsync("Account.Homepage.Fields.Genres.Choose"));
         }
 
         /// <summary>

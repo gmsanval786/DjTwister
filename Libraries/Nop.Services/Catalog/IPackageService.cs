@@ -8,6 +8,7 @@ using Nop.Core.Domain.Discounts;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Shipping;
 using Nop.Core.Domain.Stores;
+using Nop.Core.Domain.Vendors;
 
 namespace Nop.Services.Catalog
 {
@@ -48,6 +49,19 @@ namespace Nop.Services.Catalog
         /// <param name="package">Package</param>
         /// <returns>A task that represents the asynchronous operation</returns>
         Task UpdatePackageAsync(Package package);
+
+        /// <summary>
+        /// Gets all packages
+        /// </summary>
+        /// <param name="vendorId">Vendor identifier</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the packages
+        /// </returns>
+        Task<IPagedList<Package>> GetAllPackagesAsync(int vendorId = 0, int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
 
         #endregion
 

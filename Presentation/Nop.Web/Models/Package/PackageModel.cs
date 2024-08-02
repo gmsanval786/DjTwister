@@ -18,7 +18,9 @@ namespace Nop.Web.Models.Package
             AvailableDeliveryDays = new List<SelectListItem>();
         }
 
+        public int VendorId { get; set; }
         public decimal Price { get; set; }
+        public string PriceVal { get; set; }
         public string Description { get; set; }
         public string RecordingTime { get; set; }
         public int PackageTypeId { get; set; }
@@ -28,7 +30,10 @@ namespace Nop.Web.Models.Package
 
         [NopResourceDisplayName("Account.Fields.Revision")]
         public int RevisionId { get; set; }
+
+        [NopResourceDisplayName("Account.Fields.RevisionAllowed")]
         public bool AllowRevisions { get; set; }
+        public string StrAllowRevisions { get; set; }
 
         [NopResourceDisplayName("Account.Fields.DeliveryMethod")]
         public int DeliveryMethodId { get; set; }

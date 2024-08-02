@@ -1,0 +1,220 @@
+﻿@model VendorModel
+
+@using Nop.Core
+@using Nop.Core.Domain.Seo
+@using Nop.Core.Domain.Vendors
+@using Nop.Core.Domain.Catalog
+
+@inject IWebHelper webHelper
+@inject SeoSettings seoSettings
+
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    //meta
+    NopHtml.AddMetaDescriptionParts(Model.MetaDescription);
+    NopHtml.AddMetaKeywordParts(Model.MetaKeywords);
+
+    if (seoSettings.CanonicalUrlsEnabled)
+    {
+        var vendorUrl = Url.RouteUrl<Vendor>(new { SeName = Model.SeName }, webHelper.GetCurrentRequestProtocol()).ToLowerInvariant();
+        NopHtml.AddCanonicalUrlParts(vendorUrl, seoSettings.QueryStringInCanonicalUrlsEnabled);
+    }
+}
+
+<section class="product-detail-sec py50">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-lg-6 mb-5 mb-lg-0">
+                <div class="product-top-list-box d-flex align-items-center justify-content-between mb-4">
+                    @if (!string.IsNullOrWhiteSpace(Model.Categories))
+                    {
+                        <h1 class="product-shop-hading fs24 fw650 text-black" title="werty">
+                            @Html.Raw(Model.Categories)
+                        </h1>
+                    }
+                </div>
+                <a class="user-box d-block text-decoration d-flex align-items-start mb-3" href="#">
+                    <div class="user-profile-box position-relative">
+                        <img class="img-fluid" alt="@Model.PictureModel.AlternateText" src="@Model.PictureModel.ImageUrl" title="@Model.PictureModel.Title">
+                        <div class="active-dots position-absolute"></div>
+                    </div>
+                    <div class="user-box-right-star ms-3">
+                        <h3 class="user-name mb-0 text-blue fs18 fw600">@Model.Name</h3>
+                        <div class="rating-box d-flex align-items-center">
+                            <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
+                            <span class="ms-2 pt-1 starrate span1 fw600 fs18">4.9</span>
+                            <span class="ms-2 pt-1 starrate span2">(161)</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="product-detail-slide d-block text-decoration" href="product-detail.html">
+                    @foreach (var item in Model.VendorPictureModel)
+                    {
+                        <a class="slid-itm1 d-block text-decoration" href="#">
+                            <img class="img-fluid" alt="@item.OverrideAltAttribute" src="@item.PictureUrl" title="@item.OverrideTitleAttribute">
+                        </a>
+                    }
+                </div>
+                <div class="about-detail mt-3">
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <!-- <h3 class="text-black fs18 fw600">About</h3> -->
+                        <p class="p-text fs14 fw400 mb-2 description">
+                            @Html.Raw(Model.Description)
+                        </p>
+                    }
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-6">
+                <div class="tabs-sec ps-5">
+                    <div class="navtabs">
+                        @{
+                            var index = 0;
+                        }
+                        @foreach (var package in Model.PackageModel)
+                        {
+                            var isActive = index == 0 ? "active" : "";
+                            var packageName = Enum.GetName(typeof(PackageType), package.PackageTypeId);
+                            <div class="navtab @isActive" data-target="@packageName">@packageName</div>
+                            index++;
+                        }
+                    </div>
+
+                    @foreach (var package in Model.PackageModel)
+                    {
+                        var packageName = Enum.GetName(typeof(PackageType), package.PackageTypeId);
+                        var deliveryMethod = Enum.GetName(typeof(DeliveryMethod), package.DeliveryMethodId);
+                        string tabClass = "content";
+                        if (package.PackageTypeId == (int)PackageType.Basic)
+                        {
+                            tabClass += " active";
+                        }
+
+                        string packageClass = ((PackageType)package.PackageTypeId) switch
+                        {
+                            PackageType.Basic => "basic-tab-body",
+                            PackageType.Standard => "standard-tab-body",
+                            PackageType.Premium => "premium-tab-body",
+                            _ => ""
+                        };
+
+                        string fullTabClass = $"{tabClass} {packageClass}";
+
+                        <div id="@packageName" class="@fullTabClass">
+                            <div class="basic-packages">
+                                <h4 class="fs24 fw500 text-black d-flex align-items-center justify-content-between">
+                                    Package
+                                    <span class="fs24 fw600 text-blue">@package.PriceVal</span>
+                                </h4>
+                                <p class="p-text fs14 fw400 my-2 description">
+                                    @package.Description
+                                </p>
+                                <p class="song-add border-b d-flex align-items-center justify-content-between text-black fw400 fs16">
+                                    Song <span class="text-black fs16 fw600 ">@package.SongCountId</span>
+                                </p>
+                                <p class="song-add border-b d-flex align-items-center justify-content-between text-black fw400 fs16">
+                                    Recording Time <span class="text-black fs16 fw600 ">@package.RecordingTime</span>
+                                </p>
+                                <p class="song-add border-b d-flex align-items-center justify-content-between text-black fw400 fs16">
+                                    Delivery Method <span class="text-black fs16 fw600 ">@deliveryMethod</span>
+                                </p>
+                                <p class="song-add border-b d-flex align-items-center justify-content-between text-black fw400 fs16">
+                                    Delivery Time & Days <span class="text-black fs16 fw600 ">@package.DeliveryTimeDays</span>
+                                </p>
+                                <p class="song-add border-b d-flex align-items-center justify-content-between text-black fw400 fs16">
+                                    Revisions Allowed <span class="text-black fs16 fw600 ">@package.StrAllowRevisions</span>
+                                </p>
+                            </div>
+                            <div class="btn-group mt-5 d-flex align-items-center justify-content-between">
+                                @if (Model.AllowCustomersToContactVendors)
+                                {
+                                    <button type="button" class="loginbtn w-100 mt-4" onclick="setLocation('@Url.RouteUrl("ContactVendor", new { vendorId = Model.Id })')">@T("ContactVendor")</button>
+                                }
+                                <button class="loginbtn w-100 mt-4" onclick="window.location.href='cart.html'"
+                                        type="button">
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $('.product-detail-slide').slick({
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        prevArrow: '<button class="slide-arrow prev-arrow"></button>',
+        nextArrow: '<button class="slide-arrow next-arrow"></button>',
+        // prevArrow: false,
+        // nextArrow: false,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: false
+                }
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+            // You can unslick at a given breakpoint now by adding:
+            // settings: "unslick"
+            // instead of a settings object
+        ]
+    });
+</script>
+<script>
+    const tabs = document.querySelectorAll('.navtab');
+    const contents = document.querySelectorAll('.content');
+    const underline = document.querySelector('.underline');
+
+    function updateUnderline() {
+        const activeTab = document.querySelector('.navtab.active');
+        underline.style.width = `${activeTab.offsetWidth}px`;
+        underline.style.left = `${activeTab.offsetLeft}px`;
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const target = tab.getAttribute('data-target');
+            contents.forEach(content => {
+                if (content.id === target) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+            updateUnderline();
+        });
+    });
+
+    window.addEventListener('resize', updateUnderline);
+    updateUnderline();
+</script>

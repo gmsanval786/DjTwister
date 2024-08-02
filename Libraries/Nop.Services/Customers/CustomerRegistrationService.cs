@@ -427,7 +427,7 @@ namespace Nop.Services.Customers
         /// A task that represents the asynchronous operation
         /// The task result contains the result of an authentication
         /// </returns>
-        public virtual async Task<IActionResult> SignInCustomerAsync(Customer customer, string returnUrl, bool isPersist = false, bool isVendor = false)
+        public virtual async Task<IActionResult> SignInCustomerAsync(Customer customer, string returnUrl, bool isPersist = false)
         {
             var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
@@ -452,10 +452,10 @@ namespace Nop.Services.Customers
             var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
 
             //redirect to the return URL if it's specified
-            if (!isVendor && !string.IsNullOrEmpty(returnUrl) && urlHelper.IsLocalUrl(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl) && urlHelper.IsLocalUrl(returnUrl))
                 return new RedirectResult(returnUrl);
 
-            if (await _customerService.IsAdminAsync(customer) || await _customerService.IsVendorAsync(customer))
+            if (await _customerService.IsAdminAsync(customer))
                 return new RedirectResult("/Admin");
 
             return new RedirectToRouteResult("Homepage", null);

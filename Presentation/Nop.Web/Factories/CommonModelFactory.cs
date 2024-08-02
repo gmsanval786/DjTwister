@@ -31,10 +31,14 @@ using Nop.Services.Security;
 using Nop.Services.Seo;
 using Nop.Services.Themes;
 using Nop.Services.Topics;
+using Nop.Services.Vendors;
+using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Framework.Themes;
 using Nop.Web.Framework.UI;
 using Nop.Web.Infrastructure.Cache;
+using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Common;
+using Nop.Web.Models.Media;
 
 namespace Nop.Web.Factories
 {
@@ -80,6 +84,11 @@ namespace Nop.Web.Factories
         private readonly SitemapXmlSettings _sitemapXmlSettings;
         private readonly StoreInformationSettings _storeInformationSettings;
         private readonly VendorSettings _vendorSettings;
+        private readonly IBaseAdminModelFactory _baseAdminModelFactory;
+        private readonly IVendorService _vendorService;
+        private readonly IAddressService _addressService;
+        private readonly IAddressModelFactory _addressModelFactory;
+        private readonly AddressSettings _addressSettings;
 
         #endregion
 
@@ -119,7 +128,12 @@ namespace Nop.Web.Factories
             SitemapSettings sitemapSettings,
             SitemapXmlSettings sitemapXmlSettings,
             StoreInformationSettings storeInformationSettings,
-            VendorSettings vendorSettings)
+            VendorSettings vendorSettings,
+            IBaseAdminModelFactory baseAdminModelFactory,
+            IVendorService vendorService,
+            IAddressService addressService,
+            IAddressModelFactory addressModelFactory,
+            AddressSettings addressSettings)
         {
             _blogSettings = blogSettings;
             _captchaSettings = captchaSettings;
@@ -156,6 +170,11 @@ namespace Nop.Web.Factories
             _sitemapXmlSettings = sitemapXmlSettings;
             _storeInformationSettings = storeInformationSettings;
             _vendorSettings = vendorSettings;
+            _baseAdminModelFactory = baseAdminModelFactory;
+            _vendorService = vendorService;
+            _addressService = addressService;
+            _addressModelFactory = addressModelFactory;
+            _addressSettings = addressSettings;
         }
 
         #endregion
@@ -646,6 +665,94 @@ namespace Nop.Web.Factories
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Prepare the homepage model
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the homepage model
+        /// </returns>
+        public virtual async Task<HomepageModel> PrepareHomepageModelAsync()
+        {
+            var model = new HomepageModel();
+
+            //prepare model categories
+            await _baseAdminModelFactory.PrepareCategoriesAsync(model.AvailableCategories, false);
+
+            return model;
+        }
+
+        /// <summary>
+        /// Prepare the vendors model
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the vendors model
+        /// </returns>
+        public virtual async Task<HomepageModel> PrepareVendorsModelAsync(HomepageModel model, int categoryId = 0)
+        {
+            //prepare model categories
+            await _baseAdminModelFactory.PrepareCategoriesAsync(model.AvailableCategories, true);
+
+            var vendors = await _vendorService.SearchVendorsAsync(categoryId: categoryId);
+            foreach (var vendor in vendors)
+            {
+                var vendorModel = new VendorModel
+                {
+                    Id = vendor.Id,
+                    Name = await _localizationService.GetLocalizedAsync(vendor, x => x.Name),
+                    Description = await _localizationService.GetLocalizedAsync(vendor, x => x.Description),
+                    MetaKeywords = await _localizationService.GetLocalizedAsync(vendor, x => x.MetaKeywords),
+                    MetaDescription = await _localizationService.GetLocalizedAsync(vendor, x => x.MetaDescription),
+                    MetaTitle = await _localizationService.GetLocalizedAsync(vendor, x => x.MetaTitle),
+                    SeName = await _urlRecordService.GetSeNameAsync(vendor),
+                    AllowCustomersToContactVendors = _vendorSettings.AllowCustomersToContactVendors
+                };
+
+                //prepare picture model
+                var pictureSize = _mediaSettings.VendorThumbPictureSize;
+                var pictureCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NopModelCacheDefaults.VendorPictureModelKey,
+                    vendor, pictureSize, true, await _workContext.GetWorkingLanguageAsync(), _webHelper.IsCurrentConnectionSecured(), await _storeContext.GetCurrentStoreAsync());
+                vendorModel.PictureModel = await _staticCacheManager.GetAsync(pictureCacheKey, async () =>
+                {
+                    var picture = await _pictureService.GetPictureByIdAsync(vendor.PictureId);
+                    string fullSizeImageUrl, imageUrl;
+
+                    (fullSizeImageUrl, picture) = await _pictureService.GetPictureUrlAsync(picture);
+                    (imageUrl, _) = await _pictureService.GetPictureUrlAsync(picture, pictureSize);
+
+                    var pictureModel = new PictureModel
+                    {
+                        FullSizeImageUrl = fullSizeImageUrl,
+                        ImageUrl = imageUrl,
+                        Title = string.Format(await _localizationService.GetResourceAsync("Media.Vendor.ImageLinkTitleFormat"), vendorModel.Name),
+                        AlternateText = string.Format(await _localizationService.GetResourceAsync("Media.Vendor.ImageAlternateTextFormat"), vendorModel.Name)
+                    };
+
+                    return pictureModel;
+                });
+
+                var vendorPictures = await _vendorService.GetVendorPicturesByVendorIdAsync(vendor.Id);
+                foreach (var vendorPicture in vendorPictures)
+                {
+                    var picture = (await _pictureService.GetPictureByIdAsync(vendorPicture.PictureId));
+
+                    var vendorPictureModel = new VendorPictureModel()
+                    {
+                        PictureUrl = (await _pictureService.GetPictureUrlAsync(picture)).Url,
+                        OverrideAltAttribute = picture.AltAttribute,
+                        OverrideTitleAttribute = picture.TitleAttribute
+                    };
+
+                    vendorModel.VendorPictureModel.Add(vendorPictureModel);
+                }
+
+                model.Vendors.Add(vendorModel);
+            }
+
+            return model;
         }
 
         #endregion

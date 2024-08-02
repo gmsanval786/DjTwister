@@ -38,10 +38,9 @@ using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Security;
+using Nop.Services.Seo;
 using Nop.Services.Tax;
 using Nop.Services.Vendors;
-using Nop.Web.Areas.Admin.Models.Catalog;
-using Nop.Web.Areas.Admin.Models.Vendors;
 using Nop.Web.Extensions;
 using Nop.Web.Factories;
 using Nop.Web.Framework;
@@ -106,6 +105,7 @@ namespace Nop.Web.Controllers
         private readonly IVendorService _vendorService;
         private readonly IPackageService _packageService;
         private readonly ICategoryService _categoryService;
+        private readonly IUrlRecordService _urlRecordService;
 
         #endregion
 
@@ -159,7 +159,8 @@ namespace Nop.Web.Controllers
             TaxSettings taxSettings,
             IVendorService vendorService,
             IPackageService packageService,
-            ICategoryService categoryService)
+            ICategoryService categoryService,
+            IUrlRecordService urlRecordService)
         {
             _addressSettings = addressSettings;
             _captchaSettings = captchaSettings;
@@ -210,6 +211,7 @@ namespace Nop.Web.Controllers
             _vendorService = vendorService;
             _packageService = packageService;
             _categoryService = categoryService;
+            _urlRecordService = urlRecordService;
         }
 
         #endregion
@@ -506,9 +508,7 @@ namespace Nop.Web.Controllers
                                 ? await _customerService.GetCustomerByUsernameAsync(customerUserName)
                                 : await _customerService.GetCustomerByEmailAsync(customerEmail);
 
-                            bool vendor = await _customerService.IsVendorAsync(customer);
-
-                            return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, model.RememberMe, isVendor: vendor);
+                            return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, model.RememberMe);
                         }
                     case CustomerLoginResults.MultiFactorAuthenticationRequired:
                         {
@@ -932,13 +932,18 @@ namespace Nop.Web.Controllers
                         var vendor = new Vendor
                         {
                             Name = model.DisplayName,
+                            Email = customer.Email,
                             Description = model.Bio,
-                            LevelId = model.VendorLevelId,
-                            Active = true
+                            Active = true,
+                            LevelId = model.VendorLevelId
                         };
 
                         await _vendorService.InsertVendorAsync(vendor);
-                        await SaveVendorCategoryMappingsAsync(vendor, model);
+
+                        var seName = await _urlRecordService.ValidateSeNameAsync(vendor, "", vendor.Name, true);
+                        await _urlRecordService.SaveSlugAsync(vendor, seName, 0);
+
+                        customer.VendorId = vendor.Id;
 
                         var vendorRole = await _customerService.GetCustomerRoleBySystemNameAsync(NopCustomerDefaults.VendorsRoleName);
                         if (vendorRole != null)
@@ -950,15 +955,17 @@ namespace Nop.Web.Controllers
                             });
                         }
 
-                        customer.VendorId = vendor.Id;
+                        await SaveVendorCategoryMappingsAsync(vendor, model);
 
                         var basicPackage = new Package
                         {
+                            VendorId = vendor.Id,
                             PackageTypeId = (int)PackageType.Basic,
                             Price = model.PackageModel.BasicPackage.Price,
                             Description = model.PackageModel.BasicPackage.Description,
                             SongCounts = model.PackageModel.BasicPackage.SongCountId,
                             RecordingTime = model.PackageModel.BasicPackage.RecordingTime,
+                            AllowRevisions = model.PackageModel.BasicPackage.AllowRevisions,
                             Revisions = model.PackageModel.BasicPackage.RevisionId,
                             DeliveryMethodId = model.PackageModel.BasicPackage.DeliveryMethodId,
                             DeliveryTimeDays = model.PackageModel.BasicPackage.DeliveryTimeDays,
@@ -970,11 +977,13 @@ namespace Nop.Web.Controllers
 
                         var standardPackage = new Package
                         {
+                            VendorId = vendor.Id,
                             PackageTypeId = (int)PackageType.Standard,
                             Price = model.PackageModel.StandardPackage.Price,
                             Description = model.PackageModel.StandardPackage.Description,
                             SongCounts = model.PackageModel.StandardPackage.SongCountId,
                             RecordingTime = model.PackageModel.StandardPackage.RecordingTime,
+                            AllowRevisions = model.PackageModel.StandardPackage.AllowRevisions,
                             Revisions = model.PackageModel.StandardPackage.RevisionId,
                             DeliveryMethodId = model.PackageModel.StandardPackage.DeliveryMethodId,
                             DeliveryTimeDays = model.PackageModel.StandardPackage.DeliveryTimeDays,
@@ -986,11 +995,13 @@ namespace Nop.Web.Controllers
 
                         var premiumPackage = new Package
                         {
+                            VendorId = vendor.Id,
                             PackageTypeId = (int)PackageType.Premium,
                             Price = model.PackageModel.PremiumPackage.Price,
                             Description = model.PackageModel.PremiumPackage.Description,
                             SongCounts = model.PackageModel.PremiumPackage.SongCountId,
                             RecordingTime = model.PackageModel.PremiumPackage.RecordingTime,
+                            AllowRevisions = model.PackageModel.PremiumPackage.AllowRevisions,
                             Revisions = model.PackageModel.PremiumPackage.RevisionId,
                             DeliveryMethodId = model.PackageModel.PremiumPackage.DeliveryMethodId,
                             DeliveryTimeDays = model.PackageModel.PremiumPackage.DeliveryTimeDays,
@@ -1164,16 +1175,8 @@ namespace Nop.Web.Controllers
                             //raise event       
                             await _eventPublisher.PublishAsync(new CustomerActivatedEvent(customer));
 
-                            var currentVendor = await _workContext.GetCurrentVendorAsync();
-                            if(currentVendor != null)
-                            {
-                                return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, true, isVendor: true);
-                            }
-                            else
-                            {
-                                returnUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
-                                return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, true);
-                            }
+                            returnUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
+                            return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, true);
 
                         default:
                             return RedirectToRoute("Homepage");

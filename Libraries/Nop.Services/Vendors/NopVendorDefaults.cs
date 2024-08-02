@@ -27,6 +27,21 @@ namespace Nop.Services.Vendors
         /// </remarks>
         public static CacheKey VendorAttributeValuesByAttributeCacheKey => new("Nop.vendorattributevalue.byattribute.{0}");
 
+        /// <summary>
+        /// Key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : customer roles ID hash
+        /// {1} : current store ID
+        /// {2} : categories ID hash
+        /// </remarks>
+        public static CacheKey CategoryVendorsNumberCacheKey => new("Nop.vendorcategory.vendors.number.{0}", CategoryVendorsNumberPrefix);
+
+        /// <summary>
+        /// Gets a key pattern to clear cache
+        /// </summary>
+        public static string CategoryVendorsNumberPrefix => "Nop.vendorcategory.vendors.number.";
+
         #endregion
     }
 }

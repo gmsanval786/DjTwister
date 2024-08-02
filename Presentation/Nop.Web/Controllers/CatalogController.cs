@@ -11,6 +11,7 @@ using Nop.Core.Domain.Vendors;
 using Nop.Core.Rss;
 using Nop.Services.Catalog;
 using Nop.Services.Common;
+using Nop.Services.Customers;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
 using Nop.Services.Security;
@@ -52,6 +53,7 @@ namespace Nop.Web.Controllers
         private readonly IWorkContext _workContext;
         private readonly MediaSettings _mediaSettings;
         private readonly VendorSettings _vendorSettings;
+        private readonly ICustomerService _customerService;
 
         #endregion
 
@@ -77,7 +79,8 @@ namespace Nop.Web.Controllers
             IWebHelper webHelper,
             IWorkContext workContext,
             MediaSettings mediaSettings,
-            VendorSettings vendorSettings)
+            VendorSettings vendorSettings,
+            ICustomerService customerService)
         {
             _catalogSettings = catalogSettings;
             _aclService = aclService;
@@ -100,6 +103,7 @@ namespace Nop.Web.Controllers
             _workContext = workContext;
             _mediaSettings = mediaSettings;
             _vendorSettings = vendorSettings;
+            _customerService = customerService;
         }
 
         #endregion
@@ -230,6 +234,10 @@ namespace Nop.Web.Controllers
 
         public virtual async Task<IActionResult> Vendor(int vendorId, CatalogProductsCommand command)
         {
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(currentCustomer))
+                return Challenge();
+
             var vendor = await _vendorService.GetVendorByIdAsync(vendorId);
 
             if (!await CheckVendorAvailabilityAsync(vendor))
@@ -270,8 +278,8 @@ namespace Nop.Web.Controllers
         public virtual async Task<IActionResult> VendorAll()
         {
             //we don't allow viewing of vendors if "vendors" block is hidden
-            if (_vendorSettings.VendorsBlockItemsToDisplay == 0)
-                return RedirectToRoute("Homepage");
+            //if (_vendorSettings.VendorsBlockItemsToDisplay == 0)
+            //    return RedirectToRoute("Homepage");
 
             var model = await _catalogModelFactory.PrepareVendorAllModelsAsync();
             return View(model);

@@ -50,7 +50,7 @@ namespace Nop.Services.Customers
         /// A task that represents the asynchronous operation
         /// The task result contains the result of an authentication
         /// </returns>
-        Task<IActionResult> SignInCustomerAsync(Customer customer, string returnUrl, bool isPersist = false, bool isVendor = false);
+        Task<IActionResult> SignInCustomerAsync(Customer customer, string returnUrl, bool isPersist = false);
 
         /// <summary>
         /// Sets a user email

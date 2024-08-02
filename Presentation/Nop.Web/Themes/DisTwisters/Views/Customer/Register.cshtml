@@ -222,8 +222,8 @@
                                     <td colspan="1">@T("Account.Fields.Package.Revisions")</td>
                                     <td>
                                         <div class="form-checkbox-group">
-                                            <input class="checkbox1" type="checkbox" id="revisions-checked">
-                                            <label for="revisions-checked" class="checkbox-label"></label>
+                                            <input class="checkbox1" type="checkbox" asp-for="PackageModel.BasicPackage.AllowRevisions" />
+                                            <label asp-for="PackageModel.BasicPackage.AllowRevisions" class="checkbox-label"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.BasicPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
                                             </div>
@@ -232,8 +232,8 @@
                                     </td>
                                     <td>
                                         <div class="form-checkbox-group">
-                                            <input class="checkbox1" type="checkbox" id="revisions-checked1">
-                                            <label for="revisions-checked1" class="checkbox-label"></label>
+                                            <input class="checkbox1" type="checkbox" asp-for="PackageModel.StandardPackage.AllowRevisions" />
+                                            <label asp-for="PackageModel.StandardPackage.AllowRevisions" class="checkbox-label"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.StandardPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
                                             </div>
@@ -242,8 +242,8 @@
                                     </td>
                                     <td>
                                         <div class="form-checkbox-group">
-                                            <input class="checkbox1" type="checkbox" id="revisions-checked2">
-                                            <label for="revisions-checked2" class="checkbox-label"></label>
+                                            <input class="checkbox1" type="checkbox" asp-for="PackageModel.PremiumPackage.AllowRevisions" />
+                                            <label asp-for="PackageModel.PremiumPackage.AllowRevisions" class="checkbox-label"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
                                             </div>

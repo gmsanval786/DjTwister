@@ -9,7 +9,7 @@ using Nop.Core.Domain.Vendors;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2024-07-20 16:45:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
+    [NopMigration("2024-07-20 17:30:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07 : MigrationBase
     {
         #region Fields
@@ -45,6 +45,9 @@ namespace Nop.Data.Migrations.CustomMigrations
 
             if (!Schema.Table(NameCompatibilityManager.GetTableName(typeof(VendorCategory))).Exists())
                 Create.TableFor<VendorCategory>();
+
+            if (!Schema.Table(NameCompatibilityManager.GetTableName(typeof(VendorPicture))).Exists())
+                Create.TableFor<VendorPicture>();
         }
 
         /// <summary>
@@ -113,6 +116,27 @@ namespace Nop.Data.Migrations.CustomMigrations
                 resources.Add("Admin.Vendors.Fields.Categories.NoCategoriesAvailable", "No genres available.");
             }
 
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Account.Homepage.Fields.Genres'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Account.Homepage.Fields.Genres.Choose", "Choose Genre");
+            }
+
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Admin.Vendors.Multimedia'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Admin.Vendors.Multimedia", "Multimedia");
+                resources.Add("Admin.Vendors.Multimedia.Pictures", "Pictures");
+                resources.Add("Admin.Vendors.Multimedia.Pictures.Fields.Picture", "Picture");
+                resources.Add("Admin.Vendors.Multimedia.Pictures.Fields.Picture.hint", "You can choose multiple images to upload at once. If the picture size exceeds your stores max image size setting, it will be automatically resized.");
+                resources.Add("Admin.Vendors.Multimedia.Pictures.Fields.DisplayOrder", "Display order");
+                resources.Add("Admin.Vendors.Multimedia.Pictures.Fields.OverrideAltattribute", "Display order");
+                resources.Add("Admin.Vendors.Multimedia.Pictures.Fields.OverrideTitleattribute", "Display order");
+                resources.Add("Admin.Vendors.Multimedia.Pictures.AddNew", "Add a new picture");
+            }
+
             //insert new locale resources
             var locales = languages.SelectMany(language => resources.Select(resource => new LocaleStringResource
             {
@@ -131,6 +155,7 @@ namespace Nop.Data.Migrations.CustomMigrations
                     "Update  LocaleStringResource set ResourceValue='Cart' where ResourceName='ShoppingCart' and LanguageId = 1",
                     "Update  LocaleStringResource set ResourceValue='Your Account' where ResourceName='Account.MyAccount' and LanguageId = 1",
                     "Update  LocaleStringResource set ResourceValue='{0}' where ResourceName='ShoppingCart.HeaderQuantity' and LanguageId = 1",
+                    "Update  LocaleStringResource set ResourceValue='Message DJ' where ResourceName='ContactVendor' and LanguageId = 1",
             };
 
             foreach (var res in updateresources)

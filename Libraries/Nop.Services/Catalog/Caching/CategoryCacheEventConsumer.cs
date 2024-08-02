@@ -2,6 +2,7 @@
 using Nop.Core.Domain.Catalog;
 using Nop.Services.Caching;
 using Nop.Services.Discounts;
+using Nop.Services.Vendors;
 
 namespace Nop.Services.Catalog.Caching
 {
@@ -26,6 +27,7 @@ namespace Nop.Services.Catalog.Caching
             await RemoveByPrefixAsync(NopCatalogDefaults.CategoryBreadcrumbPrefix);
             await RemoveByPrefixAsync(NopCatalogDefaults.CategoryProductsNumberPrefix);
             await RemoveByPrefixAsync(NopDiscountDefaults.CategoryIdsPrefix);
+            await RemoveByPrefixAsync(NopVendorDefaults.CategoryVendorsNumberPrefix);
 
             if (entityEventType == EntityEventType.Delete)
                 await RemoveAsync(NopCatalogDefaults.SpecificationAttributeOptionsByCategoryCacheKey, entity);

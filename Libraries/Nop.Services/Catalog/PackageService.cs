@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
@@ -81,6 +82,33 @@ namespace Nop.Services.Catalog
         public virtual async Task UpdatePackageAsync(Package package)
         {
             await _packageRepository.UpdateAsync(package);
+        }
+
+        /// <summary>
+        /// Gets all packages
+        /// </summary>
+        /// <param name="vendorId">Vendor identifier</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the packages
+        /// </returns>
+        public virtual async Task<IPagedList<Package>> GetAllPackagesAsync(int vendorId = 0, int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
+        {
+            var vendors = await _packageRepository.GetAllPagedAsync(query =>
+            {
+                if (vendorId > 0)
+                    query = query.Where(p => p.VendorId == vendorId);
+
+                query = query.Where(p => !p.Deleted);
+                query = query.OrderBy(p => p.PackageTypeId);
+
+                return query;
+            }, pageIndex, pageSize);
+
+            return vendors;
         }
 
         #endregion

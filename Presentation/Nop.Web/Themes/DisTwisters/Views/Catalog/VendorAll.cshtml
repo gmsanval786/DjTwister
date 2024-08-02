@@ -1,0 +1,239 @@
+﻿@model IList<VendorModel>
+
+@using Nop.Core.Domain.Vendors
+@using Nop.Core
+@inject IWorkContext workContext
+@inject ICustomerService customerService
+@inject IWebHelper webHelper
+
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Vendors").Text);
+}
+
+@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var customer = await customerService.IsRegisteredAsync(currentCustomer);
+}
+
+<section class="product-list-sec py50 pb-0">
+    <div class="container">
+        <div class="row">
+            <div class="product-top-list-box d-flex align-items-center justify-content-between mb-2">
+                <h1 class="product-shop-hading fs34 fw600 text-black">Product Shop</h1>
+                <form class="d-flex search-box ms-5">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="loginbtn" type="submit">Search</button>
+                </form>
+            </div>
+            @foreach (var item in Model)
+            {
+                <div class="col-md-12 col-lg-6 col-xl-3 mb-5">
+                    <div class="product-cart">
+                        <div class="product-slide">
+                            @foreach (var picture in @item.VendorPictureModel)
+                            {
+                                <a class="slid-itm1 d-block text-decoration" href="@Url.RouteUrl("Vendor", new { SeName = item.SeName })" title="@item.Name">
+                                    <img class="img-fluid" alt="@picture.OverrideAltAttribute" src="@picture.PictureUrl" title="@picture.OverrideTitleAttribute">
+                                </a>
+                            }
+                        </div>
+                        <div class="product-content-box mt-3">
+                            <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="@Url.RouteUrl("Vendor", new { SeName = item.SeName })" title="@item.Name">
+                                @if (customer)
+                                {
+                                    <div class="user-profile-box position-relative">
+                                        <img class="img-fluid" alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title">
+                                        <div class="active-dots position-absolute"></div>
+                                    </div>
+                                    <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">@item.Name</h3>
+                                }
+                                else
+                                {
+                                    var vendorUrl = Url.RouteUrl("Vendor", new { SeName = item.SeName });
+
+                                    var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
+                                    ? url.ToString() : vendorUrl;
+
+                                    <h3 class="mb-0 text-blue fs18 fw600">
+                                        <a href="@Url.RouteUrl("Login", new { returnUrl })" class="nav-link"> Sign in to view name </a>
+                                    </h3>
+                                }
+                            </a>
+                            <p class="p-text fs14 fw400 description mb-2">
+                               @Html.Raw(@item.Description)
+                            </p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="rating-box d-flex align-items-center">
+                                    <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
+                                    <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
+                                    <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<section class="features-sec py50">
+    <div class="container">
+        <div class="product-top-list-box mb-2">
+            <h1 class="product-shop-hading fs34 fw600 text-black">Featured Products</h1>
+        </div>
+        <div class="features-slide">
+            @foreach (var item in Model)
+            {
+                <div class="product-cart">
+                    @{
+                        var firstPicture = item.VendorPictureModel.FirstOrDefault();
+                    }
+
+                    @if (firstPicture != null)
+                    {
+                        <a class="slid-itm1 d-block text-decoration" href="@Url.RouteUrl("Vendor", new { SeName = item.SeName })" title="@item.Name">
+                            <img class="img-fluid" alt="@firstPicture.OverrideAltAttribute" src="@firstPicture.PictureUrl" title="@firstPicture.OverrideTitleAttribute" />
+                        </a>
+                    }
+                    <div class="product-content-box mt-3">
+                        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="@Url.RouteUrl("Vendor", new { SeName = item.SeName })" title="@item.Name">
+                            @if (customer)
+                            {
+                                <div class="user-profile-box position-relative">
+                                    <img class="img-fluid" alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title">
+                                    <div class="active-dots position-absolute"></div>
+                                </div>
+                                <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">@item.Name</h3>
+                            }
+                            else
+                            {
+                                var vendorUrl = Url.RouteUrl("Vendor", new { SeName = item.SeName });
+
+                                var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
+                                ? url.ToString() : vendorUrl;
+
+                                <h3 class="mb-0 text-blue fs18 fw600">
+                                    <a href="@Url.RouteUrl("Login", new { returnUrl })" class="nav-link"> Sign in to view name </a>
+                                </h3>
+                            }
+                        </a>
+                        <p class="p-text fs14 fw400 description mb-2">
+                            @Html.Raw(@item.Description)
+                        </p>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="rating-box d-flex align-items-center">
+                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
+                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
+                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script asp-location="Footer">
+    $('.product-slide').slick({
+        dots: false,
+        infinite: false,
+        speed: 300,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        prevArrow: '<button class="slide-arrow prev-arrow"></button>',
+        nextArrow: '<button class="slide-arrow next-arrow"></button>',
+        // prevArrow: false,
+        // nextArrow: false,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: false
+                }
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+            // You can unslick at a given breakpoint now by adding:
+            // settings: "unslick"
+            // instead of a settings object
+        ]
+    });
+</script>
+<!-- features-slide -->
+<script asp-location="Footer">
+    $('.features-slide').slick({
+        dots: false,
+        infinite: true,
+        autoplay: true,
+        speed: 300,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        prevArrow: '<button class="slide-arrow prev-arrow"></button>',
+        nextArrow: '<button class="slide-arrow next-arrow"></button>',
+        // prevArrow: false,
+        // nextArrow: false,
+        responsive: [
+            {
+                breakpoint: 1199,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: false
+                }
+            },
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: false
+                }
+            },
+            {
+                breakpoint: 767,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+            // You can unslick at a given breakpoint now by adding:
+            // settings: "unslick"
+            // instead of a settings object
+        ]
+    });
+</script>
