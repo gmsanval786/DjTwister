@@ -9,7 +9,7 @@ using Nop.Core.Domain.Vendors;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2024-07-20 17:30:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
+    [NopMigration("2024-07-20 17:35:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07 : MigrationBase
     {
         #region Fields
@@ -135,6 +135,13 @@ namespace Nop.Data.Migrations.CustomMigrations
                 resources.Add("Admin.Vendors.Multimedia.Pictures.Fields.OverrideAltattribute", "Display order");
                 resources.Add("Admin.Vendors.Multimedia.Pictures.Fields.OverrideTitleattribute", "Display order");
                 resources.Add("Admin.Vendors.Multimedia.Pictures.AddNew", "Add a new picture");
+            }
+
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Account.Fields.RevisionAllowed'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Account.Fields.RevisionAllowed", "");
             }
 
             //insert new locale resources

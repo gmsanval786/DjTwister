@@ -27,10 +27,6 @@
                             {
                                 <label class="mb-1 lable-text" asp-for="FirstName" asp-postfix=":" class="text-info"></label>
                                 <input class="input-text" type="text" asp-for="FirstName"  class="form-control" />
-                                @if (Model.FirstNameRequired)
-                                {
-                                    <nop-required />
-                                }
                                 <span asp-validation-for="FirstName"></span>
                             }
                         </div>
@@ -41,19 +37,15 @@
                             {
                                 <label class="mb-1 lable-text" asp-for="LastName" asp-postfix=":" class="text-info"></label>
                                 <input class="input-text" type="text" asp-for="LastName" class="form-control" />
-                                @if (Model.LastNameRequired)
-                                {
-                                    <nop-required />
-                                }
                                 <span asp-validation-for="LastName"></span>
                             }
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4">
                         <div class="form-group mb-2">
-                            <label class="mb-1 lable-text" asp-for="DisplayName" asp-postfix=":" class="text-info"></label>
-                            <input class="input-text" type="text" asp-for="DisplayName" class="form-control" />
-                            <nop-required />
+                            <label class="mb-1 lable-text" asp-for="DisplayName" asp-postfix=":" class="text-info">
+                            </label>
+                            <input class="input-text form-control" type="text" asp-for="DisplayName" />
                             <span asp-validation-for="DisplayName"></span>
                         </div>
                     </div>
@@ -61,7 +53,6 @@
                         <div class="form-group mb-2">
                             <label class="mb-1 lable-text" asp-for="Email" asp-postfix=":" class="text-info"></label>
                             <input class="input-text" type="text" asp-for="Email" class="form-control" />
-                            <nop-required />
                             <span asp-validation-for="Email"></span>
                         </div>
                     </div>
@@ -69,7 +60,6 @@
                         <div class="form-group mb-2">
                             <label class="mb-1 lable-text" asp-for="Password" asp-postfix=":" class="text-info"></label>
                             <input class="input-text" type="password" asp-for="Password" class="form-control" />
-                            <nop-required />
                             <span asp-validation-for="Password"></span>
                         </div>
                     </div>
@@ -222,7 +212,7 @@
                                     <td colspan="1">@T("Account.Fields.Package.Revisions")</td>
                                     <td>
                                         <div class="form-checkbox-group">
-                                            <input class="checkbox1" type="checkbox" asp-for="PackageModel.BasicPackage.AllowRevisions" />
+                                            <input class="checkbox1" asp-for="PackageModel.BasicPackage.AllowRevisions" />
                                             <label asp-for="PackageModel.BasicPackage.AllowRevisions" class="checkbox-label"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.BasicPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
@@ -232,7 +222,7 @@
                                     </td>
                                     <td>
                                         <div class="form-checkbox-group">
-                                            <input class="checkbox1" type="checkbox" asp-for="PackageModel.StandardPackage.AllowRevisions" />
+                                            <input class="checkbox1" asp-for="PackageModel.StandardPackage.AllowRevisions" />
                                             <label asp-for="PackageModel.StandardPackage.AllowRevisions" class="checkbox-label"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.StandardPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
@@ -242,13 +232,12 @@
                                     </td>
                                     <td>
                                         <div class="form-checkbox-group">
-                                            <input class="checkbox1" type="checkbox" asp-for="PackageModel.PremiumPackage.AllowRevisions" />
+                                            <input class="checkbox1" asp-for="PackageModel.PremiumPackage.AllowRevisions" />
                                             <label asp-for="PackageModel.PremiumPackage.AllowRevisions" class="checkbox-label"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
                                             </div>
                                         </div>
-
                                     </td>
                                 </tr>
                                 <tr>

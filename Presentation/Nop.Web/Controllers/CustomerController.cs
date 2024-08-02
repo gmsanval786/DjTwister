@@ -1175,7 +1175,7 @@ namespace Nop.Web.Controllers
                             //raise event       
                             await _eventPublisher.PublishAsync(new CustomerActivatedEvent(customer));
 
-                            returnUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
+                            returnUrl = Url.RouteUrl("Homepage", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
                             return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, true);
 
                         default:
