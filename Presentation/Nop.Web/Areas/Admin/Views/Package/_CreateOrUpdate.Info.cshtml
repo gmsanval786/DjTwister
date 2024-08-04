@@ -1,0 +1,140 @@
+﻿@model PackageModel
+
+@inject IStoreService storeService
+
+@using Nop.Core.Domain.Catalog;
+@using Nop.Services
+@using Nop.Services.Stores
+
+@{
+    var stores = await storeService.GetAllStoresAsync();
+}
+    @* resources for product tags input *@
+    <script src="~/lib_npm/jquery-tageditor/jquery.caret.min.js"></script>
+    <script src="~/lib_npm/jquery-tageditor/jquery.tag-editor.min.js"></script>
+    <link rel="stylesheet" href="~/lib_npm/jquery-tageditor/jquery.tag-editor.css">
+
+
+    <script asp-location="Footer">
+
+    function toggleShowOnHomepage() {
+        if ($('#@Html.IdFor(model => model.ShowOnHomepage)').is(':checked')) {
+            $('#pnlDisplayOrder').showElement();
+        } else {
+            $('#pnlDisplayOrder').hideElement();
+        }
+    }
+
+    </script>
+
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="VendorId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="VendorId" asp-items="Model.AvailableVendors" />
+            <span asp-validation-for="VendorId"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="PackageTypeId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="PackageTypeId" asp-items="Model.AvailablePackageTypes" />
+            <span asp-validation-for="PackageTypeId"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Price" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Price" />
+            <span asp-validation-for="Price"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Description" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Description" />
+            <span asp-validation-for="Description"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="SongCounts" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="SongCounts" asp-items="Model.AvailableSongCounts" />
+            <span asp-validation-for="SongCounts"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="RecordingTime" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="RecordingTime" />
+            <span asp-validation-for="RecordingTime"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AllowRevisions" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AllowRevisions" />
+            <span asp-validation-for="AllowRevisions"></span>
+        </div>
+    </div>
+    <div class="form-group row" id="pnlRevision">
+        <div class="col-md-3">
+            <nop-label asp-for="Revisions" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="Revisions" asp-items="Model.AvailableRevisions" />
+            <span asp-validation-for="Revisions"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DeliveryMethodId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="DeliveryMethodId" asp-items="Model.AvailableDeliveryMethods" />
+            <span asp-validation-for="DeliveryMethodId"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DeliveryTimeDays" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="DeliveryTimeDays" asp-items="Model.AvailableDeliveryDays" />
+            <span asp-validation-for="DeliveryTimeDays"></span>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+
+        $("#@Html.IdFor(model => model.AllowRevisions)").click(toggleIsRevisionAllowed);
+
+        toggleIsRevisionAllowed();
+    });
+
+    function toggleIsRevisionAllowed() {
+        if ($('#@Html.IdFor(model => model.AllowRevisions)').is(':checked')) {
+            $('#pnlRevision').showElement();
+        } else {
+            $('#pnlRevision').hideElement();
+        }
+    }
+
+</script>

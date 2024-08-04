@@ -281,6 +281,96 @@
             </script>
         </div>
     </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="VendorId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="VendorId" asp-items="Model.AvailableVendors" />
+            <span asp-validation-for="VendorId"></span>
+        </div>
+    </div>
+    <div id="pnlVendorPackages">
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="BasicPackageId" />
+            </div>
+            <div class="col-md-9">
+                <nop-select asp-for="BasicPackageId" asp-items="Model.AvailableBasicPackages" />
+                <span asp-validation-for="BasicPackageId"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="StandardPackageId" />
+            </div>
+            <div class="col-md-9">
+                <nop-select asp-for="StandardPackageId" asp-items="Model.AvailableStandardPackages" />
+                <span asp-validation-for="StandardPackageId"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PremiumPackageId" />
+            </div>
+            <div class="col-md-9">
+                <nop-select asp-for="PremiumPackageId" asp-items="Model.AvailablePremiumPackages" />
+                <span asp-validation-for="PremiumPackageId"></span>
+            </div>
+        </div>
+        <script>
+
+            $(document).ready(function () {
+
+                $("#@Html.IdFor(model => model.VendorId)").change(function () {
+
+                    var selectedItem = $(this).val();
+                    var ddlBasicPackages = $("#@Html.IdFor(model => model.BasicPackageId)");
+                    var ddlStandardPackages = $("#@Html.IdFor(model => model.StandardPackageId)");
+                    var ddlPremiumPackages = $("#@Html.IdFor(model => model.PremiumPackageId)");
+
+                    if (selectedItem > 0) {
+                        $.ajax({
+                            cache: false,
+                            type: "GET",
+                            url: "@(Url.Action("GetPackagesByVendorId", "Package"))",
+                            data: {
+                                "vendorId": selectedItem,
+                            },
+                            success: function (data, textStatus, jqXHR) {
+
+                                console.log(data);
+                                ddlBasicPackages.html('');
+                                ddlStandardPackages.html('');
+                                ddlPremiumPackages.html('');
+
+                                $.each(data.BasicPackage, function (index, option) {
+                                    ddlBasicPackages.append($('<option></option>').val(option.Id).html(option.Package));
+                                });
+                                $.each(data.StandardPackage, function (index, option) {
+                                    ddlStandardPackages.append($('<option></option>').val(option.Id).html(option.Package));
+                                });
+                                $.each(data.PremiumPackage, function (index, option) {
+                                    ddlPremiumPackages.append($('<option></option>').val(option.Id).html(option.Package));
+                                });
+
+                                $('#pnlVendorPackages').show();
+                                ddlBasicPackages.trigger("change");
+                                ddlStandardPackages.trigger("change");
+                                ddlPremiumPackages.trigger("change");
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.error("Error loading packages: " + textStatus);
+                            }
+                        });
+                    } else {
+                        $('#pnlVendorPackages').hide();
+                    }
+                }).trigger('change'); // Trigger change event on page load to set initial state
+            });
+
+        </script>
+    </div>
     <div class="form-group row @(Model.ProductEditorSettingsModel.Manufacturers ? null : "advanced-setting")">
         <div class="col-md-3">
             <nop-label asp-for="SelectedManufacturerIds" />
@@ -564,16 +654,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="form-group row @(Model.ProductEditorSettingsModel.Vendor ? null : "advanced-setting")" @(Model.IsLoggedInAsVendor ? Html.Raw("style='display: none;'") : null)>
-        <div class="col-md-3">
-            <nop-label asp-for="VendorId" />
-        </div>
-        <div class="col-md-9">
-            <nop-select asp-for="VendorId" asp-items="Model.AvailableVendors" />
-            <span asp-validation-for="VendorId"></span>
-        </div>
-    </div>
+    </div>    
     <div class="form-group row @(Model.ProductEditorSettingsModel.RequireOtherProductsAddedToCart ? null : "advanced-setting")" id="group-required-other-products">
         <div class="col-md-3">
             <nop-label asp-for="RequireOtherProducts" />

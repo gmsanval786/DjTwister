@@ -9,7 +9,7 @@ using Nop.Core.Domain.Vendors;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2024-07-20 17:35:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
+    [NopMigration("2024-07-20 17:52:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07 : MigrationBase
     {
         #region Fields
@@ -81,7 +81,6 @@ namespace Nop.Data.Migrations.CustomMigrations
             {
                 resources.Add("Account.Fields.Package", "Packages");
 
-                resources.Add("Account.Fields.Package.Price", "Price");
                 resources.Add("Account.Fields.Package.Description", "Description");
                 resources.Add("Account.Fields.Package.SelectSongCount", "Select Song Count");
                 resources.Add("Account.Fields.Package.SongCount", "Song Count");
@@ -138,10 +137,63 @@ namespace Nop.Data.Migrations.CustomMigrations
             }
 
             localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
-              $"= 'Account.Fields.RevisionAllowed'").Result;
+              $"= 'Admin.Catalog.Packages'").Result;
             if (localeStringResource.FirstOrDefault() == 0)
             {
-                resources.Add("Account.Fields.RevisionAllowed", "");
+                resources.Add("Admin.Catalog.Packages", "Packages");
+                resources.Add("Admin.Catalog.Packages.Info", "Package info");
+                resources.Add("Admin.Catalog.Packages.AddNew", "Add new package");
+                resources.Add("Admin.Catalog.Packages.EditPackageDetails", "Edit package details");
+                resources.Add("Admin.Catalog.Packages.BackToList", "Back to packages list");
+                resources.Add("Admin.Catalog.Packages.Added", "Package added successfully.");
+                resources.Add("Admin.Catalog.Packages.Updated", "Package updated successfully.");
+                resources.Add("Admin.Catalog.Packages.Deleted", "Package deleted successfully.");
+
+                resources.Add("Admin.Catalog.Packages.List.SearchVendor", "DJs");
+                resources.Add("Admin.Catalog.Packages.List.SearchVendor.hint", "Search package by dj");
+
+                resources.Add("Admin.Catalog.Packages.List.SearchPackageType", "Types");
+                resources.Add("Admin.Catalog.Packages.List.SearchPackageType.hint", "Search package by type");
+
+                resources.Add("Admin.Catalog.Packages.Fields.PackgeTypeName", "Type");
+                resources.Add("Admin.Catalog.Packages.Fields.VendorName", "DJ");
+                resources.Add("Admin.Catalog.Packages.Fields.DeliveryMethodName", "Delivery Method");
+
+                resources.Add("Admin.Catalog.Packages.Fields.PackageType", "Type");
+                resources.Add("Admin.Catalog.Packages.Fields.PackageType.hint", "Type of package");
+                resources.Add("Admin.Catalog.Packages.Fields.Vendor", "DJ");
+                resources.Add("Admin.Catalog.Packages.Fields.Vendor.hint", "Name of dj");
+                resources.Add("Admin.Catalog.Packages.Fields.Description", "Description");
+                resources.Add("Admin.Catalog.Packages.Fields.Description.hint", "Description of package");
+                resources.Add("Admin.Catalog.Packages.Fields.RecordingTime", "Recording time");
+                resources.Add("Admin.Catalog.Packages.Fields.RecordingTime.hint", "Songs recording time");
+                resources.Add("Admin.Catalog.Packages.Fields.SongCount", "Song Count");
+                resources.Add("Admin.Catalog.Packages.Fields.SongCount.hint", "Number of songs");
+                resources.Add("Admin.Catalog.Packages.Fields.Price", "Price");
+                resources.Add("Admin.Catalog.Packages.Fields.Price.hint", "Price of package");
+                resources.Add("Admin.Catalog.Packages.Fields.RevisionAllowed", "Will Revisions be allowed?");
+                resources.Add("Admin.Catalog.Packages.Fields.RevisionAllowed.hint", "Revisions be allowed?");
+                resources.Add("Admin.Catalog.Packages.Fields.Revision", "Revision");
+                resources.Add("Admin.Catalog.Packages.Fields.Revision.hint", "Number of revision");
+                resources.Add("Admin.Catalog.Packages.Fields.DeliveryMethod", "Delivery method");
+                resources.Add("Admin.Catalog.Packages.Fields.DeliveryMethod.hint", "Method of package delivery");
+                resources.Add("Admin.Catalog.Packages.Fields.DeliveryDay", "Delivery Time Select in Days");
+                resources.Add("Admin.Catalog.Packages.Fields.DeliveryDay.hint", "Days of delivery time");
+            }
+
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Admin.Catalog.Products.Fields.BasicPackage'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Admin.Catalog.Products.Fields.BasicPackage", "Basic Package");
+                resources.Add("Admin.Catalog.Products.Fields.BasicPackage.hint", "Name of basic package");
+                resources.Add("Admin.Catalog.Products.Fields.BasicPackage.None", "None");
+                resources.Add("Admin.Catalog.Products.Fields.StandardPackage", "Standard Package");
+                resources.Add("Admin.Catalog.Products.Fields.StandardPackage.hint", "Name of standard package");
+                resources.Add("Admin.Catalog.Products.Fields.StandardPackage.None", "None");
+                resources.Add("Admin.Catalog.Products.Fields.PremiumPackage", "Premium Package");
+                resources.Add("Admin.Catalog.Products.Fields.PremiumPackage.hint", "Name of premium package");
+                resources.Add("Admin.Catalog.Products.Fields.PremiumPackage.None", "None");
             }
 
             //insert new locale resources

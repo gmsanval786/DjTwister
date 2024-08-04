@@ -314,7 +314,9 @@ namespace Nop.Services.Vendors
             if (pageSize == int.MaxValue)
                 pageSize = int.MaxValue - 1;
 
-            var vendorsQuery = _vendorRepository.Table;
+            var vendorsQuery = from vendor in _vendorRepository.Table
+                               where !vendor.Deleted && vendor.Active
+                               select vendor;
 
             if (categoryId > 0)
             {

@@ -1,12 +1,13 @@
 ﻿using System;
 using Nop.Core.Domain.Common;
+using Nop.Core.Domain.Localization;
 
 namespace Nop.Core.Domain.Catalog
 {
     /// <summary>
     /// Represents a package
     /// </summary>
-    public partial class Package : BaseEntity, ISoftDeletedEntity
+    public partial class Package : BaseEntity, ILocalizedEntity, ISoftDeletedEntity
     {
         /// <summary>
         /// Gets or sets the package type identifier
@@ -41,7 +42,7 @@ namespace Nop.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets a the revisions
         /// </summary>
-        public int Revisions { get; set; }
+        public int? Revisions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the revision allow
@@ -89,6 +90,15 @@ namespace Nop.Core.Domain.Catalog
         {
             get => (DeliveryMethod)DeliveryMethodId;
             set => DeliveryMethodId = (int)value;
+        }
+
+        /// <summary>
+        /// Gets or sets the allow revision
+        /// </summary>
+        public AllowRevision AllowRevision
+        {
+            get => (AllowRevision)Revisions;
+            set => Revisions = (int)value;
         }
     }
 }

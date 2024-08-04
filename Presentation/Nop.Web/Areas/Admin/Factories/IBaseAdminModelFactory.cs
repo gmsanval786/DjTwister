@@ -363,6 +363,42 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
         /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        Task PrepareRevisionAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null, int packageType = 0);
+        Task PrepareRevisionAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        /// <summary>
+        /// Prepare available package vendors
+        /// </summary>
+        /// <param name="items">Vendor items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task PreparePackageVendorsAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        /// <summary>
+        /// Prepare available basic package type
+        /// </summary>
+        /// <param name="items">Basic package items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task PrepareBasicPackageTypesAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        /// <summary>
+        /// Prepare available standard package type
+        /// </summary>
+        /// <param name="items">Standard package items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task PrepareStandardPackageTypesAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        /// <summary>
+        /// Prepare available premium package type
+        /// </summary>
+        /// <param name="items">Premium package items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task PreparePremiumPackageTypesAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
     }
 }

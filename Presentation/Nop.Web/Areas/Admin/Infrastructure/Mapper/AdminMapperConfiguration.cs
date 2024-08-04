@@ -687,6 +687,22 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<TierPriceModel, TierPrice>()
                 .ForMember(entity => entity.CustomerRoleId, options => options.Ignore())
                 .ForMember(entity => entity.ProductId, options => options.Ignore());
+
+            //products
+            CreateMap<Package, PackageModel>()
+                .ForMember(model => model.AvailableVendors, options => options.Ignore())
+                .ForMember(model => model.AvailableDeliveryDays, options => options.Ignore())
+                .ForMember(model => model.AvailableDeliveryMethods, options => options.Ignore())
+                .ForMember(model => model.AvailablePackageTypes, options => options.Ignore())
+                .ForMember(model => model.AvailableRevisions, options => options.Ignore())
+                .ForMember(model => model.AvailableSongCounts, options => options.Ignore());
+            CreateMap<PackageModel, Package>()
+                .ForMember(entity => entity.CreatedOnUtc, options => options.Ignore())
+                .ForMember(entity => entity.Deleted, options => options.Ignore())
+                .ForMember(entity => entity.PackageType, options => options.Ignore())
+                .ForMember(entity => entity.DeliveryMethod, options => options.Ignore())
+                .ForMember(entity => entity.AllowRevision, options => options.Ignore())
+                .ForMember(entity => entity.UpdatedOnUtc, options => options.Ignore());
         }
 
         /// <summary>

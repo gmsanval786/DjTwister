@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Localization;
+using Nop.Core.Domain.Vendors;
 using Nop.Data;
 
 namespace Nop.Services.Catalog
@@ -19,6 +21,7 @@ namespace Nop.Services.Catalog
         protected readonly IRepository<PackageProductMapping> _packageProductMapping;
         protected readonly IWorkContext _workContext;
         protected readonly LocalizationSettings _localizationSettings;
+        protected readonly IRepository<Vendor> _vendorRepository;
 
         #endregion
 
@@ -27,12 +30,14 @@ namespace Nop.Services.Catalog
         public PackageService(IRepository<Package> packageRepository,
             IWorkContext workContext,
             LocalizationSettings localizationSettings,
-            IRepository<PackageProductMapping> packageProductMapping)
+            IRepository<PackageProductMapping> packageProductMapping,
+            IRepository<Vendor> vendorRepository)
         {
             _packageRepository = packageRepository;
             _workContext = workContext;
             _localizationSettings = localizationSettings;
             _packageProductMapping = packageProductMapping;
+            _vendorRepository = vendorRepository;
         }
 
         #endregion
@@ -52,6 +57,16 @@ namespace Nop.Services.Catalog
         }
 
         /// <summary>
+        /// Delete packages
+        /// </summary>
+        /// <param name="packages">Packages</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task DeletePackagesAsync(IList<Package> packages)
+        {
+            await _packageRepository.DeleteAsync(packages);
+        }
+
+        /// <summary>
         /// Gets package
         /// </summary>
         /// <param name="productId">Package identifier</param>
@@ -62,6 +77,19 @@ namespace Nop.Services.Catalog
         public virtual async Task<Package> GetPackageByIdAsync(int productId)
         {
             return await _packageRepository.GetByIdAsync(productId, cache => default);
+        }
+
+        /// <summary>
+        /// Gets packages by identifier
+        /// </summary>
+        /// <param name="packageIds">Package identifiers</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the packages
+        /// </returns>s
+        public virtual async Task<IList<Package>> GetPackagesByIdsAsync(int[] packageIds)
+        {
+            return await _packageRepository.GetByIdsAsync(packageIds, cache => default, false);
         }
 
         /// <summary>
@@ -95,20 +123,25 @@ namespace Nop.Services.Catalog
         /// A task that represents the asynchronous operation
         /// The task result contains the packages
         /// </returns>
-        public virtual async Task<IPagedList<Package>> GetAllPackagesAsync(int vendorId = 0, int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
+        public virtual async Task<IPagedList<Package>> GetAllPackagesAsync(int vendorId = 0, int packageTypeId = 0, int storeId = 0,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
         {
-            var vendors = await _packageRepository.GetAllPagedAsync(query =>
+            var packages = await _packageRepository.GetAllPagedAsync(query =>
             {
-                if (vendorId > 0)
-                    query = query.Where(p => p.VendorId == vendorId);
-
-                query = query.Where(p => !p.Deleted);
-                query = query.OrderBy(p => p.PackageTypeId);
+                query = from p in query
+                        join v in _vendorRepository.Table on p.VendorId equals v.Id into pv
+                        from v in pv.DefaultIfEmpty()
+                        where (vendorId == 0 || p.VendorId == vendorId)
+                           && (packageTypeId == 0 || p.PackageTypeId == packageTypeId)
+                           && (v == null || (!v.Deleted && v.Active))
+                           && !p.Deleted
+                        orderby p.PackageTypeId
+                        select p;
 
                 return query;
             }, pageIndex, pageSize);
 
-            return vendors;
+            return packages;
         }
 
         #endregion

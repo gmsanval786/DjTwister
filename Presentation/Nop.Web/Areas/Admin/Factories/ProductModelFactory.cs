@@ -959,6 +959,18 @@ namespace Nop.Web.Areas.Admin.Factories
             await _baseAdminModelFactory.PrepareVendorsAsync(model.AvailableVendors,
                 defaultItemText: await _localizationService.GetResourceAsync("Admin.Catalog.Products.Fields.Vendor.None"));
 
+            //prepare available basic
+            await _baseAdminModelFactory.PrepareBasicPackageTypesAsync(model.AvailableBasicPackages,
+                defaultItemText: await _localizationService.GetResourceAsync("Admin.Catalog.Products.Fields.BasicPackage.None"));
+
+            //prepare available standard
+            await _baseAdminModelFactory.PrepareStandardPackageTypesAsync(model.AvailableStandardPackages,
+                defaultItemText: await _localizationService.GetResourceAsync("Admin.Catalog.Products.Fields.StandardPackage.None"));
+
+            //prepare available premium
+            await _baseAdminModelFactory.PreparePremiumPackageTypesAsync(model.AvailablePremiumPackages,
+                defaultItemText: await _localizationService.GetResourceAsync("Admin.Catalog.Products.Fields.PremiumPackage.None"));
+
             //prepare available tax categories
             await _baseAdminModelFactory.PrepareTaxCategoriesAsync(model.AvailableTaxCategories);
 

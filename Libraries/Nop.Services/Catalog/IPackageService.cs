@@ -27,6 +27,13 @@ namespace Nop.Services.Catalog
         Task DeletePackageAsync(Package package);
 
         /// <summary>
+        /// Delete packages
+        /// </summary>
+        /// <param name="packages">Packages</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task DeletePackagesAsync(IList<Package> packages);
+
+        /// <summary>
         /// Gets package
         /// </summary>
         /// <param name="productId">Package identifier</param>
@@ -35,6 +42,16 @@ namespace Nop.Services.Catalog
         /// The task result contains the package
         /// </returns>
         Task<Package> GetPackageByIdAsync(int productId);
+
+        /// <summary>
+        /// Gets packages by identifier
+        /// </summary>
+        /// <param name="packageIds">Package identifiers</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the packages
+        /// </returns>
+        Task<IList<Package>> GetPackagesByIdsAsync(int[] packageIds);
 
         /// <summary>
         /// Inserts a package
@@ -61,7 +78,8 @@ namespace Nop.Services.Catalog
         /// A task that represents the asynchronous operation
         /// The task result contains the packages
         /// </returns>
-        Task<IPagedList<Package>> GetAllPackagesAsync(int vendorId = 0, int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
+        Task<IPagedList<Package>> GetAllPackagesAsync(int vendorId = 0, int packageTypeId = 0, int storeId = 0,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
 
         #endregion
 

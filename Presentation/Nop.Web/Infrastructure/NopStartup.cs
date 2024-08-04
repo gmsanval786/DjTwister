@@ -85,6 +85,7 @@ namespace Nop.Web.Infrastructure
             services.AddScoped<IVendorAttributeModelFactory, VendorAttributeModelFactory>();
             services.AddScoped<IVendorModelFactory, VendorModelFactory>();
             services.AddScoped<IWidgetModelFactory, WidgetModelFactory>();
+            services.AddScoped<IPackageModelFactory, PackageModelFactory>();
 
             //factories
             services.AddScoped<Factories.IAddressModelFactory, Factories.AddressModelFactory>();

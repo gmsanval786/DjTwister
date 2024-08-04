@@ -29,7 +29,7 @@ namespace Nop.Web.Models.Package
         public int SongCountId { get; set; }
 
         [NopResourceDisplayName("Account.Fields.Revision")]
-        public int RevisionId { get; set; }
+        public int? RevisionId { get; set; }
 
         [NopResourceDisplayName("Account.Fields.RevisionAllowed")]
         public bool AllowRevisions { get; set; }

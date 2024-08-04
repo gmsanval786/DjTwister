@@ -38,6 +38,9 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
             ProductsTypesSupportedByProductTemplates = new Dictionary<int, IList<SelectListItem>>();
 
             AvailableVendors = new List<SelectListItem>();
+            AvailableBasicPackages = new List<SelectListItem>();
+            AvailableStandardPackages = new List<SelectListItem>();
+            AvailablePremiumPackages = new List<SelectListItem>();
 
             SelectedStoreIds = new List<int>();
             AvailableStores = new List<SelectListItem>();
@@ -418,6 +421,21 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
         [NopResourceDisplayName("Admin.Catalog.Products.Fields.Vendor")]
         public int VendorId { get; set; }
         public IList<SelectListItem> AvailableVendors { get; set; }
+
+        //basic packages
+        [NopResourceDisplayName("Admin.Catalog.Products.Fields.BasicPackage")]
+        public int BasicPackageId { get; set; }
+        public IList<SelectListItem> AvailableBasicPackages { get; set; }
+
+        //standard packages
+        [NopResourceDisplayName("Admin.Catalog.Products.Fields.StandardPackage")]
+        public int StandardPackageId { get; set; }
+        public IList<SelectListItem> AvailableStandardPackages { get; set; }
+
+        //premium packages
+        [NopResourceDisplayName("Admin.Catalog.Products.Fields.PremiumPackage")]
+        public int PremiumPackageId { get; set; }
+        public IList<SelectListItem> AvailablePremiumPackages { get; set; }
 
         //discounts
         [NopResourceDisplayName("Admin.Catalog.Products.Fields.Discounts")]

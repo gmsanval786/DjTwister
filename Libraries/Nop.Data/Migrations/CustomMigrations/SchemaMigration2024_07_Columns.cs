@@ -6,7 +6,7 @@ using Nop.Core.Domain.Catalog;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2023-07-16 01:45:00:1037704", "SchemaMigration2024_07_Columns", MigrationProcessType.NoMatter)]
+    [NopMigration("2023-07-16 01:50:00:1037704", "SchemaMigration2024_07_Columns", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07_Columns : MigrationBase
     {
         #region Fields
@@ -69,6 +69,13 @@ namespace Nop.Data.Migrations.CustomMigrations
             {
                 Alter.Table(NameCompatibilityManager.GetTableName(typeof(Package)))
                     .AddColumn(nameof(Package.AllowRevisions)).AsBoolean().Nullable();
+            }
+
+            if (Schema.Table(NameCompatibilityManager.GetTableName(typeof(Package))).Column(nameof(Package.Revisions)).Exists())
+            {
+                //alter column
+                Alter.Table(NameCompatibilityManager.GetTableName(typeof(Package)))
+                    .AlterColumn(nameof(Package.Revisions)).AsInt32().Nullable();
             }
         }
 

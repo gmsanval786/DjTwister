@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -62,6 +63,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly ITopicTemplateService _topicTemplateService;
         private readonly IVendorService _vendorService;
+        private readonly IPackageService _packageService;
 
         #endregion
 
@@ -89,7 +91,8 @@ namespace Nop.Web.Areas.Admin.Factories
             IStoreService storeService,
             ITaxCategoryService taxCategoryService,
             ITopicTemplateService topicTemplateService,
-            IVendorService vendorService)
+            IVendorService vendorService,
+            IPackageService packageService)
         {
             _categoryService = categoryService;
             _categoryTemplateService = categoryTemplateService;
@@ -114,6 +117,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _taxCategoryService = taxCategoryService;
             _topicTemplateService = topicTemplateService;
             _vendorService = vendorService;
+            _packageService = packageService;
         }
 
         #endregion
@@ -1158,26 +1162,165 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
         /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        public virtual async Task PrepareRevisionAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null, int packageType = 0)
+        public virtual async Task PrepareRevisionAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
         {
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
 
-            int minCount = 1;
-            int maxCount = 4;
+            // Prepare available allow revisions
+            var revisionItems = Enum.GetValues(typeof(AllowRevision))
+                        .Cast<AllowRevision>()
+                        .Select(rc => new SelectListItem
+                        {
+                            Text = ((int)rc).ToString(),
+                            Value = ((int)rc).ToString()
+                        })
+                        .ToList();
 
-            var revisionCounts = new List<SelectListItem>();
-            for (int i = minCount; i <= maxCount; i++)
+            foreach (var item in revisionItems)
             {
-                revisionCounts.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-            }
-
-            foreach (var revision in revisionCounts)
-            {
-                items.Add(revision);
+                items.Add(item);
             }
 
             await PrepareDefaultItemAsync(items, withSpecialDefaultItem, await _localizationService.GetResourceAsync("Account.Fields.Package.HowMany"));
+        }
+
+        /// <summary>
+        /// Prepare available package vendors
+        /// </summary>
+        /// <param name="items">Vendor items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task PreparePackageVendorsAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            //prepare available vendors
+            var availableVendorItems = await _vendorService.GetAllVendorsAsync();
+            foreach (var vendorItem in availableVendorItems)
+            {
+                items.Add(new SelectListItem
+                {
+                    Text = $"{vendorItem.Name} - {vendorItem.Email}",
+                    Value = vendorItem.Id.ToString()
+                });
+            }
+
+            //insert special item for the default value
+            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        /// <summary>
+        /// Prepare available basic package type
+        /// </summary>
+        /// <param name="items">Basic package items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task PrepareBasicPackageTypesAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            //prepare available basic packages
+            var availableBasicPackageItems = await _packageService.GetAllPackagesAsync(packageTypeId: (int)PackageType.Basic);
+            foreach (var basicPackageItem in availableBasicPackageItems)
+            {
+                var vendorEmail = "";
+                var vendor = await _vendorService.GetVendorByIdAsync(basicPackageItem.VendorId);
+                if (vendor is not null)
+                    vendorEmail = vendor.Email;
+
+                var packageType = await _localizationService.GetLocalizedEnumAsync(basicPackageItem.PackageType);
+                var text = string.IsNullOrEmpty(vendorEmail)
+                    ? $"{packageType} - {basicPackageItem.Price}"
+                    : $"{packageType} - {vendorEmail} - {basicPackageItem.Price}";
+
+                items.Add(new SelectListItem
+                {
+                    Text = text,
+                    Value = basicPackageItem.Id.ToString()
+                });
+            }
+
+            //insert special item for the default value
+            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        /// <summary>
+        /// Prepare available standard package type
+        /// </summary>
+        /// <param name="items">Standard package items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task PrepareStandardPackageTypesAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            //prepare available basic packages
+            var availableStandardPackageItems = await _packageService.GetAllPackagesAsync(packageTypeId: (int)PackageType.Standard);
+            foreach (var standardPackageItem in availableStandardPackageItems)
+            {
+                var vendorEmail = "";
+                var vendor = await _vendorService.GetVendorByIdAsync(standardPackageItem.VendorId);
+                if (vendor is not null)
+                    vendorEmail = vendor.Email;
+
+                var packageType = await _localizationService.GetLocalizedEnumAsync(standardPackageItem.PackageType);
+                var text = string.IsNullOrEmpty(vendorEmail)
+                    ? $"{packageType} - {standardPackageItem.Price}"
+                    : $"{packageType} - {vendorEmail} - {standardPackageItem.Price}";
+
+                items.Add(new SelectListItem
+                {
+                    Text = text,
+                    Value = standardPackageItem.Id.ToString()
+                });
+            }
+
+            //insert special item for the default value
+            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        /// <summary>
+        /// Prepare available premium package type
+        /// </summary>
+        /// <param name="items">Premium package items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task PreparePremiumPackageTypesAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            //prepare available basic packages
+            var availablePremiumPackageItems = await _packageService.GetAllPackagesAsync(packageTypeId: (int)PackageType.Premium);
+            foreach (var premiumPackageItem in availablePremiumPackageItems)
+            {
+                var vendorEmail = "";
+                var vendor = await _vendorService.GetVendorByIdAsync(premiumPackageItem.VendorId);
+                if (vendor is not null)
+                    vendorEmail = vendor.Email;
+
+                var packageType = await _localizationService.GetLocalizedEnumAsync(premiumPackageItem.PackageType);
+                var text = string.IsNullOrEmpty(vendorEmail)
+                    ? $"{packageType} - {premiumPackageItem.Price}"
+                    : $"{packageType} - {vendorEmail} - {premiumPackageItem.Price}";
+
+                items.Add(new SelectListItem
+                {
+                    Text = text,
+                    Value = premiumPackageItem.Id.ToString()
+                });
+            }
+
+            //insert special item for the default value
+            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText);
         }
 
 
