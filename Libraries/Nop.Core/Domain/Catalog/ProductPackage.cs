@@ -5,7 +5,7 @@ namespace Nop.Core.Domain.Catalog
     /// <summary>
     /// Represents a product attribute mapping
     /// </summary>
-    public partial class PackageProductMapping : BaseEntity, ILocalizedEntity
+    public partial class ProductPackage : BaseEntity, ILocalizedEntity
     {
         /// <summary>
         /// Gets or sets the product identifier

@@ -40,8 +40,8 @@ namespace Nop.Data.Migrations.CustomMigrations
             if (!Schema.Table(NameCompatibilityManager.GetTableName(typeof(Package))).Exists())
                 Create.TableFor<Package>();
 
-            if (!Schema.Table(NameCompatibilityManager.GetTableName(typeof(PackageProductMapping))).Exists())
-                Create.TableFor<PackageProductMapping>();
+            if (!Schema.Table(NameCompatibilityManager.GetTableName(typeof(ProductPackage))).Exists())
+                Create.TableFor<ProductPackage>();
 
             if (!Schema.Table(NameCompatibilityManager.GetTableName(typeof(VendorCategory))).Exists())
                 Create.TableFor<VendorCategory>();

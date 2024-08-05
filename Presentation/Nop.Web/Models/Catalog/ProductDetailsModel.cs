@@ -7,6 +7,7 @@ using Nop.Core.Domain.Orders;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
 using Nop.Web.Models.Media;
+using Nop.Web.Models.Package;
 using Nop.Web.Models.ShoppingCart;
 
 namespace Nop.Web.Models.Catalog
@@ -31,6 +32,8 @@ namespace Nop.Web.Models.Catalog
             ProductReviewOverview = new ProductReviewOverviewModel();
             TierPrices = new List<TierPriceModel>();
             ProductEstimateShipping = new ProductEstimateShippingModel();
+            PackageModel = new List<PackageModel>();
+            PictureModel = new PictureModel();
         }
 
         //picture(s)
@@ -120,6 +123,10 @@ namespace Nop.Web.Models.Catalog
         public bool InStock { get; set; }
 
         public bool AllowAddingOnlyExistingAttributeCombinations { get; set; }
+
+        public string Categories { get; set; }
+        public IList<PackageModel> PackageModel { get; set; }
+        public PictureModel PictureModel { get; set; }
 
         #region Nested Classes
 

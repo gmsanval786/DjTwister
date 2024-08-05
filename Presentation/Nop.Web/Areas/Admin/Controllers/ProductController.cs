@@ -83,6 +83,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IWebHelper _webHelper;
         private readonly IWorkContext _workContext;
         private readonly VendorSettings _vendorSettings;
+        private readonly IPackageService _packageService;
 
         #endregion
 
@@ -124,7 +125,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             IVideoService videoService,
             IWebHelper webHelper,
             IWorkContext workContext,
-            VendorSettings vendorSettings)
+            VendorSettings vendorSettings,
+            IPackageService packageService)
         {
             _aclService = aclService;
             _backInStockSubscriptionService = backInStockSubscriptionService;
@@ -163,6 +165,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             _webHelper = webHelper;
             _workContext = workContext;
             _vendorSettings = vendorSettings;
+            _packageService = packageService;
         }
 
         #endregion
@@ -331,6 +334,37 @@ namespace Nop.Web.Areas.Admin.Controllers
                     });
                 }
             }
+        }
+
+        protected virtual async Task SavePackageMappingsAsync(Product product, ProductModel model)
+        {
+            var existingProductPackages = await _packageService.GetProductPackagesByProductIdAsync(product.Id, true);
+
+            async Task AddProductPackageAsync(int productId, int packageId)
+            {
+                if (_packageService.FindProductPackage(existingProductPackages, productId, packageId) == null)
+                {
+                    await _packageService.InsertProductPackageAsync(new ProductPackage
+                    {
+                        ProductId = productId,
+                        ProductPackageId = packageId
+                    });
+                }
+            }
+
+            foreach (var existingProductPackage in existingProductPackages)
+            {
+                if (existingProductPackage.ProductPackageId != model.BasicPackageId &&
+                    existingProductPackage.ProductPackageId != model.StandardPackageId &&
+                    existingProductPackage.ProductPackageId != model.PremiumPackageId)
+                {
+                    await _packageService.DeleteProductPackageAsync(existingProductPackage);
+                }
+            }
+
+            await AddProductPackageAsync(product.Id, model.BasicPackageId);
+            await AddProductPackageAsync(product.Id, model.StandardPackageId);
+            await AddProductPackageAsync(product.Id, model.PremiumPackageId);
         }
 
         protected virtual async Task SaveDiscountMappingsAsync(Product product, ProductModel model)
@@ -872,6 +906,9 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //categories
                 await SaveCategoryMappingsAsync(product, model);
 
+                //packages
+                await SavePackageMappingsAsync(product, model);
+
                 //manufacturers
                 await SaveManufacturerMappingsAsync(product, model);
 
@@ -1014,6 +1051,9 @@ namespace Nop.Web.Areas.Admin.Controllers
 
                 //categories
                 await SaveCategoryMappingsAsync(product, model);
+
+                //packages
+                await SavePackageMappingsAsync(product, model);
 
                 //manufacturers
                 await SaveManufacturerMappingsAsync(product, model);

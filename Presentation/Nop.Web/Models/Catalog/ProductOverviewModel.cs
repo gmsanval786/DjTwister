@@ -14,6 +14,7 @@ namespace Nop.Web.Models.Catalog
             PictureModels = new List<PictureModel>();
             ProductSpecificationModel = new ProductSpecificationModel();
             ReviewOverviewModel = new ProductReviewOverviewModel();
+            VendorModel = new VendorModel();
         }
 
         public string Name { get; set; }
@@ -35,6 +36,7 @@ namespace Nop.Web.Models.Catalog
         public ProductSpecificationModel ProductSpecificationModel { get; set; }
         //price
         public ProductReviewOverviewModel ReviewOverviewModel { get; set; }
+        public VendorModel VendorModel { get; set; }
 
 		#region Nested Classes
 

@@ -28,6 +28,7 @@ using Nop.Services.Media;
 using Nop.Services.Seo;
 using Nop.Services.Topics;
 using Nop.Services.Vendors;
+using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Framework.Events;
 using Nop.Web.Framework.Mvc.Routing;
 using Nop.Web.Infrastructure.Cache;
@@ -72,6 +73,7 @@ namespace Nop.Web.Factories
         private readonly VendorSettings _vendorSettings;
         private readonly IPackageService _packageService;
         private readonly IPriceFormatter _priceFormatter;
+        private readonly IBaseAdminModelFactory _baseAdminModelFactory;
 
         #endregion
 
@@ -107,7 +109,8 @@ namespace Nop.Web.Factories
             MediaSettings mediaSettings,
             VendorSettings vendorSettings,
             IPackageService packageService,
-            IPriceFormatter priceFormatter)
+            IPriceFormatter priceFormatter,
+            IBaseAdminModelFactory baseAdminModelFactory)
         {
             _blogSettings = blogSettings;
             _catalogSettings = catalogSettings;
@@ -140,6 +143,7 @@ namespace Nop.Web.Factories
             _vendorSettings = vendorSettings;
             _packageService = packageService;
             _priceFormatter = priceFormatter;
+            _baseAdminModelFactory = baseAdminModelFactory;
         }
 
         #endregion
@@ -1671,6 +1675,45 @@ namespace Nop.Web.Factories
 
         #endregion
 
+        #region all products
+
+        /// <summary>
+        /// Prepare new products model
+        /// </summary>
+        /// <param name="command">Model to get the catalog products</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the new products model
+        /// </returns>
+        public virtual async Task<CatalogProductsModel> PrepareAllProductsModelAsync(CatalogProductsCommand command)
+        {
+            if (command == null)
+                throw new ArgumentNullException(nameof(command));
+
+            var model = new CatalogProductsModel
+            {
+                UseAjaxLoading = _catalogSettings.UseAjaxCatalogProductsLoading
+            };
+
+            var currentStore = await _storeContext.GetCurrentStoreAsync();
+
+            //page size
+            await PreparePageSizeOptionsAsync(model, command, _catalogSettings.NewProductsAllowCustomersToSelectPageSize,
+                _catalogSettings.NewProductsPageSizeOptions, _catalogSettings.NewProductsPageSize);
+
+            //products
+            var products = await _productService.SearchProductsAsync(storeId: currentStore.Id,
+                showHidden: true,
+                pageIndex: command.PageNumber - 1,
+                pageSize: command.PageSize);
+
+            await PrepareCatalogProductsAsync(model, products);
+
+            return model;
+        }
+
+        #endregion
+
         #region Searching
 
         /// <summary>
@@ -1972,6 +2015,9 @@ namespace Nop.Web.Factories
                 SearchTermMinimumLength = _catalogSettings.ProductSearchTermMinimumLength,
                 ShowSearchBox = _catalogSettings.ProductSearchEnabled
             };
+
+            //prepare model categories
+            _baseAdminModelFactory.PrepareCategoriesAsync(model.AvailableCategories, true);
 
             return Task.FromResult(model);
         }

@@ -1,4 +1,13 @@
-﻿<div class="header">
+﻿@using Nop.Core
+
+@inject IWorkContext workContext
+@inject ICustomerService customerService
+
+@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var customer = await customerService.IsRegisteredAsync(currentCustomer);
+}
+<div class="header">
     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderBefore })
     <div class="header-upper">
         <div class="header-selectors-wrapper">
@@ -14,9 +23,12 @@
     </div>
     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderMiddle })
     <div class="header-lower">
-        <header class="headerlogo no2 text-center position-relative z9">
-            @await Component.InvokeAsync(typeof(LogoViewComponent))
-        </header>
+        @* @if (!customer)
+        {
+            <header class="headerlogo no2 text-center position-relative z9">
+                @await Component.InvokeAsync(typeof(LogoViewComponent))
+            </header>
+        } *@
         @* <div class="search-box store-search-box">
             @await Component.InvokeAsync(typeof(SearchBoxViewComponent))
         </div> *@

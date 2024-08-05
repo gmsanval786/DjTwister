@@ -275,7 +275,7 @@ namespace Nop.Web.Controllers
             return PartialView("_ProductsInGridOrLines", model);
         }
 
-        public virtual async Task<IActionResult> VendorAll()
+        public virtual async Task<IActionResult> VendorAll(int categoryId = 0)
         {
             //we don't allow viewing of vendors if "vendors" block is hidden
             //if (_vendorSettings.VendorsBlockItemsToDisplay == 0)
@@ -332,6 +332,16 @@ namespace Nop.Web.Controllers
             var model = new NewProductsModel
             {
                 CatalogProductsModel = await _catalogModelFactory.PrepareNewProductsModelAsync(command)
+            };
+
+            return View(model);
+        }
+
+        public virtual async Task<IActionResult> ProductAll(CatalogProductsCommand command)
+        {
+            var model = new NewProductsModel
+            {
+                CatalogProductsModel = await _catalogModelFactory.PrepareAllProductsModelAsync(command)
             };
 
             return View(model);

@@ -272,6 +272,20 @@ namespace Nop.Web.Factories
 
         #endregion
 
+        #region all products
+
+        /// <summary>
+        /// Prepare new products model
+        /// </summary>
+        /// <param name="command">Model to get the catalog products</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the new products model
+        /// </returns>
+        Task<CatalogProductsModel> PrepareAllProductsModelAsync(CatalogProductsCommand command);
+
+        #endregion
+
         #region Searching
 
         /// <summary>

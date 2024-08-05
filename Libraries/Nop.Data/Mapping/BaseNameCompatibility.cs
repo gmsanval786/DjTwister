@@ -40,7 +40,8 @@ namespace Nop.Data.Mapping
             { typeof(ForumTopic), "Forums_Topic" },
             { typeof(PrivateMessage), "Forums_PrivateMessage" },
             { typeof(NewsItem), "News" },
-            { typeof(VendorCategory), "Vendor_Category_Mapping" }
+            { typeof(VendorCategory), "Vendor_Category_Mapping" },
+            { typeof(ProductPackage), "PackageProductMapping" }
         };
 
         public Dictionary<(Type, string), string> ColumnName => new()

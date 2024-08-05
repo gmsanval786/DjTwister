@@ -85,12 +85,71 @@ namespace Nop.Services.Catalog
 
         #region Package product
 
+
         /// <summary>
-        /// Add a package product mapping
+        /// Gets a product package mapping collection
         /// </summary>
-        /// <param name="packProductMapping">Package-product mapping</param>
+        /// <param name="productId">Product identifier</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product package mapping collection
+        /// </returns>
+        Task<IList<ProductPackage>> GetProductPackagesByProductIdAsync(int productId, bool showHidden = false);
+
+        /// <summary>
+        /// Gets a product package mapping 
+        /// </summary>
+        /// <param name="v">Product package mapping identifier</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product package mapping
+        /// </returns>
+        Task<ProductPackage> GetProductPackageByIdAsync(int productPackageId);
+
+        /// <summary>
+        /// Inserts a product package mapping
+        /// </summary>
+        /// <param name="productPackage">>Product package mapping</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        Task AddPackageProductMappingAsync(PackageProductMapping packProductMapping);
+        Task InsertProductPackageAsync(ProductPackage productPackage);
+
+        /// <summary>
+        /// Updates the product package mapping 
+        /// </summary>
+        /// <param name="productPackage">>Product package mapping</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task UpdateProductPackageAsync(ProductPackage productPackage);
+
+        /// <summary>
+        /// Deletes a product package mapping
+        /// </summary>
+        /// <param name="productPackage">Product category</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task DeleteProductPackageAsync(ProductPackage productPackage);
+
+        /// <summary>
+        /// Returns a ProductPackage that has the specified values
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="productId">Product identifier</param>
+        /// <param name="packageId">Package identifier</param>
+        /// <returns>A ProductPackage that has the specified values; otherwise null</returns>
+        ProductPackage FindProductPackage(IList<ProductPackage> source, int productId, int packageId);
+
+        /// <summary>
+        /// Gets product package mapping collection
+        /// </summary>
+        /// <param name="packageId">Package identifier</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product a package mapping collection
+        /// </returns>
+        Task<IPagedList<ProductPackage>> GetProductPackagesByPackageIdAsync(int packageId,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
 
         #endregion
     }

@@ -1,6 +1,4 @@
-﻿@model HomepageModel
-
-@using Nop.Services.Localization
+﻿@using Nop.Services.Localization
 @using Nop.Core
 @inject ILocalizationService localizationService
 @inject IStoreContext storeContext
@@ -24,21 +22,12 @@
     </section>
     <section class="choose-category-sec py100 z9 position-relative max-width70">
         <div class="container">
-            <div class="category-select-box">
-                <label class="mb-2 lable-text text-white text-info" asp-for="CategoryId" asp-postfix=":"></label>
-                <select class="form-select mb-2" aria-label="Default select example" asp-for="CategoryId" asp-items="Model.AvailableCategories"></select>
-            </div>
-            <div class="btn-group mt-5 d-flex align-items-center justify-content-between">
-                @if (!customer)
-                {
-                    <button class="loginbtn dj-member-btn text-center" onclick="setLocation('@Url.RouteUrl("Register")')" type="button">Become a Dj Member</button>
-                }
-                <button class="loginbtn search-btn text-center" type="button">Search</button>
-            </div>
+            @await Component.InvokeAsync(typeof(SearchBoxViewComponent))
         </div>
     </section>
     <section class="features-sec features-home-page py50 z9 position-relative">
-        <div id="dvVendors" class="container">
+        <div class="container">
+            @await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
         </div>
     </section>
 

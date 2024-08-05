@@ -15,6 +15,7 @@ using Nop.Core.Domain.Security;
 using Nop.Core.Domain.Seo;
 using Nop.Core.Domain.Shipping;
 using Nop.Core.Domain.Vendors;
+using Nop.Data.Extensions;
 using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Customers;
@@ -29,10 +30,12 @@ using Nop.Services.Shipping.Date;
 using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Services.Vendors;
+using Nop.Web.Framework.Models.DataTables;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Common;
 using Nop.Web.Models.Media;
+using Nop.Web.Models.Package;
 
 namespace Nop.Web.Factories
 {
@@ -82,6 +85,7 @@ namespace Nop.Web.Factories
         private readonly SeoSettings _seoSettings;
         private readonly ShippingSettings _shippingSettings;
         private readonly VendorSettings _vendorSettings;        
+        private readonly IPackageService _packageService;
 
         #endregion
 
@@ -125,7 +129,8 @@ namespace Nop.Web.Factories
             OrderSettings orderSettings,
             SeoSettings seoSettings,
             ShippingSettings shippingSettings,
-            VendorSettings vendorSettings)
+            VendorSettings vendorSettings,
+            IPackageService packageService)
         {
             _captchaSettings = captchaSettings;
             _catalogSettings = catalogSettings;
@@ -166,6 +171,7 @@ namespace Nop.Web.Factories
             _shippingSettings = shippingSettings;
             _vendorSettings = vendorSettings;
             _videoService = videoService;
+            _packageService = packageService;
         }
 
         #endregion
@@ -1399,6 +1405,45 @@ namespace Nop.Web.Factories
                 //reviews
                 model.ReviewOverviewModel = await PrepareProductReviewOverviewModelAsync(product);
 
+                var vendor = await _vendorService.GetVendorByIdAsync(product.VendorId);
+                if(vendor is not null)
+                {
+                    model.VendorModel = new VendorModel
+                    {
+                        Id = vendor.Id,
+                        Name = await _localizationService.GetLocalizedAsync(vendor, x => x.Name),
+                        Description = await _localizationService.GetLocalizedAsync(vendor, x => x.Description),
+                        MetaKeywords = await _localizationService.GetLocalizedAsync(vendor, x => x.MetaKeywords),
+                        MetaDescription = await _localizationService.GetLocalizedAsync(vendor, x => x.MetaDescription),
+                        MetaTitle = await _localizationService.GetLocalizedAsync(vendor, x => x.MetaTitle),
+                        SeName = await _urlRecordService.GetSeNameAsync(vendor),
+                        AllowCustomersToContactVendors = _vendorSettings.AllowCustomersToContactVendors
+                    };
+
+                    //prepare picture model
+                    var pictureSize = _mediaSettings.VendorThumbPictureSize;
+                    var pictureCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NopModelCacheDefaults.VendorPictureModelKey,
+                        vendor, pictureSize, true, await _workContext.GetWorkingLanguageAsync(), _webHelper.IsCurrentConnectionSecured(), await _storeContext.GetCurrentStoreAsync());
+                    model.VendorModel.PictureModel = await _staticCacheManager.GetAsync(pictureCacheKey, async () =>
+                    {
+                        var picture = await _pictureService.GetPictureByIdAsync(vendor.PictureId);
+                        string fullSizeImageUrl, imageUrl;
+
+                        (fullSizeImageUrl, picture) = await _pictureService.GetPictureUrlAsync(picture);
+                        (imageUrl, _) = await _pictureService.GetPictureUrlAsync(picture, pictureSize);
+
+                        var pictureModel = new PictureModel
+                        {
+                            FullSizeImageUrl = fullSizeImageUrl,
+                            ImageUrl = imageUrl,
+                            Title = string.Format(await _localizationService.GetResourceAsync("Media.Vendor.ImageLinkTitleFormat"), model.VendorModel.Name),
+                            AlternateText = string.Format(await _localizationService.GetResourceAsync("Media.Vendor.ImageAlternateTextFormat"), model.VendorModel.Name)
+                        };
+
+                        return pictureModel;
+                    });
+                }
+
                 models.Add(model);
             }
 
@@ -1546,7 +1591,67 @@ namespace Nop.Web.Factories
                         Id = vendor.Id,
                         Name = await _localizationService.GetLocalizedAsync(vendor, x => x.Name),
                         SeName = await _urlRecordService.GetSeNameAsync(vendor),
+                        Description = await _localizationService.GetLocalizedAsync(vendor, x => x.Description)
                     };
+
+                    var categoryNames = new List<string>();
+                    var categoryIds = (await _categoryService.GetVendorCategoriesByVendorIdAsync(vendor.Id, true))
+                            .Select(vendorCategory => vendorCategory.CategoryId).ToList();
+
+                    foreach (var categoryId in categoryIds)
+                    {
+                        var category = await _categoryService.GetCategoryByIdAsync(categoryId);
+                        if (category is not null && !string.IsNullOrEmpty(category.Name))
+                            categoryNames.Add(category.Name);
+                    }
+
+                    model.Categories = String.Join(",", categoryNames);
+
+                    //prepare picture model
+                    var pictureSize = _mediaSettings.VendorThumbPictureSize;
+                    var pictureCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NopModelCacheDefaults.VendorPictureModelKey,
+                        vendor, pictureSize, true, await _workContext.GetWorkingLanguageAsync(), _webHelper.IsCurrentConnectionSecured(), await _storeContext.GetCurrentStoreAsync());
+                    model.PictureModel = await _staticCacheManager.GetAsync(pictureCacheKey, async () =>
+                    {
+                        var picture = await _pictureService.GetPictureByIdAsync(vendor.PictureId);
+                        string fullSizeImageUrl, imageUrl;
+
+                        (fullSizeImageUrl, picture) = await _pictureService.GetPictureUrlAsync(picture);
+                        (imageUrl, _) = await _pictureService.GetPictureUrlAsync(picture, pictureSize);
+
+                        var pictureModel = new PictureModel
+                        {
+                            FullSizeImageUrl = fullSizeImageUrl,
+                            ImageUrl = imageUrl,
+                            Title = string.Format(await _localizationService.GetResourceAsync("Media.Vendor.ImageLinkTitleFormat"), model.Name),
+                            AlternateText = string.Format(await _localizationService.GetResourceAsync("Media.Vendor.ImageAlternateTextFormat"), model.Name)
+                        };
+
+                        return pictureModel;
+                    });
+
+                    var packages = await _packageService.GetAllPackagesAsync(vendorId: vendor.Id);
+                    foreach (var package in packages)
+                    {
+                        PackageModel packageModel = new PackageModel()
+                        {
+                            VendorId = package.VendorId,
+                            Price = package.Price,
+                            Description = package.Description,
+                            RecordingTime = package.RecordingTime,
+                            PackageTypeId = package.PackageTypeId,
+                            SongCountId = package.SongCounts,
+                            RevisionId = package.Revisions,
+                            AllowRevisions = package.AllowRevisions,
+                            DeliveryMethodId = package.DeliveryMethodId,
+                            DeliveryTimeDays = package.DeliveryTimeDays
+                        };
+
+                        packageModel.StrAllowRevisions = package.AllowRevisions.ToYesAndNo();
+                        packageModel.PriceVal = await _priceFormatter.FormatPriceAsync(package.Price, true, false);
+
+                        model.PackageModel.Add(packageModel);
+                    }
                 }
             }
 

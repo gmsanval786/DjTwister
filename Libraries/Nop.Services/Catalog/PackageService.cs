@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Nop.Core;
+using Nop.Core.Caching;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Localization;
@@ -18,10 +19,13 @@ namespace Nop.Services.Catalog
         #region Fields
 
         protected readonly IRepository<Package> _packageRepository;
-        protected readonly IRepository<PackageProductMapping> _packageProductMapping;
+        protected readonly IRepository<ProductPackage> _productPackageRepository;
+        protected readonly IRepository<Product> _productRepository;
         protected readonly IWorkContext _workContext;
         protected readonly LocalizationSettings _localizationSettings;
         protected readonly IRepository<Vendor> _vendorRepository;
+        protected readonly IStoreContext _storeContext;
+        protected readonly IStaticCacheManager _staticCacheManager;
 
         #endregion
 
@@ -30,14 +34,56 @@ namespace Nop.Services.Catalog
         public PackageService(IRepository<Package> packageRepository,
             IWorkContext workContext,
             LocalizationSettings localizationSettings,
-            IRepository<PackageProductMapping> packageProductMapping,
-            IRepository<Vendor> vendorRepository)
+            IRepository<ProductPackage> packageProductMapping,
+            IRepository<Vendor> vendorRepository,
+            IRepository<Product> productRepository,
+            IStoreContext storeContext,
+            IStaticCacheManager staticCacheManager)
         {
             _packageRepository = packageRepository;
             _workContext = workContext;
             _localizationSettings = localizationSettings;
-            _packageProductMapping = packageProductMapping;
+            _productPackageRepository = packageProductMapping;
             _vendorRepository = vendorRepository;
+            _productRepository = productRepository;
+            _storeContext = storeContext;
+            _staticCacheManager = staticCacheManager;
+        }
+
+        #endregion
+
+        #region Utilities
+
+        /// <summary>
+        /// Gets a product category mapping collection
+        /// </summary>
+        /// <param name="productId">Product identifier</param>
+        /// <param name="storeId">Store identifier (used in multi-store environment). "showHidden" parameter should also be "true"</param>
+        /// <param name="showHidden"> A value indicating whether to show hidden records</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product category mapping collection
+        /// </returns>
+        protected virtual async Task<IList<ProductPackage>> GetProductPackagesByProductIdAsync(int productId, int storeId,
+            bool showHidden = false)
+        {
+            if (productId == 0)
+                return new List<ProductPackage>();
+
+            return await _productPackageRepository.GetAllAsync(async query =>
+            {
+                if (!showHidden)
+                {
+                    var packagesQuery = _packageRepository.Table.Where(c => !c.Deleted);
+
+                    query = query.Where(pc => packagesQuery.Any(c => !c.Deleted && c.Id == pc.ProductPackageId));
+                }
+
+                return query
+                    .Where(pc => pc.ProductId == productId);
+
+            }, cache => _staticCacheManager.PrepareKeyForDefaultCache(NopCatalogDefaults.ProductPackagesByProductCacheKey,
+                productId, showHidden, storeId));
         }
 
         #endregion
@@ -149,13 +195,111 @@ namespace Nop.Services.Catalog
         #region Package product
 
         /// <summary>
-        /// Add a package product mapping
+        /// Gets a product package mapping collection
         /// </summary>
-        /// <param name="packProductMapping">Package-product mapping</param>
-        /// <returns>A task that represents the asynchronous operation</returns>
-        public async Task AddPackageProductMappingAsync(PackageProductMapping packProductMapping)
+        /// <param name="productId">Product identifier</param>
+        /// <param name="showHidden"> A value indicating whether to show hidden records</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product package mapping collection
+        /// </returns>
+        public virtual async Task<IList<ProductPackage>> GetProductPackagesByProductIdAsync(int productId, bool showHidden = false)
         {
-            await _packageProductMapping.InsertAsync(packProductMapping);
+            var store = await _storeContext.GetCurrentStoreAsync();
+
+            return await GetProductPackagesByProductIdAsync(productId, store.Id, showHidden);
+        }
+
+        /// <summary>
+        /// Gets a product package mapping 
+        /// </summary>
+        /// <param name="productPackageId">Product package mapping identifier</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product package mapping
+        /// </returns>
+        public virtual async Task<ProductPackage> GetProductPackageByIdAsync(int productPackageId)
+        {
+            return await _productPackageRepository.GetByIdAsync(productPackageId, cache => default);
+        }
+
+        /// <summary>
+        /// Inserts a product package mapping
+        /// </summary>
+        /// <param name="productPackage">>Product package mapping</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task InsertProductPackageAsync(ProductPackage productPackage)
+        {
+            await _productPackageRepository.InsertAsync(productPackage);
+        }
+
+        /// <summary>
+        /// Updates the product package mapping 
+        /// </summary>
+        /// <param name="productPackage">>Product package mapping</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task UpdateProductPackageAsync(ProductPackage productPackage)
+        {
+            await _productPackageRepository.UpdateAsync(productPackage);
+        }
+
+        /// <summary>
+        /// Deletes a product package mapping
+        /// </summary>
+        /// <param name="productPackage">Product category</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task DeleteProductPackageAsync(ProductPackage productPackage)
+        {
+            await _productPackageRepository.DeleteAsync(productPackage);
+        }
+
+        /// <summary>
+        /// Returns a ProductCategory that has the specified values
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="productId">Product identifier</param>
+        /// <param name="packageId">Package identifier</param>
+        /// <returns>A ProductPackage that has the specified values; otherwise null</returns>
+        public virtual ProductPackage FindProductPackage(IList<ProductPackage> source, int productId, int packageId)
+        {
+            foreach (var productPackage in source)
+                if (productPackage.ProductId == productId && productPackage.ProductPackageId == packageId)
+                    return productPackage;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets product package mapping collection
+        /// </summary>
+        /// <param name="packageId">Package identifier</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product a package mapping collection
+        /// </returns>
+        public virtual async Task<IPagedList<ProductPackage>> GetProductPackagesByPackageIdAsync(int packageId,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
+        {
+            if (packageId == 0)
+                return new PagedList<ProductPackage>(new List<ProductPackage>(), pageIndex, pageSize);
+
+            var query = from pc in _productPackageRepository.Table
+                        join p in _productRepository.Table on pc.ProductId equals p.Id
+                        where pc.ProductPackageId == packageId && !p.Deleted
+                        orderby pc.Id
+                        select pc;
+
+            if (!showHidden)
+            {
+                var packagesQuery = _packageRepository.Table.Where(c => !c.Deleted);
+
+                query = query.Where(pc => packagesQuery.Any(c => c.Id == pc.ProductPackageId));
+            }
+
+            return await query.ToPagedListAsync(pageIndex, pageSize);
         }
 
         #endregion

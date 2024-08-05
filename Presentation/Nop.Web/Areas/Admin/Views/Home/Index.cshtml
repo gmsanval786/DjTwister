@@ -30,7 +30,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    @if (!closeConfigurationStepsCard)
+                    @* @if (!closeConfigurationStepsCard)
                     {
                         <div class="row">
                             <div class="col-md-12">
@@ -105,7 +105,7 @@
                                 }
                             </div>
                         </div>
-                    }
+                    } *@
                     @await Component.InvokeAsync(typeof(AdminWidgetViewComponent), new { widgetZone = AdminWidgetZones.DashboardLatestordersSearchtermsAfter, additionalData = Model })
                     @if (canManageOrders)
                     {

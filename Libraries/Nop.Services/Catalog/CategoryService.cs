@@ -312,7 +312,7 @@ namespace Nop.Services.Catalog
 
                 query = query.Where(c => !c.Deleted);
 
-                return query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
+                return query.OrderBy(c => c.Name).ThenBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder).ThenBy(c => c.Id);
             });
 
             //sort categories

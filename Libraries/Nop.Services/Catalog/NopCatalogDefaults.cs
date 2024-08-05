@@ -143,6 +143,22 @@ namespace Nop.Services.Catalog
         public static string ProductCategoriesByProductPrefix => "Nop.productcategory.byproduct.{0}";
 
         /// <summary>
+        /// Gets a key pattern to clear cache
+        /// </summary>
+        public static string ProductPackagesByProductPrefix => "Nop.productpackage.byproduct.{0}";
+
+        /// <summary>
+        /// Gets a key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : product ID
+        /// {1} : show hidden records?
+        /// {2} : roles of the current user
+        /// {3} : store ID
+        /// </remarks>
+        public static CacheKey ProductPackagesByProductCacheKey => new("Nop.productpackage.byproduct.{0}-{1}-{2}", ProductPackagesByProductPrefix);
+
+        /// <summary>
         /// Key for caching
         /// </summary>
         /// <remarks>

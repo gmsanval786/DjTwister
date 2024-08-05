@@ -15,31 +15,13 @@ namespace Nop.Web.Controllers
 {
     public partial class HomeController : BasePublicController
     {
-        #region Fields
-
-        private readonly ICommonModelFactory _commonModelFactory;
-        private readonly IVendorService _vendorService;
-
-        #endregion
-
-        public HomeController(ICommonModelFactory commonModelFactory, IVendorService vendorService)
+        public HomeController()
         {
-            _commonModelFactory = commonModelFactory;
-            _vendorService = vendorService;
+
         }
         public virtual async Task<IActionResult> Index()
         {
-            var model = await _commonModelFactory.PrepareVendorsModelAsync(new HomepageModel());
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SearchVendors(int categoryId)
-        {
-            var model = await _commonModelFactory.PrepareVendorsModelAsync(new HomepageModel(), categoryId);
-            
-            return PartialView("_Vendors", model);
+            return View();
         }
     }
 }

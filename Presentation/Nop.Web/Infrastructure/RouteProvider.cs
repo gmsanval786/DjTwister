@@ -120,6 +120,11 @@ namespace Nop.Web.Infrastructure
                 pattern: $"{lang}/newproducts/",
                 defaults: new { controller = "Catalog", action = "NewProducts" });
 
+            //new products
+            endpointRouteBuilder.MapControllerRoute(name: "ProductAll",
+                pattern: $"{lang}/products/",
+                defaults: new { controller = "Catalog", action = "ProductAll" });
+
             //blog
             endpointRouteBuilder.MapControllerRoute(name: "Blog",
                 pattern: $"{lang}/blog",
