@@ -1,4 +1,14 @@
 ﻿@model SearchBoxModel
+@using Nop.Services.Localization
+@using Nop.Core
+@inject ILocalizationService localizationService
+@inject IStoreContext storeContext
+@inject IWorkContext workContext
+@inject ICustomerService customerService
+@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var customer = await customerService.IsRegisteredAsync(currentCustomer);
+}
 <form asp-route="ProductSearch" method="get" id="small-search-box-form">
     @if (Model.ShowSearchBox)
     {
@@ -8,7 +18,10 @@
             <select class="form-select mb-2" aria-label="Default select example" asp-for="cid" asp-items="Model.AvailableCategories"></select>
         </div>
         <div class="btn-group mt-5 d-flex align-items-center justify-content-between">
-            <button class="loginbtn dj-member-btn text-center" onclick="setLocation('@Url.RouteUrl("Register")')" type="button">Become a Dj Member</button>
+            @if (!customer){
+                <button class="loginbtn dj-member-btn text-center" onclick="setLocation('@Url.RouteUrl("Register")')" type="button">Become a Dj Member</button>
+            }
+            
             <button class="loginbtn search-btn text-center" type="submit">@T("Search.Button")</button>
         </div>
         @if (Model.SearchTermMinimumLength > 0)

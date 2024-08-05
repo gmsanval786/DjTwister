@@ -31,6 +31,7 @@ using Nop.Services.Orders;
 using Nop.Services.Security;
 using Nop.Services.Seo;
 using Nop.Services.Shipping;
+using Nop.Services.Vendors;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Web.Areas.Admin.Models.Catalog;
@@ -84,6 +85,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IWorkContext _workContext;
         private readonly VendorSettings _vendorSettings;
         private readonly IPackageService _packageService;
+        private readonly IVendorService _vendorService;
 
         #endregion
 
@@ -126,7 +128,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             IWebHelper webHelper,
             IWorkContext workContext,
             VendorSettings vendorSettings,
-            IPackageService packageService)
+            IPackageService packageService,
+            IVendorService vendorService)
         {
             _aclService = aclService;
             _backInStockSubscriptionService = backInStockSubscriptionService;
@@ -166,6 +169,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             _workContext = workContext;
             _vendorSettings = vendorSettings;
             _packageService = packageService;
+            _vendorService = vendorService;
         }
 
         #endregion
@@ -287,6 +291,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                 if (!model.SelectedCategoryIds.Contains(existingProductCategory.CategoryId))
                     await _categoryService.DeleteProductCategoryAsync(existingProductCategory);
 
+            var existingVendorCategories = await _categoryService.GetVendorCategoriesByVendorIdAsync(model.VendorId, true);
+            model.SelectedCategoryIds = existingVendorCategories.Select(category => category.CategoryId).ToList();
             //add categories
             foreach (var categoryId in model.SelectedCategoryIds)
             {
