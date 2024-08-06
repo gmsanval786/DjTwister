@@ -388,3 +388,5 @@ appsettings.json
 appdata/
 
 Plugins/
+/Presentation/Nop.Web/App_Data/appsettings.json
+/Presentation/Nop.Web/App_Data/plugins.json
