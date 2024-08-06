@@ -25,6 +25,7 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
             AvailableRevisions = new List<SelectListItem>();
             AvailableDeliveryMethods = new List<SelectListItem>();
             AvailableDeliveryDays = new List<SelectListItem>();
+            AvailableRecordingTimes = new List<SelectListItem>();
         }
 
         #endregion
@@ -49,6 +50,7 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
         public string Description { get; set; }
 
         [NopResourceDisplayName("Admin.Catalog.Packages.Fields.RecordingTime")]
+        public IList<SelectListItem> AvailableRecordingTimes { get; set; }
         public string RecordingTime { get; set; }
 
         [NopResourceDisplayName("Admin.Catalog.Packages.Fields.SongCount")]
@@ -70,7 +72,6 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
         public int DeliveryTimeDays { get; set; }
         public IList<SelectListItem> AvailableDeliveryDays { get; set; }
 
-        [NopResourceDisplayName("Admin.Catalog.Packages.Fields.RevisionAllowed")]
         public bool AllowRevisions { get; set; }
 
         [NopResourceDisplayName("Admin.Catalog.Packages.Fields.Revision")]

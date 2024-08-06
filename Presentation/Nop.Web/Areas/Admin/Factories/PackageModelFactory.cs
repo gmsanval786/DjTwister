@@ -200,6 +200,8 @@ namespace Nop.Web.Areas.Admin.Factories
 
             await _baseAdminModelFactory.PrepareDeliveryDaysAsync(model.AvailableDeliveryDays);
 
+            await _baseAdminModelFactory.PrepareRecordingTimeAsync(model.AvailableRecordingTimes, false);
+
             //prepare localized models
             if (!excludeProperties)
                 model.Locales = await _localizedModelFactory.PrepareLocalizedModelsAsync(localizedModelConfiguration);

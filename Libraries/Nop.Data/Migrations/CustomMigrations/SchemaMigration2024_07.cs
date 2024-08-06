@@ -9,7 +9,7 @@ using Nop.Core.Domain.Vendors;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2024-07-20 18:25:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
+    [NopMigration("2024-07-20 18:30:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07 : MigrationBase
     {
         #region Fields
@@ -212,7 +212,20 @@ namespace Nop.Data.Migrations.CustomMigrations
                 resources.Add("Account.Fields.Bio.length", "The Bio must contain at least 400 words.");
             }
 
-            resources.Add("Account.Fields.Bio", "Bio");
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Admin.Vendors.Fields.Experience'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Admin.Fields.Experience", "Experience");
+                resources.Add("Admin.Fields.Experience.hint", "Number of years experinece.");
+            }
+
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Account.Fields.Experience'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Account.Fields.Experience", "Experience");
+            }
 
 
             //insert new locale resources

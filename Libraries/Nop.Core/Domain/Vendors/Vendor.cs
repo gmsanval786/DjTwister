@@ -111,6 +111,11 @@ namespace Nop.Core.Domain.Vendors
         public int LevelId { get; set; }
 
         /// <summary>
+        /// Gets or sets the experience count
+        /// </summary>
+        public int Experience { get; set; }
+
+        /// <summary>
         /// Gets or sets the vendor level
         /// </summary>
         public VendorLevel VendorLevel

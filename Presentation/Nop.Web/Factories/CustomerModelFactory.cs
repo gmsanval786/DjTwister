@@ -504,6 +504,9 @@ namespace Nop.Web.Factories
             //prepare available delivery methods
             await _baseAdminModelFactory.PrepareDeliveryMethodsAsync(model.PackageModel.AvailableDeliveryMethods, true);
 
+            //prepare available recording times
+            await _baseAdminModelFactory.PrepareRecordingTimeAsync(model.PackageModel.AvailableRecordingTimes, false);
+
             //prepare available experience types
             await _baseAdminModelFactory.PrepareVendorLevelsAsync(model.AvailableVendorLevels, true);
 
@@ -523,6 +526,9 @@ namespace Nop.Web.Factories
 
             //prepare available revisions
             await _baseAdminModelFactory.PrepareRevisionAsync(model.PackageModel.AvailableRevisions, true);
+
+            //prepare available vendor experience
+            await _baseAdminModelFactory.PrepareVendorExperienceAsync(model.AvailableVendorExperience, false);
 
             return model;
         }

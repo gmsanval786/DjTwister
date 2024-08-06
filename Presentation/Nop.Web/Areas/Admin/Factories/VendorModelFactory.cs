@@ -374,6 +374,8 @@ namespace Nop.Web.Areas.Admin.Factories
                     && model.SelectedCategoryIds.Contains(categoryId);
             }
 
+            await _baseAdminModelFactory.PrepareVendorExperienceAsync(model.AvailableVendorExperience, false);
+
             return model;
         }
 

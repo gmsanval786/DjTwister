@@ -79,7 +79,7 @@
             <nop-label asp-for="RecordingTime" />
         </div>
         <div class="col-md-9">
-            <nop-editor asp-for="RecordingTime" />
+            <nop-select asp-for="RecordingTime" asp-items="Model.AvailableRecordingTimes" />
             <span asp-validation-for="RecordingTime"></span>
         </div>
     </div>

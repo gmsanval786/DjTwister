@@ -4,8 +4,8 @@
 @using Nop.Services.Directory
 @using Nop.Services.Localization
 
-@inject ILanguageService languageService
-@inject ICurrencyService currencyService
+@using Nop.Core;
+@inject IWorkContext workContext;
 
 @{
     Layout = "_ColumnsOne";
@@ -16,9 +16,8 @@
 }
 
 @{
-    var languages = await languageService.GetAllLanguagesAsync();
-    var defaultlanguage = languages.FirstOrDefault(lang => lang.Published);
-    var defaultCurrency = await currencyService.GetCurrencyByIdAsync(defaultlanguage.DefaultCurrencyId);
+    var language = await workContext.GetWorkingLanguageAsync();
+    var currency = await workContext.GetWorkingCurrencyAsync();
 }
 
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.RegisterTop, additionalData = Model })
@@ -113,7 +112,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 col-lg-4 col-midia">
-                            @await Component.InvokeAsync("LanguageSelector")
+                            <label class="mb-1 lable-text fs14" class="text-info" asp-for="Experience" asp-postfix=":"></label>
+                            <select class="form-select mb-2" aria-label="Default select example" asp-for="Experience" asp-items="Model.AvailableVendorExperience"></select>
                         </div>
                     </div>
                     <h2 class="fs24 fw400">@T("Account.Fields.Package")</h2>
@@ -133,7 +133,7 @@
                                     <td>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text">@defaultCurrency.CurrencyCode</span>
+                                                <span class="input-group-text">@currency.CurrencyCode</span>
                                             </div>
                                             <input class="form-control price-input" type="number" asp-for="PackageModel.BasicPackage.Price" />
                                         </div>
@@ -141,7 +141,7 @@
                                     <td>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text">@defaultCurrency.CurrencyCode</span>
+                                                <span class="input-group-text">@currency.CurrencyCode</span>
                                             </div>
                                             <input class="form-control price-input" type="number" asp-for="PackageModel.StandardPackage.Price" />
                                         </div>
@@ -149,7 +149,7 @@
                                     <td>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text">@defaultCurrency.CurrencyCode</span>
+                                                <span class="input-group-text">@currency.CurrencyCode</span>
                                             </div>
                                             <input class="form-control price-input" type="number" asp-for="PackageModel.PremiumPackage.Price" />
                                         </div>
@@ -195,17 +195,17 @@
                                     <td colspan="1">@T("Account.Fields.Package.RecordingTime")</td>
                                     <td>
                                         <div class="form-group">
-                                            <input class="input-text" type="text" asp-for="PackageModel.BasicPackage.RecordingTime" class="form-control" />
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.RecordingTime" asp-items="Model.PackageModel.AvailableRecordingTimes"></select>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
-                                            <input class="input-text" type="text" asp-for="PackageModel.StandardPackage.RecordingTime" class="form-control" />
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.RecordingTime" asp-items="Model.PackageModel.AvailableRecordingTimes"></select>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
-                                            <input class="input-text" type="text" asp-for="PackageModel.PremiumPackage.RecordingTime" class="form-control" />
+                                            <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.RecordingTime" asp-items="Model.PackageModel.AvailableRecordingTimes"></select>
                                         </div>
                                     </td>
                                 </tr>

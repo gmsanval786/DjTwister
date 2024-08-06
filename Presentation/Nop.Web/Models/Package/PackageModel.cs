@@ -16,6 +16,7 @@ namespace Nop.Web.Models.Package
             AvailableRevisions = new List<SelectListItem>();
             AvailableDeliveryMethods = new List<SelectListItem>();
             AvailableDeliveryDays = new List<SelectListItem>();
+            AvailableRecordingTimes = new List<SelectListItem>();
         }
 
         public int VendorId { get; set; }
@@ -45,6 +46,7 @@ namespace Nop.Web.Models.Package
         public IList<SelectListItem> AvailableRevisions { get; set; }
         public IList<SelectListItem> AvailableDeliveryMethods { get; set; }
         public IList<SelectListItem> AvailableDeliveryDays { get; set; }
+        public IList<SelectListItem> AvailableRecordingTimes { get; set; }
         public PackageModel BasicPackage { get; set; }
         public PackageModel StandardPackage { get; set; }
         public PackageModel PremiumPackage { get; set; }

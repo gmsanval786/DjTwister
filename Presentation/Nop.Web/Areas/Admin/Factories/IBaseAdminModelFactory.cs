@@ -400,5 +400,23 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
         /// <returns>A task that represents the asynchronous operation</returns>
         Task PreparePremiumPackageTypesAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        /// <summary>
+        /// Prepare available recording time
+        /// </summary>
+        /// <param name="items">Recording time items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task PrepareRecordingTimeAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        /// <summary>
+        /// Prepare available vendor experience
+        /// </summary>
+        /// <param name="items">Vendor experience items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task PrepareVendorExperienceAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
     }
 }

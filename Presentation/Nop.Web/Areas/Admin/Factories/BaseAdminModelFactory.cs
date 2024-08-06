@@ -1323,6 +1323,68 @@ namespace Nop.Web.Areas.Admin.Factories
             await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText);
         }
 
+        /// <summary>
+        /// Prepare available recording time
+        /// </summary>
+        /// <param name="items">Recording time items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task PrepareRecordingTimeAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            var timeIncrementItems = Enum.GetValues(typeof(RecordingTime))
+                .Cast<RecordingTime>()
+                .Select(t => new SelectListItem
+                {
+                    Text = $"{((int)t) / 60}:{((int)t) % 60:D2}",
+                    Value = $"{((int)t) / 60}:{((int)t) % 60:D2}"
+                })
+                .ToList();
+
+            foreach (var recordingTimeItem in timeIncrementItems)
+            {
+                items.Add(recordingTimeItem);
+            }
+
+            // use empty string for nullable field
+            var defaultItemValue = string.Empty;
+
+            //insert special item for the default value
+            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText, defaultItemValue);
+        }
+
+        /// <summary>
+        /// Prepare available vendor experience
+        /// </summary>
+        /// <param name="items">Vendor experience items</param>
+        /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
+        /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task PrepareVendorExperienceAsync(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            int minCount = 1;
+            int maxCount = 60;
+
+            var vendorExperience = new List<SelectListItem>();
+            for (int i = minCount; i <= maxCount; i++)
+            {
+                vendorExperience.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            }
+
+            foreach (var experience in vendorExperience)
+            {
+                items.Add(experience);
+            }
+
+            // Insert special item for the default value if needed
+            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, await _localizationService.GetResourceAsync("Account.Fields.Package.SongCount"));
+        }
 
         #endregion
     }

@@ -18,6 +18,7 @@ namespace Nop.Web.Models.Customer
             AvailableStates = new List<SelectListItem>();
             AvailableCategories = new List<SelectListItem>();
             AvailableVendorLevels = new List<SelectListItem>();
+            AvailableVendorExperience = new List<SelectListItem>();
             CustomerAttributes = new List<CustomerAttributeModel>();
             GdprConsents = new List<GdprConsentModel>();
             SelectedCategoryIds = new List<int>();
@@ -169,6 +170,10 @@ namespace Nop.Web.Models.Customer
 
         [NopResourceDisplayName("Account.Fields.FavoriteGenre")]
         public int? CategoryId { get; set; }
+
+        [NopResourceDisplayName("Account.Fields.Experience")]
+        public int Experience { get; set; }
+        public IList<SelectListItem> AvailableVendorExperience { get; set; }
 
         [NopResourceDisplayName("Account.Fields.EventsInYear")]
         public int? Event { get; set; }

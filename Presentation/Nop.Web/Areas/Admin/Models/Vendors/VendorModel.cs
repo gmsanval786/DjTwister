@@ -32,6 +32,7 @@ namespace Nop.Web.Areas.Admin.Models.Vendors
 
             SelectedCategoryIds = new List<int>();
             AvailableCategories = new List<SelectListItem>();
+            AvailableVendorExperience = new List<SelectListItem>();
         }
 
         #endregion
@@ -59,6 +60,9 @@ namespace Nop.Web.Areas.Admin.Models.Vendors
 
         [NopResourceDisplayName("Admin.Vendors.Fields.Active")]
         public bool Active { get; set; }
+
+        [NopResourceDisplayName("Admin.Vendors.Fields.Experience")]
+        public int Experience { get; set; }
 
         [NopResourceDisplayName("Admin.Vendors.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }        
@@ -100,6 +104,7 @@ namespace Nop.Web.Areas.Admin.Models.Vendors
         [NopResourceDisplayName("Admin.Vendors.Fields.Categories")]
         public IList<int> SelectedCategoryIds { get; set; }
         public IList<SelectListItem> AvailableCategories { get; set; }
+        public IList<SelectListItem> AvailableVendorExperience { get; set; }
 
         public List<VendorAttributeModel> VendorAttributes { get; set; }
 

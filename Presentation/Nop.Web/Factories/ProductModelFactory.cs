@@ -1638,7 +1638,7 @@ namespace Nop.Web.Factories
                             VendorId = package.VendorId,
                             Price = package.Price,
                             Description = package.Description,
-                            RecordingTime = package.RecordingTime,
+                            RecordingTime = package.RecordingTime.ReadableTimeFormat(),
                             PackageTypeId = package.PackageTypeId,
                             SongCountId = package.SongCounts,
                             RevisionId = package.Revisions,
