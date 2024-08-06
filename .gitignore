@@ -381,3 +381,10 @@ FodyWeavers.xsd
 /Presentation/Nop.Web/Plugins/Widgets.GoogleAnalytics/Nop.Plugin.Widgets.GoogleAnalytics.deps.json
 /Presentation/Nop.Web/Plugins/Widgets.NivoSlider/Nop.Plugin.Widgets.NivoSlider.deps.json
 /Presentation/Nop.Web/Plugins/Widgets.What3words/Nop.Plugin.Widgets.What3words.deps.json
+
+
+appsettings.json
+
+appdata/
+
+Plugins/

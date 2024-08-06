@@ -1369,7 +1369,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(items));
 
             int minCount = 1;
-            int maxCount = 60;
+            int maxCount = 65;
 
             var vendorExperience = new List<SelectListItem>();
             for (int i = minCount; i <= maxCount; i++)
