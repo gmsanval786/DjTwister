@@ -1,6 +1,11 @@
 ﻿@model RegisterModel
 
 @using Nop.Core.Domain.Catalog
+@using Nop.Services.Directory
+@using Nop.Services.Localization
+
+@inject ILanguageService languageService
+@inject ICurrencyService currencyService
 
 @{
     Layout = "_ColumnsOne";
@@ -8,6 +13,12 @@
     //title
     NopHtml.AddTitleParts(T("PageTitle.Register").Text);
 
+}
+
+@{
+    var languages = await languageService.GetAllLanguagesAsync();
+    var defaultlanguage = languages.FirstOrDefault(lang => lang.Published);
+    var defaultCurrency = await currencyService.GetCurrencyByIdAsync(defaultlanguage.DefaultCurrencyId);
 }
 
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.RegisterTop, additionalData = Model })
@@ -100,6 +111,11 @@
                             <select class="w-100 multiple-select1 mb-2" id="multiple-select-box" asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" multiple></select>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4 col-midia">
+                            @await Component.InvokeAsync("LanguageSelector")
+                        </div>
+                    </div>
                     <h2 class="fs24 fw400">@T("Account.Fields.Package")</h2>
                     <div class="packages-table-sec table-responsive mt-4">
                         <table class="table packages-table">
@@ -115,18 +131,27 @@
                                 <tr>
                                     <td colspan="1" class="td-border-none">@T("Account.Fields.Package.Price")</td>
                                     <td>
-                                        <div class="form-group">
-                                            <input class="input-text" type="text" asp-for="PackageModel.BasicPackage.Price" class="form-control" />
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">@defaultCurrency.CurrencyCode</span>
+                                            </div>
+                                            <input class="form-control price-input" type="number" asp-for="PackageModel.BasicPackage.Price" />
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="form-group">
-                                            <input class="input-text" type="text" asp-for="PackageModel.StandardPackage.Price" class="form-control" />
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">@defaultCurrency.CurrencyCode</span>
+                                            </div>
+                                            <input class="form-control price-input" type="number" asp-for="PackageModel.StandardPackage.Price" />
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="form-group">
-                                            <input class="input-text" type="text" asp-for="PackageModel.PremiumPackage.Price" class="form-control" />
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">@defaultCurrency.CurrencyCode</span>
+                                            </div>
+                                            <input class="form-control price-input" type="number" asp-for="PackageModel.PremiumPackage.Price" />
                                         </div>
                                     </td>
                                 </tr>
@@ -299,6 +324,16 @@
         } else {
             $(".yes_wrapper").hide();
         }
+
+        $('.price-input').on('input', function () {
+            var value = $(this).val();
+            if (parseFloat(value) < 0 || isNaN(value)) {
+                // Show alert message
+                alert('Negative values are not allowed. The value has been reset to 0.');
+                // Reset value to 0
+                $(this).val('0');
+            }
+        });
 
         $("#yes").click(function () {
             $(".yes_wrapper").show();
