@@ -9,7 +9,7 @@ using Nop.Core.Domain.Vendors;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2024-07-20 18:10:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
+    [NopMigration("2024-07-20 18:25:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07 : MigrationBase
     {
         #region Fields
@@ -195,6 +195,25 @@ namespace Nop.Data.Migrations.CustomMigrations
                 resources.Add("Admin.Catalog.Products.Fields.PremiumPackage.hint", "Name of premium package");
                 resources.Add("Admin.Catalog.Products.Fields.PremiumPackage.None", "None");
             }
+
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Admin.Catalog.Products.SearchFound'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Admin.Catalog.Products.SearchFound", "Search results");
+                resources.Add("Admin.Catalog.Products.SearchNotFound", "No Search results");
+            }
+
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Account.Fields.Bio.required'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Account.Fields.Bio.required", "The Bio field is required.");
+                resources.Add("Account.Fields.Bio.length", "The Bio must contain at least 400 words.");
+            }
+
+            resources.Add("Account.Fields.Bio", "Bio");
+
 
             //insert new locale resources
             var locales = languages.SelectMany(language => resources.Select(resource => new LocaleStringResource

@@ -67,10 +67,10 @@
             }
             else
             {
-                var vendorUrl = Url.RouteUrl("Vendor", new { SeName = Model.VendorModel.SeName });
+                var productUrl = Url.RouteUrl<Product>(new { SeName = Model.SeName });
 
                 var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
-                ? url.ToString() : vendorUrl;
+                ? url.ToString() : productUrl;
 
                 <h3 class="mb-0 text-blue fs18 fw600">
                     <a href="@Url.RouteUrl("Login", new { returnUrl })" class="nav-link"> Sign in to view name </a>

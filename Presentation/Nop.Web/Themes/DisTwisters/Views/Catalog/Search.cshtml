@@ -75,9 +75,17 @@
                 catalogProductsViewData["fetchUrl"] = Html.Raw(Url.Action("SearchProducts", "Catalog"));
             }
             <div>
-                <h4>@T("Search Results")</h4>
+                @if (Model.CatalogProductsModel.Products.Any())
+                {
+                    <h4>@T("Admin.Catalog.Products.SearchFound")</h4>
+                    @await Html.PartialAsync("_CatalogProducts", Model.CatalogProductsModel, catalogProductsViewData)
+                }
+                else
+                {
+                    <h4>@T("Admin.Catalog.Products.SearchNotFound")</h4>
+                }
             </div>
-            @await Html.PartialAsync("_CatalogProducts", Model.CatalogProductsModel, catalogProductsViewData)
+
             @* <script asp-location="Footer">
                 $(document).ready(function () {
                     $(CatalogProducts).on('before', function (e) {

@@ -12,9 +12,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                    <li class="nav-item">
+                    @* <li class="nav-item">
                         <a class="nav-link active" href="@Url.RouteUrl("ProductAll")">Product Shop</a>
-                    </li>
+                    </li> *@
                     @if (Model.ShoppingCartEnabled)
                     {
                         <li class="nav-item">
@@ -51,6 +51,7 @@
                                     <a class="dropdown-item fs16 fw500 p-border-color pt-0 position-relative"
                                        href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")</a>
                                 </li>
+                                @await Component.InvokeAsync(typeof(AdminHeaderLinksViewComponent))
                                 <li>
                                     <a class="dropdown-item fs16 fw500 p-border-color position-relative" data-bs-toggle="modal"
                                        data-bs-target="#long-out" href="#">@T("Account.Logout")</a>

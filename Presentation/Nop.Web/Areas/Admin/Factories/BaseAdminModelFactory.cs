@@ -1085,7 +1085,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(items));
 
             int minCount = 1;
-            int maxCount = 10; 
+            int maxCount = 50; 
 
             var songCounts = new List<SelectListItem>();
             for (int i = minCount; i <= maxCount; i++)

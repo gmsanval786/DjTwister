@@ -138,6 +138,16 @@ namespace Nop.Web.Validators.Customer
             }
 
             RuleFor(x => x.DisplayName).NotEmpty().WithMessageAwait(localizationService.GetResourceAsync("Account.Fields.DisplayName.Required"));
+            RuleFor(x => x.Bio).NotEmpty().WithMessage("Account.Fields.Bio.required").Must(HaveMinimumWords).WithMessage("Account.Fields.Bio.length");
+        }
+
+        private bool HaveMinimumWords(string bio)
+        {
+            if (string.IsNullOrWhiteSpace(bio))
+                return false;
+
+            var wordCount = bio.Split(new[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Length;
+            return wordCount >= 400;
         }
     }
 }

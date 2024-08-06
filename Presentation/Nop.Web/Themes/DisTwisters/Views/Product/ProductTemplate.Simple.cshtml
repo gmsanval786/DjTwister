@@ -8,6 +8,8 @@
 @inject IHtmlFormatter htmlFormatter
 @inject IWebHelper webHelper
 @inject SeoSettings seoSettings
+@inject IWorkContext workContext
+@inject ICustomerService customerService
 
 @{
     Layout = "_ColumnsOne";
@@ -48,6 +50,12 @@
         NopHtml.AddHeadCustomParts("<meta property=\"twitter:url\" content=\"" + webHelper.GetThisPageUrl(false) + "\" />");
     }
 }
+
+@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var customer = await customerService.IsRegisteredAsync(currentCustomer);
+}
+
 <!--product breadcrumb-->
 @* @section Breadcrumb
 {
@@ -66,28 +74,42 @@
                         </h1>
                     }
                 </div>
-                <a class="user-box d-block text-decoration d-flex align-items-start mb-3" href="#">
-                    <div class="user-profile-box position-relative">
-                        <img class="img-fluid" alt="@Model.PictureModel.AlternateText" src="@Model.PictureModel.ImageUrl" title="@Model.PictureModel.Title">
-                        <div class="active-dots position-absolute"></div>
-                    </div>
-                    <div class="user-box-right-star ms-3">
-                        <h3 class="user-name mb-0 text-blue fs18 fw600">@Model.VendorModel.Name</h3>
-                        @if (Model.ProductReviewOverview.AllowCustomerReviews)
-                        {
-                            var ratingPercent = 0;
-                            if (Model.ProductReviewOverview.TotalReviews != 0)
+                @if (customer)
+                {
+                    <a class="user-box d-block text-decoration d-flex align-items-start mb-3" href="#">
+                        <div class="user-profile-box position-relative">
+                            <img class="img-fluid" alt="@Model.PictureModel.AlternateText" src="@Model.PictureModel.ImageUrl" title="@Model.PictureModel.Title">
+                            <div class="active-dots position-absolute"></div>
+                        </div>
+                        <div class="user-box-right-star ms-3">
+                            <h3 class="user-name mb-0 text-blue fs18 fw600">@Model.VendorModel.Name</h3>
+                            @if (Model.ProductReviewOverview.AllowCustomerReviews)
                             {
-                                ratingPercent = ((Model.ProductReviewOverview.RatingSum * 100) / Model.ProductReviewOverview.TotalReviews) / 5;
+                                var ratingPercent = 0;
+                                if (Model.ProductReviewOverview.TotalReviews != 0)
+                                {
+                                    ratingPercent = ((Model.ProductReviewOverview.RatingSum * 100) / Model.ProductReviewOverview.TotalReviews) / 5;
+                                }
+                                <div class="rating-box d-flex align-items-center">
+                                    <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
+                                    <span class="ms-2 pt-1 starrate span1 fw600 fs16">@(ratingPercent)</span>
+                                    <span class="ms-2 pt-1 starrate span2 fw500 fs16">(@Model.ProductReviewOverview.TotalReviews)</span>
+                                </div>
                             }
-                            <div class="rating-box d-flex align-items-center">
-                                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
-                                <span class="ms-2 pt-1 starrate span1 fw600 fs16">@(ratingPercent)</span>
-                                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(@Model.ProductReviewOverview.TotalReviews)</span>
-                            </div>
-                        }
-                    </div>
-                </a>
+                        </div>
+                    </a>
+                }
+                else
+                {
+                    var productUrl = Url.RouteUrl<Product>(new { SeName = Model.SeName });
+
+                    var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
+                    ? url.ToString() : productUrl;
+
+                    <h3 class="user-profile-box position-relative">
+                        <a href="@Url.RouteUrl("Login", new { returnUrl })" class="nav-link"> Sign in to view name </a>
+                    </h3>
+                }
                 <div class="product-detail-slide d-block text-decoration" href="product-detail.html">
                     @await Html.PartialAsync("_ProductDetailsPictures", Model)
                 </div>

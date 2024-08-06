@@ -87,8 +87,9 @@
                 <div class="yes_wrapper mt-4">
                     <div class="row">
                         <div class="col-md-6 col-lg-4 col-midia">
-                            <label class="mb-1 lable-text fs14" for="bio-content"  asp-for="Bio" asp-postfix=":" class="text-info"></label>
-                            <textarea class="w-100 bio-message mb-2" id="bio-content" name="bio-content" asp-for="Bio"></textarea>
+                            <label class="mb-1 lable-text fs14" for="bio-content" asp-for="Bio" asp-postfix=":" class="text-info"></label>
+                            <textarea class="w-100 bio-message mb-2" asp-for="Bio"></textarea>
+                            <span asp-validation-for="Bio"></span>
                         </div>
                         <div class="col-md-6 col-lg-4 col-midia">
                             <label class="mb-1 lable-text fs14" class="text-info" asp-for="VendorLevelId" asp-postfix=":"></label>
@@ -98,31 +99,6 @@
                             <label class="mb-1 lable-text fs14" class="text-info" asp-for="SelectedCategoryIds" asp-postfix=":"></label>
                             <select class="w-100 multiple-select1 mb-2" id="multiple-select-box" asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" multiple></select>
                         </div>
-                        <script>
-                            $(document).ready(function () {
-                                $('#multiple-select-box').on('change', function () {
-                                    var $this = $(this);
-                                    var selectedOptions = $this.val();
-
-                                    if (selectedOptions.length > 3) {
-                                        // Get the last selected value
-                                        var lastSelectedValue = selectedOptions[selectedOptions.length - 1];
-
-                                        // Remove the last selected value
-                                        $this.find('option[value="' + lastSelectedValue + '"]').prop('selected', false);
-
-                                        // Show alert to the user
-                                        alert('You can only choose up to three genres. Please remove an existing one to add a new one.');
-
-                                        // Trigger change event to update the select box
-                                        $this.trigger('change');
-                                    }
-                                });
-                            });
-
-
-                        </script>
-
                     </div>
                     <h2 class="fs24 fw400">@T("Account.Fields.Package")</h2>
                     <div class="packages-table-sec table-responsive mt-4">
@@ -316,6 +292,14 @@
 
 <script asp-location="Footer">
     $(document).ready(function () {
+
+        var isDJ = $("#@Html.IdFor(model => model.IsDJ)").val();
+        if (isDJ === "true") {
+            $(".yes_wrapper").show();
+        } else {
+            $(".yes_wrapper").hide();
+        }
+
         $("#yes").click(function () {
             $(".yes_wrapper").show();
             $("#IsDJ").val(true);
@@ -332,8 +316,20 @@
             $(".no_wrapper").hide();
         });
 
-        // $(".yes_wrapper").show();
+        $('#multiple-select-box').on('change', function () {
+            var $this = $(this);
+            var selectedOptions = $this.val();
+
+            if (selectedOptions.length > 3) {
+
+                var lastSelectedValue = selectedOptions[selectedOptions.length - 1];
+                $this.find('option[value="' + lastSelectedValue + '"]').prop('selected', false);
+                alert('You can only choose up to three genres. Please remove an existing one to add a new one.');
+                $this.trigger('change');
+            }
+        });
     });
+
 </script>
 <script asp-location="Footer">
     const data = [

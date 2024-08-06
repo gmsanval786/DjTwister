@@ -64,6 +64,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Themes\DisTwisters\Views\Catalog\ProductAll.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DisTwisters\Views\Catalog\VendorAll.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DisTwisters\Views\Catalog\_ProductsInGridOrLines.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Themes\DisTwisters\Views\Customer\Login.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
@@ -82,6 +91,18 @@
     <Content Update="Themes\DisTwisters\Views\Home\Index.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
+    <Content Update="Themes\DisTwisters\Views\Product\_AddToCart.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DisTwisters\Views\Shared\Components\HomepageProducts\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DisTwisters\Views\Shared\Components\FeaturedProducts\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DisTwisters\Views\Shared\Components\SearchBox\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Themes\DisTwisters\Views\Shared\_ColumnsOne.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
@@ -89,6 +110,9 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Themes\DisTwisters\Views\Shared\_Header.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DisTwisters\Views\Shared\_ProductBox.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Themes\DisTwisters\Views\Shared\_Root.cshtml">
@@ -100,7 +124,7 @@
     <Content Update="Themes\DisTwisters\Views\Catalog\Vendor.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
-    <Content Update="Themes\DisTwisters\Views\Catalog\VendorAll.cshtml">
+    <Content Update="Themes\DisTwisters\Views\Product\ProductsList.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>
