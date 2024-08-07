@@ -1,0 +1,18 @@
+﻿@model VendorModel
+
+<div class="card-body">
+    @if (Model.Id > 0)
+    {
+		<nop-tabs id="vendormultimedia-edit" asp-tab-name-to-select="tab-pictures" asp-render-selected-tab-input="false">
+            <nop-tab asp-name="tab-pictures" asp-title="@T("Admin.Vendors.Multimedia.Pictures")" asp-default="true">@await Html.PartialAsync("_CreateOrUpdate.Multimedia.Pictures", Model)</nop-tab>
+		</nop-tabs>
+    }
+    else
+    {
+        <div class="card card-default">
+            <div class="card-body">
+                @T("Admin.Vendors.Multimedia.Pictures.SaveBeforeEdit")
+            </div>
+        </div>
+    }    
+</div>

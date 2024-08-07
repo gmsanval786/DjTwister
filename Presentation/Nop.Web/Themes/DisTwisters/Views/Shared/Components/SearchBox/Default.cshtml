@@ -1,0 +1,43 @@
+﻿@model SearchBoxModel
+@using Nop.Services.Localization
+@using Nop.Core
+@inject ILocalizationService localizationService
+@inject IStoreContext storeContext
+@inject IWorkContext workContext
+@inject ICustomerService customerService
+@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var customer = await customerService.IsRegisteredAsync(currentCustomer);
+}
+<form asp-route="ProductSearch" method="get" id="small-search-box-form">
+    @if (Model.ShowSearchBox)
+    {
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.SearchBoxBeforeSearchButton, additionalData = Model })
+        <div class="category-select-box">
+            <label class="mb-2 lable-text text-white text-info" asp-for="cid" asp-postfix=":"></label>
+            <select class="form-select mb-2" aria-label="Default select example" asp-for="cid" asp-items="Model.AvailableCategories"></select>
+        </div>
+        <div class="btn-group mt-5 d-flex align-items-center justify-content-between">
+            @if (!customer){
+                <button class="loginbtn dj-member-btn text-center" onclick="setLocation('@Url.RouteUrl("Register")')" type="button">Become a Dj Member</button>
+            }
+            
+            <button class="loginbtn search-btn text-center" type="submit">@T("Search.Button")</button>
+        </div>
+        @if (Model.SearchTermMinimumLength > 0)
+        {
+            <script asp-location="Footer">
+
+                $("#small-search-box-form").on("submit", function (event) {
+                    var categoryId = $('#CategoryId').val();
+                    if (categoryId == 0) {
+                        alert('@Html.Raw(JavaScriptEncoder.Default.Encode(T("Search.SelectCategory").Text))');
+                        $("#CategoryId").focus();
+                        event.preventDefault();
+                    }
+                });
+            </script>
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.SearchBox, additionalData = Model })
+    }
+</form>

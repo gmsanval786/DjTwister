@@ -1,0 +1,20 @@
+﻿@model RegisterResultModel
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Register").Text);
+}
+
+<section class="login-sec d-flex align-items-center justify-content-center">
+    <div class="container">
+        <div class="login-cart forgot-password z9 position-relative">
+            <div class="login-hading text-center">
+            </div>
+            <p>@Model.Result</p>
+            <div class="forgotandlogin-cmn">
+                <button class="loginbtn w-100 mb-5 mt-4" onclick="window.location.href='@Model.ReturnUrl'">@T("Common.Continue")</button>
+            </div>
+        </div>
+    </div>
+</section>

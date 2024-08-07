@@ -1,0 +1,9 @@
+﻿@model NewProductsModel
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.ProductAll").Text);
+}
+
+@await Html.PartialAsync("_CatalogProducts", Model.CatalogProductsModel)

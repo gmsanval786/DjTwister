@@ -1,0 +1,71 @@
+﻿@using Nop.Services.Localization
+@using Nop.Core
+@inject ILocalizationService localizationService
+@inject IStoreContext storeContext
+@inject IWorkContext workContext
+@inject ICustomerService customerService
+
+@{
+    Layout = "_ColumnsOne";
+}
+
+@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var customer = await customerService.IsRegisteredAsync(currentCustomer);
+}
+
+<div class="body-home">
+    <section class="banner-sec d-flex align-items-center justify-content-center z9 position-relative max-width70">
+        <div class="container">
+            <h1 class="text-w fs80 text-center">Spark Your Savings on Electronics!</h1>
+        </div>
+    </section>
+    <section class="choose-category-sec py100 z9 position-relative max-width70">
+        <div class="container">
+            @await Component.InvokeAsync(typeof(SearchBoxViewComponent))
+        </div>
+    </section>
+    <section class="features-sec features-home-page py50 z9 position-relative">
+        <div class="container">
+            @await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
+        </div>
+    </section>
+
+    <script asp-location="Footer">
+
+        $(document).ready(function () {
+            function loadVendors(categoryId) {
+
+                $(".strivingprogrammersloader").show();
+
+                $.ajax({
+                    url: '/Home/SearchVendors',
+                    type: 'POST',
+                    data: { categoryId: categoryId },
+                    success: function (response) {
+                        $('#dvVendors').html(response);
+                    },
+                    error: function (error) {
+                        console.error(error);
+                        $('#dvVendors').html('<div class="alert alert-danger">An error occurred.</div>');
+                    },
+                    complete: function () {
+                        $(".strivingprogrammersloader").fadeOut("slow");
+                    }
+                });
+            }
+
+            loadVendors(null);
+
+            $('.search-btn').click(function () {
+                var categoryId = $('#CategoryId').val();
+                loadVendors(categoryId);
+            });
+
+            $(window).on('load', function () {
+                $(".strivingprogrammersloader").fadeOut("slow");
+            });
+        });
+
+    </script>
+</div>

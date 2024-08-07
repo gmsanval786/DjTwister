@@ -1,0 +1,57 @@
+﻿@model VendorModel
+
+@using Nop.Core
+@inject IWorkContext workContext
+@inject ICustomerService customerService
+@inject IWebHelper webHelper
+
+@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var customer = await customerService.IsRegisteredAsync(currentCustomer);
+}
+
+<div class="product-cart">
+    <a class="slid-itm1 d-block text-decoration" href="@Url.RouteUrl("Vendor", new { SeName = Model.SeName })" title="@Model.Name">
+        @{
+            var firstPicture = Model.VendorPictureModel.FirstOrDefault();
+        }
+
+        @if (firstPicture != null)
+        {
+            <img class="img-fluid" alt="@firstPicture.OverrideAltAttribute" src="@firstPicture.PictureUrl" title="@firstPicture.OverrideTitleAttribute" />
+        }
+    </a>
+    <div class="product-content-box mt-3">
+        <a class="user-box d-block text-decoration d-flex align-items-center mb-2" href="@Url.RouteUrl("Vendor", new { SeName = Model.SeName })" title="@Model.Name">
+            @if (customer)
+            {
+                <div class="user-profile-box position-relative">
+                    <img class="img-fluid" alt="@Model.PictureModel.AlternateText" src="@Model.PictureModel.ImageUrl" title="@Model.PictureModel.Title">
+                    <div class="active-dots position-absolute"></div>
+                </div>
+                <h3 class="user-name mb-0 text-blue fs18 fw600 ms-2">@Model.Name</h3>
+            }
+            else
+            {
+                var vendorUrl = Url.RouteUrl("Vendor", new { SeName = Model.SeName });
+
+                var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
+                ? url.ToString() : vendorUrl;
+
+                <h3 class="mb-0 text-blue fs18 fw600">
+                    <a href="@Url.RouteUrl("Login", new { returnUrl })" class="nav-link"> Sign in to view name </a>
+                </h3>
+            }
+        </a>
+        <p class="p-text fs14 fw400 description mb-2">
+            @Html.Raw(@Model.Description)
+        </p>
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="rating-box d-flex align-items-center">
+                <img width="20" height="20" src="~/themes/DisTwisters/content/img/star.png" alt="">
+                <span class="ms-2 pt-1 starrate span1 fw600 fs16">4.9</span>
+                <span class="ms-2 pt-1 starrate span2 fw500 fs16">(161)</span>
+            </div>
+        </div>
+    </div>
+</div>
