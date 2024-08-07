@@ -17,7 +17,8 @@
             <label class="mb-2 lable-text text-white text-info" asp-for="cid" asp-postfix=":"></label>
             <select class="form-select mb-2" aria-label="Default select example" asp-for="cid" asp-items="Model.AvailableCategories"></select>
         </div>
-        <div class="btn-group mt-5 d-flex align-items-center justify-content-between">
+
+        <div class="btn-group mt-5 d-flex align-items-center justify-content-between customer-login">
             @if (!customer){
                 <button class="loginbtn dj-member-btn text-center" onclick="setLocation('@Url.RouteUrl("Register")')" type="button">Become a Dj Member</button>
             }

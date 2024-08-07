@@ -94,6 +94,12 @@
     <Content Update="Themes\DisTwisters\Views\Product\_AddToCart.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
+    <Content Update="Themes\DisTwisters\Views\Shared\Components\Footer\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DisTwisters\Views\Shared\Components\HeaderLinks\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Themes\DisTwisters\Views\Shared\Components\HomepageProducts\Default.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>

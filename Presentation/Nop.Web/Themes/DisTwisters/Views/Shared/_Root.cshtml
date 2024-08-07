@@ -5,30 +5,32 @@
 @{ await Html.RenderPartialAsync("_Notifications"); }
 @{ await Html.RenderPartialAsync("_JavaScriptDisabledWarning"); }
 @{ await Html.RenderPartialAsync("_OldInternetExplorerWarning"); }
-<div>
-    @{ await Html.RenderPartialAsync("_Header"); }
+
+<div class="main-wrapper">
+    @* Header *@
+    @{await Html.RenderPartialAsync("_Header");}
     <script asp-location="Footer">
         var localized_data = {
             AjaxCartFailure: "@T("AjaxCart.Failure")"
         };
         AjaxCart.init(false, '.header-links .cart-qty', '.header-links .wishlist-qty', '#flyout-cart', localized_data);
     </script>
-    <div>
         @* @await Component.InvokeAsync(typeof(TopMenuViewComponent)) *@
-    </div>
-    <div>
+    <div class="page-wrapper">
         @* @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentBefore }) *@
 
         @if (IsSectionDefined("Breadcrumb"))
         {
             @RenderSection("Breadcrumb") 
         }
-        <div>
+        <div class="page-body">
             @RenderBody()
         </div>
         @* @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentAfter }) *@
     </div>
+    @* Footer *@
     @await Component.InvokeAsync(typeof(FooterViewComponent))
 </div>
+
 @* @await Component.InvokeAsync(typeof(EuCookieLawViewComponent))
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BodyEndHtmlTagBefore }) *@

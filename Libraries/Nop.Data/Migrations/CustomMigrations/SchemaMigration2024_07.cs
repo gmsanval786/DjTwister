@@ -9,7 +9,7 @@ using Nop.Core.Domain.Vendors;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2024-07-20 18:30:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
+    [NopMigration("2024-07-20 18:35:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07 : MigrationBase
     {
         #region Fields

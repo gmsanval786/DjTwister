@@ -12,10 +12,10 @@
     var themeName = await themeContext.GetWorkingThemeNameAsync();
     var supportRtl = await Html.ShouldUseRtlThemeAsync();
 
-    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap.min.css");
     NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/style.css");
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/jquery-confirm.min.css");
     NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/select2.min.css");
     NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/all.css");
     NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/slick.css");
-    
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap.min.css");
 }
