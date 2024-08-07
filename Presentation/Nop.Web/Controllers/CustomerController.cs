@@ -653,27 +653,23 @@ namespace Nop.Web.Controllers
             return View(model);
         }
 
-        [ValidateCaptcha]
-        [HttpPost, ActionName("PasswordRecovery")]
-        [FormValueRequired("send-email")]
-        //available even when navigation is not allowed
+        [HttpPost]
         [CheckAccessPublicStore(ignore: true)]
-        //available even when a store is closed
         [CheckAccessClosedStore(ignore: true)]
-        public virtual async Task<IActionResult> PasswordRecoverySend(PasswordRecoveryModel model, bool captchaValid)
+        public virtual async Task<IActionResult> PasswordRecoverySend(string email, bool captchaValid)
         {
-            // validate CAPTCHA
+            // Validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnForgotPasswordPage && !captchaValid)
             {
-                ModelState.AddModelError("", await _localizationService.GetResourceAsync("Common.WrongCaptchaMessage"));
+                return Json(new { success = false, message = await _localizationService.GetResourceAsync("Common.WrongCaptchaMessage") });
             }
 
             if (ModelState.IsValid)
             {
-                var customer = await _customerService.GetCustomerByEmailAsync(model.Email.Trim());
+                var customer = await _customerService.GetCustomerByEmailAsync(email.Trim());
                 if (customer != null && customer.Active && !customer.Deleted)
                 {
-                    //save token and current date
+                    // Save token and current date
                     var passwordRecoveryToken = Guid.NewGuid();
                     await _genericAttributeService.SaveAttributeAsync(customer, NopCustomerDefaults.PasswordRecoveryTokenAttribute,
                         passwordRecoveryToken.ToString());
@@ -681,21 +677,18 @@ namespace Nop.Web.Controllers
                     await _genericAttributeService.SaveAttributeAsync(customer,
                         NopCustomerDefaults.PasswordRecoveryTokenDateGeneratedAttribute, generatedDateTime);
 
-                    //send email
+                    // Send email
                     await _workflowMessageService.SendCustomerPasswordRecoveryMessageAsync(customer,
                         (await _workContext.GetWorkingLanguageAsync()).Id);
 
-                    _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.PasswordRecovery.EmailHasBeenSent"));
+                    return Json(new { success = true, message = await _localizationService.GetResourceAsync("Account.PasswordRecovery.EmailHasBeenSent") });
                 }
                 else
                 {
-                    _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Account.PasswordRecovery.EmailNotFound"));
+                    return Json(new { success = false, message = await _localizationService.GetResourceAsync("Account.PasswordRecovery.EmailNotFound") });
                 }
             }
-
-            model = await _customerModelFactory.PreparePasswordRecoveryModelAsync(model);
-
-            return View(model);
+            return Json(new { success = false });
         }
 
         //available even when navigation is not allowed

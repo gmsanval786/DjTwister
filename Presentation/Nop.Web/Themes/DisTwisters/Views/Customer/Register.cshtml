@@ -117,7 +117,7 @@
                         </div>
                     </div>
                     <h2 class="fs24 fw400">@T("Account.Fields.Package")</h2>
-                    <div class="packages-table-sec table-responsive mt-4">
+                    <div class="packages-table-sec mt-4">
                         <table class="table packages-table">
                             <thead class="thead-light packages-thead">
                                 <tr>
@@ -326,14 +326,30 @@
         }
 
         $('.price-input').on('input', function () {
-            var value = $(this).val();
+            var $input = $(this);
+            var value = $input.val();
             if (parseFloat(value) < 0 || isNaN(value)) {
-                // Show alert message
-                alert('Negative values are not allowed. The value has been reset to 0.');
-                // Reset value to 0
-                $(this).val('0');
+                $.alert({
+                    title: 'Error',
+                    content: 'Negative values are not allowed. The value has been reset to 0.',
+                    animation: 'scale',
+                    theme: 'modern',
+                    type: 'red',
+                    closeAnimation: 'bottom',
+                    backgroundDismiss: false,
+                    buttons: {
+                        okay: {
+                            text: 'okay',
+                            btnClass: 'btn-red',
+                            action: function () {
+                                $input.val('0');
+                            }
+                        }
+                    }
+                });
             }
         });
+
 
         $("#yes").click(function () {
             $(".yes_wrapper").show();
@@ -359,7 +375,25 @@
 
                 var lastSelectedValue = selectedOptions[selectedOptions.length - 1];
                 $this.find('option[value="' + lastSelectedValue + '"]').prop('selected', false);
-                alert('You can only choose up to three genres. Please remove an existing one to add a new one.');
+
+                $.alert({
+                    title: 'Error',
+                    content: 'You can only choose up to three genres. Please remove an existing one to add a new one.',
+                    animation: 'scale',
+                    theme: 'modern',
+                    type: 'red',
+                    closeAnimation: 'bottom',
+                    backgroundDismiss: false,
+                    buttons: {
+                        okay: {
+                            text: 'okay',
+                            btnClass: 'btn-red',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+
                 $this.trigger('change');
             }
         });

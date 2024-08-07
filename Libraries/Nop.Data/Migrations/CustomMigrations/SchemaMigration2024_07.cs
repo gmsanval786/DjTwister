@@ -6,10 +6,11 @@ using Nop.Core.Domain.Localization;
 using System.Linq;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Vendors;
+using Nop.Core.Domain.Logging;
 
 namespace Nop.Data.Migrations.CustomMigrations
 {
-    [NopMigration("2024-07-20 18:35:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
+    [NopMigration("2024-07-25 18:35:00:1037704", "SchemaMigration2024_07", MigrationProcessType.NoMatter)]
     public class SchemaMigration2024_07 : MigrationBase
     {
         #region Fields
@@ -227,6 +228,12 @@ namespace Nop.Data.Migrations.CustomMigrations
                 resources.Add("Account.Fields.Experience", "Experience");
             }
 
+            localeStringResource = _dataProvider.QueryAsync<int>($"Select count(id) from {nameof(LocaleStringResource)} Where {nameof(LocaleStringResource.ResourceName)} " +
+              $"= 'Account.Logout.AreYouSure'").Result;
+            if (localeStringResource.FirstOrDefault() == 0)
+            {
+                resources.Add("Account.Logout.AreYouSure", "Are you sure you want to log out?");
+            }
 
             //insert new locale resources
             var locales = languages.SelectMany(language => resources.Select(resource => new LocaleStringResource
