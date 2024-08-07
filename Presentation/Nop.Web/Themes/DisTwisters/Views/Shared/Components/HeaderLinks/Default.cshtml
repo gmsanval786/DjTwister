@@ -1,0 +1,139 @@
+﻿@model HeaderLinksModel
+@using Nop.Core.Domain.Customers
+@inject Nop.Core.IWebHelper webHelper
+
+<header class="header">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand logo" href="@Url.RouteUrl("Homepage")"><img src="~/themes/DisTwisters/content/img/Logo-dis.png" alt=""></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    @* <li class="nav-item">
+                        <a class="nav-link active" href="@Url.RouteUrl("ProductAll")">Product Shop</a>
+                    </li> *@
+                    
+                    @if (Model.AllowPrivateMessages)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.RouteUrl("PrivateMessages", new { tab = "" })">
+                                Messages
+                            </a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="nav-link" href="rating.html">
+                            Review
+                        </a>
+                    </li>
+                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksBefore, additionalData = Model })
+                    @if (Model.IsAuthenticated)
+                    {
+                        <div class="dropdown header-dropdown">
+                            <button class="btn header-profile page-menu p-0 ms-2 dropdown-toggle" type="button"
+                                    id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Hello, @Model.CustomerName
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li>
+                                    <a class="dropdown-item fs16 fw500 p-border-color position-relative"
+                                       href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")</a>
+                                </li>
+                                @await Component.InvokeAsync(typeof(AdminHeaderLinksViewComponent))
+                                <li>
+                                    <a class="dropdown-item fs16 fw500 p-border-color position-relative" data-bs-toggle="modal"
+                                       data-bs-target="#long-out" href="#">@T("Account.Logout")</a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
+                        ? url.ToString()
+                        : webHelper.GetRawUrl(Context.Request);
+
+                        <li><a href="@Url.RouteUrl("Login", new { returnUrl })" class="nav-link">@T("Account.Login")</a></li>
+                    }
+                    @if (Model.ShoppingCartEnabled)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="@Url.RouteUrl("ShoppingCart")">
+                                <span class="cart-span position-relative">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </span><span class="cart-add-itm1">@T("ShoppingCart.HeaderQuantity", Model.ShoppingCartItems) </span> @T("ShoppingCart")
+                            </a>
+                        </li>
+                    }
+                </ul>
+                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksAfter, additionalData = Model })
+                <!-- <form class="d-flex search-box">
+                  <input class="form-control me-2 ms-5" type="search" placeholder="Search" aria-label="Search">
+                  <button class="loginbtn" type="submit">Search</button>
+                </form> -->
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="modal long-out-model" id="long-out">
+    <div class="modal-dialog long-out-modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header justify-content-center p-0">
+                <div class="logout-logo">
+                    <img src="~/themes/DisTwisters/content/img/logout.png" alt="" />
+                </div>
+                <!-- <button type="button" class="btn-close" data-bs-dismiss="modal"></button> -->
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body p-0">
+                <h2 class="fs32 fw500 text-black text-center">@T("Account.Logout")</h2>
+                <p class="fs16 p-border-color text-center mb-0">Are you sure you want to log out?</p>
+                <div class="cmn2-btn-box text-center d-flex align-items-center justify-content-center">
+                    <button class="cmn2button no fs20 fw500 text-white mb-0" data-bs-dismiss="modal" type="button">No</button>
+                    <button class="cmn2button yes fs20 fw500 text-white mb-0" onclick="setLocation('@Url.RouteUrl("Logout")')"
+                            type="button">
+                        Yes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <!-- <div class="modal-footer">
+                   <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+               </div> -->
+        </div>
+    </div>
+</div>
+@if (Model.AllowPrivateMessages && !string.IsNullOrEmpty(Model.AlertMessage))
+{
+    //new private message notification
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            displayPopupNotification('@Html.Raw(JavaScriptEncoder.Default.Encode(Model.AlertMessage))', 'success', false);
+        });
+    </script>
+}
+@if (Model.ShoppingCartEnabled)
+{
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            $('.header').on('mouseenter', '#topcartlink', function () {
+                $('#flyout-cart').addClass('active');
+            });
+            $('.header').on('mouseleave', '#topcartlink', function () {
+                $('#flyout-cart').removeClass('active');
+            });
+            $('.header').on('mouseenter', '#flyout-cart', function () {
+                $('#flyout-cart').addClass('active');
+            });
+            $('.header').on('mouseleave', '#flyout-cart', function () {
+                $('#flyout-cart').removeClass('active');
+            });
+        });
+    </script>
+}

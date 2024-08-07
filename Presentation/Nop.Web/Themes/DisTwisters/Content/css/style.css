@@ -145,9 +145,9 @@ body{
     text-decoration: none;
 }
 /*----------------- header-css ---------------------*/
-.header{
+.header {
     background: #fff;
-    box-shadow: 0px 0px 10px 0px #0cbddf1a;
+    box-shadow: 0 0 8px 0 rgba(0,0,0,0.04);
 }
 .header .navbar-brand.logo img{
     height: 80px;
@@ -206,7 +206,21 @@ body{
     margin: auto;
 }
 /*==================== banner-sec-css ================*/
-.body-home{
+
+.main-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.page-wrapper {
+    flex: 1 0 auto;
+}
+.footer {
+    flex-shrink: 0;
+}
+.body-home {
     background-image: url('..//img/index-bg.png');
     background-repeat: no-repeat;
     background-position: center, center;
@@ -870,6 +884,9 @@ padding: 50px 0;
     box-shadow: 0px 0px 10px 0px #0cbddf1a;
     right: 0;
     left: auto;
+    padding:10px 0;
+    border:1px solid #ddd;
+    border-radius:10px;
 }
 .header .header-dropdown .header-profile:hover {
     color: #000000b3;
@@ -878,8 +895,11 @@ padding: 50px 0;
     background-color: transparent;
     color: #212530;
 }
-.header .header-dropdown .dropdown-item{
+.header .header-dropdown .dropdown-item {
     overflow: hidden;
+    overflow: hidden;
+    padding-block: 7px;
+    font-weight: 400;
 }
 .header .header-dropdown .dropdown-menu .dropdown-item::after{
     content: '';
@@ -1452,8 +1472,33 @@ textarea.form-control:focus{
   }
 /*============================ scrollbar-css end =======================*/
 
-
-@media only screen and (max-width:1599px){
+.btn-group.customer-login{
+    justify-content:center !important;
+}
+.footer-logo {
+    max-width: 350px;
+}
+.footer-disclaimer{
+    font-size:16px;
+}
+.search-titles {
+    padding-block:40px 20px;
+}
+.search-titles h1{
+    font-size:1.7rem;
+}
+@media only screen and (min-width:992px) {
+    .navbar-expand-lg .navbar-nav {
+        font-size: 20px;
+        gap: 15px;
+    }
+    .header .navbar-light .navbar-nav .nav-link:hover .cart-span i,
+    .navbar-light .navbar-nav .nav-link:focus,
+    .navbar-light .navbar-nav .nav-link:hover {
+        color: #0cbddf;
+    }
+}
+@media only screen and (max-width:1599px) {
     .banner-sec{
         max-width: 70% !important;
     }
@@ -1514,7 +1559,8 @@ textarea.form-control:focus{
    
 }
 @media only screen and (max-width:767px){
-    .banner-sec .fs80{
+    .footer-logo{margin-inline:auto;}
+    .banner-sec .fs80 {
         font-size: 50px;
     }
      .choose-category-sec{
