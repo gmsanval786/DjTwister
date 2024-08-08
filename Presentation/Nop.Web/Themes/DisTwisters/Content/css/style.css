@@ -179,11 +179,32 @@ body{
     color: rgba(0,0,0,.7);
     transition: 0.6s;
 }
+.header-selectors-wrapper {
+    border-bottom:1px solid #ddd;
+    padding-block:12px;
+}
+.header-selectors-wrapper select{
+    padding: 6px;
+    min-width: 100px;
+    border-radius: 0;
+    border-color:#d0d0d0;
+}
+.header-selectors-wrapper .container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+/*.field-validation-error {
+    display: block;
+    color: red;
+    font-size: 13px;
+    padding-top: 5px;
+}*/
+.form-checkbox-group label.checkbox-label.packge-lable {
+    font-size:0;
+}
 
-
-
-
-.header .loginbtn{
+.header .loginbtn {
     padding: 8px 20px;
     border-radius: 5px;
 }
@@ -302,7 +323,9 @@ body{
     background-position: center, center;
     background-size: cover;
     position: relative;
+    box-sizing:border-box;
 }
+.login-sec{padding-block:30px;}
 .login-sec::before, .checkout-page-sec::before{
     content: '';
     background-color: #b0c1ffde;
@@ -1487,6 +1510,7 @@ textarea.form-control:focus{
 .search-titles h1{
     font-size:1.7rem;
 }
+
 @media only screen and (min-width:992px) {
     .navbar-expand-lg .navbar-nav {
         font-size: 20px;
@@ -1639,6 +1663,9 @@ textarea.form-control:focus{
     .features-home-page .product-top-list-box{
         margin: 20px 0px !important;
     }
+    .header .navbar-brand.logo img {
+        height: 60px;
+    }
 }
 @media only screen and (max-width:475px){
     .banner-sec .fs80{
@@ -1688,6 +1715,7 @@ textarea.form-control:focus{
     .login-cart .form .or-continue p::before, .login-cart .form .or-continue p::after {
         width: 28%;
     }
+    
 }
 @media only screen and (max-width:375px){
     .login-cart .login-hading{

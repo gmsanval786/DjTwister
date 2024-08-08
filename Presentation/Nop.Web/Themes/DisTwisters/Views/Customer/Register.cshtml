@@ -96,24 +96,24 @@
 
                 <div class="yes_wrapper mt-4">
                     <div class="row">
-                        <div class="col-md-6 col-lg-4 col-midia">
+                        <div class="col-md-6 col-lg-4 col-midia mb-2">
                             <label class="mb-1 lable-text fs14" for="bio-content" asp-for="Bio" asp-postfix=":" class="text-info"></label>
-                            <textarea class="w-100 bio-message mb-2" asp-for="Bio"></textarea>
+                            <textarea class="w-100 bio-message" asp-for="Bio"></textarea>
                             <span asp-validation-for="Bio"></span>
                         </div>
-                        <div class="col-md-6 col-lg-4 col-midia">
+                        <div class="col-md-6 col-lg-4 col-midia mb-2">
                             <label class="mb-1 lable-text fs14" class="text-info" asp-for="VendorLevelId" asp-postfix=":"></label>
-                            <select class="form-select mb-2" aria-label="Default select example" asp-for="VendorLevelId" asp-items="Model.AvailableVendorLevels"></select>
+                            <select class="form-select" aria-label="Default select example" asp-for="VendorLevelId" asp-items="Model.AvailableVendorLevels"></select>
                         </div>
-                        <div class="col-md-6 col-lg-4 col-midia">
+                        <div class="col-md-6 col-lg-4 col-midia mb-2">
                             <label class="mb-1 lable-text fs14" class="text-info" asp-for="SelectedCategoryIds" asp-postfix=":"></label>
-                            <select class="w-100 multiple-select1 mb-2" id="multiple-select-box" asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" multiple></select>
+                            <select class="w-100 multiple-select1" id="multiple-select-box" asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" multiple></select>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 col-lg-4 col-midia">
+                        <div class="col-md-6 col-lg-4 col-midia mb-2">
                             <label class="mb-1 lable-text fs14" class="text-info" asp-for="Experience" asp-postfix=":"></label>
-                            <select class="form-select mb-2" aria-label="Default select example" asp-for="Experience" asp-items="Model.AvailableVendorExperience"></select>
+                            <select class="form-select" aria-label="Default select example" asp-for="Experience" asp-items="Model.AvailableVendorExperience"></select>
                         </div>
                     </div>
                     <h2 class="fs24 fw400">@T("Account.Fields.Package")</h2>
@@ -214,7 +214,7 @@
                                     <td>
                                         <div class="form-checkbox-group">
                                             <input class="checkbox1" asp-for="PackageModel.BasicPackage.AllowRevisions" />
-                                            <label asp-for="PackageModel.BasicPackage.AllowRevisions" class="checkbox-label"></label>
+                                            <label asp-for="PackageModel.BasicPackage.AllowRevisions" class="checkbox-label packge-lable"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.BasicPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
                                             </div>
@@ -224,7 +224,7 @@
                                     <td>
                                         <div class="form-checkbox-group">
                                             <input class="checkbox1" asp-for="PackageModel.StandardPackage.AllowRevisions" />
-                                            <label asp-for="PackageModel.StandardPackage.AllowRevisions" class="checkbox-label"></label>
+                                            <label asp-for="PackageModel.StandardPackage.AllowRevisions" class="checkbox-label packge-lable"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.StandardPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
                                             </div>
@@ -234,7 +234,7 @@
                                     <td>
                                         <div class="form-checkbox-group">
                                             <input class="checkbox1" asp-for="PackageModel.PremiumPackage.AllowRevisions" />
-                                            <label asp-for="PackageModel.PremiumPackage.AllowRevisions" class="checkbox-label"></label>
+                                            <label asp-for="PackageModel.PremiumPackage.AllowRevisions" class="checkbox-label packge-lable"></label>
                                             <div class="category-select-box delivery-method mt-2">
                                                 <select class="form-select" aria-label="Default select example" asp-for="PackageModel.PremiumPackage.RevisionId" asp-items="Model.PackageModel.AvailableRevisions"></select>
                                             </div>
