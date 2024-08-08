@@ -2,81 +2,79 @@
 @using Nop.Core.Domain.Customers
 @inject Nop.Core.IWebHelper webHelper
 
-<header class="header">
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand logo" href="@Url.RouteUrl("Homepage")"><img src="~/themes/DisTwisters/content/img/Logo-dis.png" alt=""></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                    @* <li class="nav-item">
-                        <a class="nav-link active" href="@Url.RouteUrl("ProductAll")">Product Shop</a>
-                    </li> *@
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand logo" href="@Url.RouteUrl("Homepage")"><img src="~/themes/DisTwisters/content/img/Logo-dis.png" alt=""></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                @* <li class="nav-item">
+                    <a class="nav-link active" href="@Url.RouteUrl("ProductAll")">Product Shop</a>
+                </li> *@
                     
-                    @if (Model.AllowPrivateMessages)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.RouteUrl("PrivateMessages", new { tab = "" })">
-                                Messages
-                            </a>
-                        </li>
-                    }
+                @if (Model.AllowPrivateMessages)
+                {
                     <li class="nav-item">
-                        <a class="nav-link" href="rating.html">
-                            Review
+                        <a class="nav-link" href="@Url.RouteUrl("PrivateMessages", new { tab = "" })">
+                            Messages
                         </a>
                     </li>
-                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksBefore, additionalData = Model })
-                    @if (Model.IsAuthenticated)
-                    {
-                        <div class="dropdown header-dropdown">
-                            <button class="btn header-profile page-menu p-0 ms-2 dropdown-toggle" type="button"
-                                    id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                Hello, @Model.CustomerName
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li>
-                                    <a class="dropdown-item fs16 fw500 p-border-color position-relative"
-                                       href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")</a>
-                                </li>
-                                @await Component.InvokeAsync(typeof(AdminHeaderLinksViewComponent))
-                                <li>
-                                    <a id="user-logout" class="dropdown-item fs16 fw500 p-border-color position-relative" href="#">@T("Account.Logout")</a>
-                                </li>
-                            </ul>
-                        </div>
-                    }
-                    else
-                    {
-                        var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
-                        ? url.ToString()
-                        : webHelper.GetRawUrl(Context.Request);
+                }
+                <li class="nav-item">
+                    <a class="nav-link" href="rating.html">
+                        Review
+                    </a>
+                </li>
+                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksBefore, additionalData = Model })
+                @if (Model.IsAuthenticated)
+                {
+                    <div class="dropdown header-dropdown">
+                        <button class="btn header-profile page-menu p-0 ms-2 dropdown-toggle" type="button"
+                                id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            Hello, @Model.CustomerName
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li>
+                                <a class="dropdown-item fs16 fw500 p-border-color position-relative"
+                                    href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")</a>
+                            </li>
+                            @await Component.InvokeAsync(typeof(AdminHeaderLinksViewComponent))
+                            <li>
+                                <a id="user-logout" class="dropdown-item fs16 fw500 p-border-color position-relative" href="#">@T("Account.Logout")</a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
+                    ? url.ToString()
+                    : webHelper.GetRawUrl(Context.Request);
 
-                        <li><a href="@Url.RouteUrl("Login", new { returnUrl })" class="nav-link">@T("Account.Login")</a></li>
-                    }
-                    @if (Model.ShoppingCartEnabled)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link position-relative" href="@Url.RouteUrl("ShoppingCart")">
-                                <span class="cart-span position-relative">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </span><span class="cart-add-itm1">@T("ShoppingCart.HeaderQuantity", Model.ShoppingCartItems) </span> @T("ShoppingCart")
-                            </a>
-                        </li>
-                    }
-                </ul>
-                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksAfter, additionalData = Model })
-                <!-- <form class="d-flex search-box">
-                  <input class="form-control me-2 ms-5" type="search" placeholder="Search" aria-label="Search">
-                  <button class="loginbtn" type="submit">Search</button>
-                </form> -->
-            </div>
+                    <li><a href="@Url.RouteUrl("Login", new { returnUrl })" class="nav-link">@T("Account.Login")</a></li>
+                }
+                @if (Model.ShoppingCartEnabled)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="@Url.RouteUrl("ShoppingCart")">
+                            <span class="cart-span position-relative">
+                                <i class="fas fa-shopping-cart"></i>
+                            </span><span class="cart-add-itm1">@T("ShoppingCart.HeaderQuantity", Model.ShoppingCartItems) </span> @T("ShoppingCart")
+                        </a>
+                    </li>
+                }
+            </ul>
+            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksAfter, additionalData = Model })
+            <!-- <form class="d-flex search-box">
+                <input class="form-control me-2 ms-5" type="search" placeholder="Search" aria-label="Search">
+                <button class="loginbtn" type="submit">Search</button>
+            </form> -->
         </div>
-    </nav>
-</header>
+    </div>
+</nav>
 <div class="modal long-out-model" id="long-out">
     <div class="modal-dialog long-out-modal-dialog modal-dialog-centered">
         <div class="modal-content">
