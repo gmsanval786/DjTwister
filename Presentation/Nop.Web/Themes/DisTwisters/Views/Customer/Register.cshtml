@@ -325,6 +325,113 @@
             $(".yes_wrapper").hide();
         }
 
+        $("#yes").click(function () {
+            $(".yes_wrapper").show();
+            $("#IsDJ").val(true);
+        });
+        $("#no").click(function () {
+            $(".yes_wrapper").hide();
+            $("#IsDJ").val(false);
+        });
+
+        $("#no").click(function () {
+            $(".no_wrapper").show();
+        });
+        $("#yes").click(function () {
+            $(".no_wrapper").hide();
+        });
+
+        $('.loginbtn').on('click', function (event) {
+
+            var errormessage = '';
+            var firstName = $("#@Html.IdFor(model => model.FirstName)").val().trim();
+            var lastName = $("#@Html.IdFor(model => model.LastName)").val().trim();
+            var displayName = $("#@Html.IdFor(model => model.DisplayName)").val().trim();
+            var email = $("#@Html.IdFor(model => model.Email)").val().trim();
+            var password = $("#@Html.IdFor(model => model.Password)").val().trim();
+            var bio = $("#@Html.IdFor(model => model.Bio)").val().trim();
+
+
+            if (!firstName || !lastName || !displayName || !email || !password || !bio) {
+
+                if (!firstName)
+                    errormessage = '@T("Account.Fields.FirstName.Required")';
+                else if (!lastName)
+                    errormessage = '@T("Account.Fields.LastName.Required")';
+                else if (!displayName)
+                    errormessage = '@T("Account.Fields.DisplayName.Required")';
+                else if (!email)
+                    errormessage = '@T("Account.Fields.Email.Required")';
+                else if (!password)
+                    errormessage = '@T("Account.Fields.Password.Required")';
+                else if (!bio)
+                    errormessage = '@T("Account.Fields.Bio.Required")';
+
+                event.preventDefault();
+                $.alert({
+                    title: 'Error',
+                    content: errormessage,
+                    animation: 'scale',
+                    theme: 'modern',
+                    type: 'red',
+                    closeAnimation: 'bottom',
+                    backgroundDismiss: false,
+                    buttons: {
+                        okay: {
+                            text: 'Okay',
+                            btnClass: 'btn-red',
+                            action: function () {
+                                $('#firstName').focus();
+                            }
+                        }
+                    }
+                });
+            }
+            else 
+            { 
+                if (email || password || bio) {
+
+                    var minLengthRegex = /^.{8,}$/;
+                    var numberRegex = /[0-9]/;
+                    var specialCharRegex = /[!@@#$%^&*(),.?"{}|<>]/
+
+                    if (password) {
+                        if (!minLengthRegex.test(password)) {
+                            errorMessage = '@T("Account.Fields.Password.MinLength")';
+                        } else if (!numberRegex.test(password)) {
+                            errorMessage = '@T("Account.Fields.Password.Number")';
+                        } else if (!specialCharRegex.test(password)) {
+                            errorMessage = '@T("Account.Fields.Password.Special")';
+                        }
+                    }
+
+                    if (!errorMessage && bio && bio.length < 400) {
+                        errorMessage = '@T("Account.Fields.Bio.length")';
+                    }
+
+                    event.preventDefault();
+                    $.alert({
+                        title: 'Error',
+                        content: errormessage,
+                        animation: 'scale',
+                        theme: 'modern',
+                        type: 'red',
+                        closeAnimation: 'bottom',
+                        backgroundDismiss: false,
+                        buttons: {
+                            okay: {
+                                text: 'Okay',
+                                btnClass: 'btn-red',
+                                action: function () {
+                                    $('#firstName').focus();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
         $('.price-input').on('input', function () {
             var $input = $(this);
             var value = $input.val();
@@ -348,23 +455,6 @@
                     }
                 });
             }
-        });
-
-
-        $("#yes").click(function () {
-            $(".yes_wrapper").show();
-            $("#IsDJ").val(true);
-        });
-        $("#no").click(function () {
-            $(".yes_wrapper").hide();
-            $("#IsDJ").val(false);
-        });
-
-        $("#no").click(function () {
-            $(".no_wrapper").show();
-        });
-        $("#yes").click(function () {
-            $(".no_wrapper").hide();
         });
 
         $('#multiple-select-box').on('change', function () {
