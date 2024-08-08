@@ -352,25 +352,53 @@
             var bio = $("#@Html.IdFor(model => model.Bio)").val().trim();
 
 
-            if (!firstName || !lastName || !displayName || !email || !password || !bio) {
+            var errorMessages = [];
 
-                if (!firstName)
-                    errormessage = '@T("Account.Fields.FirstName.Required")';
-                else if (!lastName)
-                    errormessage = '@T("Account.Fields.LastName.Required")';
-                else if (!displayName)
-                    errormessage = '@T("Account.Fields.DisplayName.Required")';
-                else if (!email)
-                    errormessage = '@T("Account.Fields.Email.Required")';
-                else if (!password)
-                    errormessage = '@T("Account.Fields.Password.Required")';
-                else if (!bio)
-                    errormessage = '@T("Account.Fields.Bio.Required")';
+            if (!firstName)
+                errorMessages.push('@T("Account.Fields.FirstName.Required")');
+            if (!lastName)
+                errorMessages.push('@T("Account.Fields.LastName.Required")');
+            if (!displayName)
+                errorMessages.push('@T("Account.Fields.DisplayName.Required")');
+            if (!email)
+                errorMessages.push('@T("Account.Fields.Email.Required")');
+            if (!password)
+                errorMessages.push('@T("Account.Fields.Password.Required")');
 
+            var emailRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            var minLengthRegex = /^.{8,}$/;
+            var numberRegex = /[0-9]/;
+            var specialCharRegex = /[!@@#$%^&*(),.?"{}|<>]/;
+
+            if (email) {
+                if (!emailRegex.test(email))
+                    errorMessages.push('@T("Common.WrongEmail")');
+            }
+
+            if (password) {
+                if (!minLengthRegex.test(password))
+                    errorMessages.push('@T("Account.Fields.Password.MinLength")');
+                else if (!numberRegex.test(password))
+                    errorMessages.push('@T("Account.Fields.Password.Number")');
+                else if (!specialCharRegex.test(password))
+                    errorMessages.push('@T("Account.Fields.Password.Special")');
+            }
+
+            var isDJ = $("#@Html.IdFor(model => model.IsDJ)").val();
+            if (isDJ === "true") {
+                if (!bio)
+                    errorMessages.push('@T("Account.Fields.Bio.Required")');
+
+                if (bio && bio.length < 400) {
+                    errorMessages.push('@T("Account.Fields.Bio.length")');
+                }
+            }
+
+            if (errorMessages.length > 0) {
                 event.preventDefault();
                 $.alert({
-                    title: 'Error',
-                    content: errormessage,
+                    title: '<div class="text-danger">Error!</div>',
+                    content: '<ul><li class="text-danger">' + errorMessages.join('</li><li class="text-danger">') + '</li></ul>',
                     animation: 'scale',
                     theme: 'modern',
                     type: 'red',
@@ -386,49 +414,6 @@
                         }
                     }
                 });
-            }
-            else 
-            { 
-                if (email || password || bio) {
-
-                    var minLengthRegex = /^.{8,}$/;
-                    var numberRegex = /[0-9]/;
-                    var specialCharRegex = /[!@@#$%^&*(),.?"{}|<>]/
-
-                    if (password) {
-                        if (!minLengthRegex.test(password)) {
-                            errorMessage = '@T("Account.Fields.Password.MinLength")';
-                        } else if (!numberRegex.test(password)) {
-                            errorMessage = '@T("Account.Fields.Password.Number")';
-                        } else if (!specialCharRegex.test(password)) {
-                            errorMessage = '@T("Account.Fields.Password.Special")';
-                        }
-                    }
-
-                    if (!errorMessage && bio && bio.length < 400) {
-                        errorMessage = '@T("Account.Fields.Bio.length")';
-                    }
-
-                    event.preventDefault();
-                    $.alert({
-                        title: 'Error',
-                        content: errormessage,
-                        animation: 'scale',
-                        theme: 'modern',
-                        type: 'red',
-                        closeAnimation: 'bottom',
-                        backgroundDismiss: false,
-                        buttons: {
-                            okay: {
-                                text: 'Okay',
-                                btnClass: 'btn-red',
-                                action: function () {
-                                    $('#firstName').focus();
-                                }
-                            }
-                        }
-                    });
-                }
             }
         });
 
