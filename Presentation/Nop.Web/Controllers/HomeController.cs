@@ -10,6 +10,7 @@ using Nop.Web.Models.Common;
 using Nop.Web.Models.Catalog;
 using System.Linq;
 using DocumentFormat.OpenXml.EMMA;
+using Nop.Core.Domain.Customers;
 
 namespace Nop.Web.Controllers
 {
@@ -19,8 +20,9 @@ namespace Nop.Web.Controllers
         {
 
         }
-        public virtual async Task<IActionResult> Index()
+        public virtual async Task<IActionResult> Index(int resultId)
         {
+            ViewBag.ResultId = resultId;
             return View();
         }
     }

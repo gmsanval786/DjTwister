@@ -32,6 +32,11 @@
         /// </summary>
         public const string CustomerPasswordRecoveryMessage = "Customer.PasswordRecovery";
 
+        /// <summary>
+        /// Represents system name of account verification message
+        /// </summary>
+        public const string CustomerAccountVerificationMessage = "Customer.AccountVerification";
+
         #endregion
 
         #region Order

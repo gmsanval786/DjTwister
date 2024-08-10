@@ -8,10 +8,12 @@ namespace Nop.Web.Models.Customer
     public partial record LoginModel : BaseNopModel
     {
         public bool CheckoutAsGuest { get; set; }
+        public int ResultId { get; set; }
 
         [DataType(DataType.EmailAddress)]
         [NopResourceDisplayName("Account.Login.Fields.Email")]
         public string Email { get; set; }
+        public string EmailToken { get; set; }
 
         public bool UsernamesEnabled { get; set; }
 

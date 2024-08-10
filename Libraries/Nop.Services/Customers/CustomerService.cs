@@ -143,7 +143,7 @@ namespace Nop.Services.Customers
             string email = null, string username = null, string firstName = null, string lastName = null,
             int dayOfBirth = 0, int monthOfBirth = 0,
             string company = null, string phone = null, string zipPostalCode = null, string ipAddress = null,
-            int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false)
+            string token = "", int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false)
         {
             var customers = await _customerRepository.GetAllPagedAsync(query =>
             {
@@ -159,6 +159,8 @@ namespace Nop.Services.Customers
                     query = query.Where(c => affiliateId == c.AffiliateId);
                 if (vendorId > 0)
                     query = query.Where(c => vendorId == c.VendorId);
+                if (!string.IsNullOrEmpty(token))
+                    query = query.Where(c => c.Token == token);
 
                 query = query.Where(c => !c.Deleted);
 
@@ -451,6 +453,28 @@ namespace Nop.Services.Customers
                         select c;
 
             var customer = await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
+
+            return customer;
+        }
+
+        /// <summary>
+        /// Get customer by token
+        /// </summary>
+        /// <param name="token">Token</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the customer
+        /// </returns>
+        public virtual async Task<Customer> GetCustomerByTokenAsync(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return null;
+
+            var query = from c in _customerRepository.Table
+                        orderby c.Id
+                        where c.Token == token
+                        select c;
+            var customer = await query.FirstOrDefaultAsync();
 
             return customer;
         }
@@ -1099,6 +1123,28 @@ namespace Nop.Services.Customers
                 .ToListAsync();
 
             return queryFilter.Except(filter).ToArray();
+        }
+
+        /// <summary>
+        /// Check whether user invite link is expired
+        /// </summary>
+        /// <param name="customer">Company user</param>
+        /// <returns>
+        /// True for expire, false for valid
+        /// </returns>
+        public virtual bool IsUserEmailVerificationLinkExpired(Customer customer)
+        {
+            if (customer == null)
+                throw new ArgumentNullException(nameof(customer));
+
+            if (_customerSettings.UserEmailVerificationLinkDaysValid == 0)
+                return false;
+
+            var daysPassed = (DateTime.UtcNow - customer.TokenCreatedOnUtc).TotalDays;
+            if (daysPassed > _customerSettings.UserEmailVerificationLinkDaysValid)
+                return true;
+
+            return false;
         }
 
         #endregion

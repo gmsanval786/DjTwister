@@ -235,7 +235,12 @@ namespace Nop.Core.Domain.Customers
         /// <summary>
         /// Gets or sets interval (in minutes) with which the Delete Guest Task runs
         /// </summary>
-        public int DeleteGuestTaskOlderThanMinutes { get; set; }        
+        public int DeleteGuestTaskOlderThanMinutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets a number of days for user invitation link. Set to 0 if it doesn't expire.
+        /// </summary>
+        public int UserEmailVerificationLinkDaysValid { get; set; } = 1;
 
         #region Form fields
 

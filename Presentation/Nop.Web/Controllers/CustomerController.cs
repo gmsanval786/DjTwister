@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Autofac.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -464,7 +465,7 @@ namespace Nop.Web.Controllers
         [CheckAccessClosedStore(ignore: true)]
         //available even when navigation is not allowed
         [CheckAccessPublicStore(ignore: true)]
-        public virtual async Task<IActionResult> Login(bool? checkoutAsGuest)
+        public virtual async Task<IActionResult> Login(bool? checkoutAsGuest, string emailToken = "")
         {
             var model = await _customerModelFactory.PrepareLoginModelAsync(checkoutAsGuest);
             var customer = await _workContext.GetCurrentCustomerAsync();
@@ -474,6 +475,27 @@ namespace Nop.Web.Controllers
                 var fullName = await _customerService.GetCustomerFullNameAsync(customer);
                 var message = await _localizationService.GetResourceAsync("Account.Login.AlreadyLogin");
                 _notificationService.SuccessNotification(string.Format(message, _htmlEncoder.Encode(fullName)));
+            }
+
+            model.EmailToken = emailToken;
+
+            //validate invitation token
+            if (!string.IsNullOrEmpty(emailToken))
+            {
+                var existingCustomer = (await _customerService.GetAllCustomersAsync(token: emailToken)).FirstOrDefault();
+                if (existingCustomer != null)
+                {
+                    var emailVerificationLinkExpired = _customerService.IsUserEmailVerificationLinkExpired(existingCustomer);
+                    if (emailVerificationLinkExpired)
+                    {
+                        model.ResultId = (int)UserRegistrationType.AccountVerificationLinkExpired;
+                    }
+                    else
+                    {
+                        existingCustomer.Active = true;
+                        await _customerService.UpdateCustomerAsync(existingCustomer);
+                    }
+                }
             }
 
             return View(model);
@@ -499,7 +521,19 @@ namespace Nop.Web.Controllers
                 var customerEmail = model.Email?.Trim();
                 var userNameOrEmail = _customerSettings.UsernamesEnabled ? customerUserName : customerEmail;
 
-                var loginResult = await _customerRegistrationService.ValidateCustomerAsync(userNameOrEmail, model.Password);
+                //validate invitation token
+                if (!string.IsNullOrEmpty(model.EmailToken))
+                {
+                    var existingCustomer = (await _customerService.GetAllCustomersAsync(token: model.EmailToken)).FirstOrDefault();
+                    if (existingCustomer != null)
+                    {
+                        var emailVerificationLinkExpired = _customerService.IsUserEmailVerificationLinkExpired(existingCustomer);
+                        if (emailVerificationLinkExpired)
+                            return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.AccountVerificationLinkExpired, returnUrl });  
+                    }
+                }
+
+                var loginResult = await _customerRegistrationService.ValidateCustomerAsync(userNameOrEmail, model.Password, model.EmailToken);
                 switch (loginResult)
                 {
                     case CustomerLoginResults.Successful:
@@ -937,6 +971,9 @@ namespace Nop.Web.Controllers
                         await _urlRecordService.SaveSlugAsync(vendor, seName, 0);
 
                         customer.VendorId = vendor.Id;
+                        customer.Active = false;
+                        customer.Token = Guid.NewGuid().ToString();
+                        customer.TokenCreatedOnUtc = DateTime.UtcNow;
 
                         var vendorRole = await _customerService.GetCustomerRoleBySystemNameAsync(NopCustomerDefaults.VendorsRoleName);
                         if (vendorRole != null)
@@ -1004,6 +1041,8 @@ namespace Nop.Web.Controllers
 
                         //packages
                         await _packageService.InsertPackageAsync(premiumPackage);
+
+                        _customerSettings.UserRegistrationType = UserRegistrationType.AccountVerification;
                     }
                     else
                     {
@@ -1161,6 +1200,10 @@ namespace Nop.Web.Controllers
                         case UserRegistrationType.AdminApproval:
                             return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.AdminApproval, returnUrl });
 
+                        case UserRegistrationType.AccountVerification:
+                            await _workflowMessageService.SendCustomerAccountVerificationMessageAsync(customer, currentLanguage.Id);
+                            return RedirectToRoute("Homepage", new { resultId = (int)UserRegistrationType.AccountVerification });
+
                         case UserRegistrationType.Standard:
                             //send customer welcome message
                             await _workflowMessageService.SendCustomerWelcomeMessageAsync(customer, currentLanguage.Id);
@@ -1170,7 +1213,6 @@ namespace Nop.Web.Controllers
 
                             returnUrl = Url.RouteUrl("Homepage", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
                             return await _customerRegistrationService.SignInCustomerAsync(customer, returnUrl, true);
-
                         default:
                             return RedirectToRoute("Homepage");
                     }
@@ -1834,6 +1876,25 @@ namespace Nop.Web.Controllers
 
             //If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ResendLink(string token)
+        {
+            var customer = await _customerService.GetCustomerByTokenAsync(token);
+            var currentLanguage = await _workContext.GetWorkingLanguageAsync();
+
+            if (customer != null)
+            {
+                customer.Token = Guid.NewGuid().ToString();
+                customer.TokenCreatedOnUtc = DateTime.UtcNow;
+                await _customerService.UpdateCustomerAsync(customer);
+
+                await _workflowMessageService.SendCustomerAccountVerificationMessageAsync(customer, currentLanguage.Id);
+                return Json(new { success = true, message = "Account verification email sent successfully." });
+            }
+
+            return Json(new { success = false, message = "User not found." });
         }
 
         #endregion

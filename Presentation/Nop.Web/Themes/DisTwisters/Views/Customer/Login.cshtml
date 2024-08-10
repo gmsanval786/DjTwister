@@ -18,6 +18,8 @@
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.LoginTop, additionalData = Model })
 <form asp-route="Login" asp-route-returnurl="@Context.Request.Query["ReturnUrl"]" method="post" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="message-error">@T("Account.Login.Unsuccessful")</div>
+    <input asp-for="EmailToken" type="hidden" />
+    <input asp-for="ResultId" type="hidden" />
     <section class="login-sec d-flex align-items-center justify-content-center">
         <div class="container">
             <div class="login-cart z9 position-relative">
@@ -56,5 +58,84 @@
         </div>
     </section>
 </form>
+<script asp-location="Footer">
+
+    $(document).ready(function () {
+
+    var token = $("#@Html.IdFor(model => model.EmailToken)").val();
+    var resultId = $("#@Html.IdFor(model => model.ResultId)").val();
+    if (resultId == @((int)UserRegistrationType.AccountVerificationLinkExpired)) {
+
+            $.alert({
+                animation: 'scale',
+                theme: 'modern',
+                type: 'red',
+                closeAnimation: 'bottom',
+                backgroundDismiss: false,
+                title: '<div class="text-danger">Error</div>',
+                content: '<div class="text-danger">Your account verification link has expired. To activate your account, please click the \'Resend\' button to receive a new link.</div>',
+                buttons: {
+                    okay: {
+                        text: 'Resend',
+                        btnClass: 'btn-red',
+                        action: function () {
+
+                            var postData = {
+                                token: token
+                            };
+                            addAntiForgeryToken(postData);
+
+                            $.ajax({
+                                cache: false,
+                                url: '@Url.Action("ResendLink", "Customer")',
+                                type: 'POST',
+                                data: postData,
+                                dataType: "json",
+                                success: function (response) {
+                                    if (response.success) {
+                                        $.alert({
+                                            title: 'Success',
+                                            content: response.message,
+                                            animation: 'scale',
+                                            theme: 'modern',
+                                            type: 'blue',
+                                            closeAnimation: 'bottom',
+                                            backgroundDismiss: false,
+                                            buttons: {
+                                                okay: {
+                                                    text: 'okay',
+                                                    btnClass: 'btn-blue'
+                                                }
+                                            }
+                                        });
+                                    } else if (!response.success) {
+                                        $.alert({
+                                            title: 'Error',
+                                            content: response.message,
+                                            animation: 'scale',
+                                            theme: 'modern',
+                                            type: 'red',
+                                            closeAnimation: 'bottom',
+                                            backgroundDismiss: false,
+                                            buttons: {
+                                                okay: {
+                                                    text: 'okay',
+                                                    btnClass: 'btn-red'
+                                                }
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('AJAX error:', status, error);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.LoginBottom, additionalData = Model })
 

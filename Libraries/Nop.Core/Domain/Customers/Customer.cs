@@ -254,6 +254,16 @@ namespace Nop.Core.Domain.Customers
         /// </summary>
         public bool IsLock { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Token
+        /// </summary>
+        public string Token { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time of token
+        /// </summary>
+        public DateTime TokenCreatedOnUtc { get; set; }
+
         #region Custom properties
 
         /// <summary>

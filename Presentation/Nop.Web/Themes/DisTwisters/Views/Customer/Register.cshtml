@@ -31,48 +31,46 @@
                     Create Account
                 </div>
                 <div class="row">
-                    <div class="col-md-6 col-lg-4">
-                        <div class="form-group mb-2">
-                            @if (Model.FirstNameEnabled)
-                            {
-                                <label class="mb-1 lable-text" asp-for="FirstName" asp-postfix=":" class="text-info"></label>
-                                <input class="input-text" type="text" asp-for="FirstName"  class="form-control" />
-                                <span asp-validation-for="FirstName"></span>
-                            }
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="form-group mb-2">
+                                @if (Model.FirstNameEnabled)
+                                {
+                                    <label class="mb-1 lable-text" asp-for="FirstName" asp-postfix=":" class="text-info"></label>
+                                    <input class="input-text" type="text" asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName"></span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="form-group mb-2">
+                                @if (Model.LastNameEnabled)
+                                {
+                                    <label class="mb-1 lable-text" asp-for="LastName" asp-postfix=":" class="text-info"></label>
+                                    <input class="input-text" type="text" asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName"></span>
+                                }
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="form-group mb-2">
-                            @if (Model.LastNameEnabled)
-                            {
-                                <label class="mb-1 lable-text" asp-for="LastName" asp-postfix=":" class="text-info"></label>
-                                <input class="input-text" type="text" asp-for="LastName" class="form-control" />
-                                <span asp-validation-for="LastName"></span>
-                            }
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="form-group mb-2">
+                                <label class="mb-1 lable-text" asp-for="Email" asp-postfix=":" class="text-info"></label>
+                                <input class="input-text" type="text" asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="form-group mb-2">
+                                <label class="mb-1 lable-text" asp-for="Password" asp-postfix=":" class="text-info"></label>
+                                <input class="input-text" type="password" asp-for="Password" class="form-control" />
+                                <span asp-validation-for="Password"></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="form-group mb-2">
-                            <label class="mb-1 lable-text" asp-for="DisplayName" asp-postfix=":" class="text-info">
-                            </label>
-                            <input class="input-text form-control" type="text" asp-for="DisplayName" />
-                            <span asp-validation-for="DisplayName"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="form-group mb-2">
-                            <label class="mb-1 lable-text" asp-for="Email" asp-postfix=":" class="text-info"></label>
-                            <input class="input-text" type="text" asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="form-group mb-2">
-                            <label class="mb-1 lable-text" asp-for="Password" asp-postfix=":" class="text-info"></label>
-                            <input class="input-text" type="password" asp-for="Password" class="form-control" />
-                            <span asp-validation-for="Password"></span>
-                        </div>
-                    </div>
+                    
+                    
                     <div class="radio-box-and-label my-4">
                         <label class="mb-1 lable-text fs14" class="text-info">DJ Yes or No:</label>
                         <div class="radio-box d-flex align-items-center justify-content-between">
@@ -97,13 +95,17 @@
                 <div class="yes_wrapper mt-4">
                     <div class="row">
                         <div class="col-md-6 col-lg-4 col-midia mb-2">
+                            <div class="form-group mb-2">
+                                <label class="mb-1 lable-text" asp-for="DisplayName" asp-postfix=":" class="text-info">
+                                </label>
+                                <input class="input-text form-control" type="text" asp-for="DisplayName" />
+                                <span asp-validation-for="DisplayName"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-midia mb-2">
                             <label class="mb-1 lable-text fs14" for="bio-content" asp-for="Bio" asp-postfix=":" class="text-info"></label>
                             <textarea class="w-100 bio-message" asp-for="Bio"></textarea>
                             <span asp-validation-for="Bio"></span>
-                        </div>
-                        <div class="col-md-6 col-lg-4 col-midia mb-2">
-                            <label class="mb-1 lable-text fs14" class="text-info" asp-for="VendorLevelId" asp-postfix=":"></label>
-                            <select class="form-select" aria-label="Default select example" asp-for="VendorLevelId" asp-items="Model.AvailableVendorLevels"></select>
                         </div>
                         <div class="col-md-6 col-lg-4 col-midia mb-2">
                             <label class="mb-1 lable-text fs14" class="text-info" asp-for="SelectedCategoryIds" asp-postfix=":"></label>
@@ -111,6 +113,10 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-6 col-lg-4 col-midia mb-2">
+                            <label class="mb-1 lable-text fs14" class="text-info" asp-for="VendorLevelId" asp-postfix=":"></label>
+                            <select class="form-select" aria-label="Default select example" asp-for="VendorLevelId" asp-items="Model.AvailableVendorLevels"></select>
+                        </div>
                         <div class="col-md-6 col-lg-4 col-midia mb-2">
                             <label class="mb-1 lable-text fs14" class="text-info" asp-for="Experience" asp-postfix=":"></label>
                             <select class="form-select" aria-label="Default select example" asp-for="Experience" asp-items="Model.AvailableVendorExperience"></select>
@@ -358,8 +364,6 @@
                 errorMessages.push('@T("Account.Fields.FirstName.Required")');
             if (!lastName)
                 errorMessages.push('@T("Account.Fields.LastName.Required")');
-            if (!displayName)
-                errorMessages.push('@T("Account.Fields.DisplayName.Required")');
             if (!email)
                 errorMessages.push('@T("Account.Fields.Email.Required")');
             if (!password)
@@ -386,9 +390,10 @@
 
             var isDJ = $("#@Html.IdFor(model => model.IsDJ)").val();
             if (isDJ === "true") {
+                if (!displayName)
+                    errorMessages.push('@T("Account.Fields.DisplayName.Required")');
                 if (!bio)
                     errorMessages.push('@T("Account.Fields.Bio.Required")');
-
                 if (bio && bio.length < 400) {
                     errorMessages.push('@T("Account.Fields.Bio.length")');
                 }

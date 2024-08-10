@@ -1225,6 +1225,12 @@ namespace Nop.Services.Messages
             tokens.Add(new Token("Customer.EmailRevalidationURL", emailRevalidationUrl, true));
             tokens.Add(new Token("Wishlist.URLForCustomer", wishlistUrl, true));
 
+            if(!string.IsNullOrEmpty(customer.Token))
+            {
+                var registerUrl = await RouteUrlAsync(routeName: "Login", routeValues: new { emailToken = customer.Token });
+                tokens.Add(new Token("Customer.UserAccountVerificationURL", registerUrl, true));
+            }
+
             //event notification
             await _eventPublisher.EntityTokensAddedAsync(customer, tokens);
         }

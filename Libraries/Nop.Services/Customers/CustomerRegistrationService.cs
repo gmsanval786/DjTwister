@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.EMMA;
+using MailKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -145,7 +148,7 @@ namespace Nop.Services.Customers
         /// A task that represents the asynchronous operation
         /// The task result contains the result
         /// </returns>
-        public virtual async Task<CustomerLoginResults> ValidateCustomerAsync(string usernameOrEmail, string password)
+        public virtual async Task<CustomerLoginResults> ValidateCustomerAsync(string usernameOrEmail, string password, string token = "")
         {
             var customer = _customerSettings.UsernamesEnabled ?
                 await _customerService.GetCustomerByUsernameAsync(usernameOrEmail) :
@@ -155,8 +158,12 @@ namespace Nop.Services.Customers
                 return CustomerLoginResults.CustomerNotExist;
             if (customer.Deleted)
                 return CustomerLoginResults.Deleted;
-            if (!customer.Active)
+
+            if (!string.IsNullOrEmpty(token))
+                customer.Active = true;
+            else if (!customer.Active)
                 return CustomerLoginResults.NotActive;
+
             //only registered can login
             if (!await _customerService.IsRegisteredAsync(customer))
                 return CustomerLoginResults.NotRegistered;
@@ -198,6 +205,7 @@ namespace Nop.Services.Customers
             customer.CannotLoginUntilDateUtc = null;
             customer.RequireReLogin = false;
             customer.LastLoginDateUtc = DateTime.UtcNow;
+
             await _customerService.UpdateCustomerAsync(customer);
 
             return CustomerLoginResults.Successful;

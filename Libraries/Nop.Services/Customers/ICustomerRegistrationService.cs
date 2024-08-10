@@ -1,4 +1,5 @@
-﻿﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 ﻿using Microsoft.AspNetCore.Mvc;
 using Nop.Core.Domain.Customers;
 
@@ -18,7 +19,7 @@ namespace Nop.Services.Customers
         /// A task that represents the asynchronous operation
         /// The task result contains the result
         /// </returns>
-        Task<CustomerLoginResults> ValidateCustomerAsync(string usernameOrEmail, string password);
+        Task<CustomerLoginResults> ValidateCustomerAsync(string usernameOrEmail, string password, string token = "");
 
         /// <summary>
         /// Register customer

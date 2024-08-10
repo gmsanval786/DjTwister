@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Customers
+﻿namespace Nop.Core.Domain.Customers
 {
     /// <summary>
     /// Represents the customer registration type formatting enumeration
@@ -23,6 +23,16 @@ namespace Nop.Core.Domain.Customers
         /// <summary>
         /// Registration is disabled
         /// </summary>
-        Disabled = 4
+        Disabled = 4,
+
+        /// <summary>
+        /// Account verification
+        /// </summary>
+        AccountVerification = 5,
+
+        /// <summary>
+        /// Account verification link expired
+        /// </summary>
+        AccountVerificationLinkExpired = 6
     }
 }

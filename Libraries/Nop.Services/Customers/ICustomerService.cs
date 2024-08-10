@@ -49,7 +49,7 @@ namespace Nop.Services.Customers
             string email = null, string username = null, string firstName = null, string lastName = null,
             int dayOfBirth = 0, int monthOfBirth = 0,
             string company = null, string phone = null, string zipPostalCode = null, string ipAddress = null,
-            int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false);
+            string token = "", int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false);
 
         /// <summary>
         /// Gets online customers
@@ -179,6 +179,16 @@ namespace Nop.Services.Customers
         /// The task result contains the customer
         /// </returns>
         Task<Customer> GetCustomerBySystemNameAsync(string systemName);
+
+        /// <summary>
+        /// Get customer by token
+        /// </summary>
+        /// <param name="token">Token</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the customer
+        /// </returns>
+        Task<Customer> GetCustomerByTokenAsync(string token);
 
         /// <summary>
         /// Get customer by username
@@ -346,6 +356,15 @@ namespace Nop.Services.Customers
         /// The task result contains the list of guids not existing customers
         /// </returns>
         Task<Guid[]> GetNotExistingCustomersAsync(Guid[] guids);
+
+        /// <summary>
+        /// Check whether user invite link is expired
+        /// </summary>
+        /// <param name="customer">Company user</param>
+        /// <returns>
+        /// True for expire, false for valid
+        /// </returns>
+        bool IsUserEmailVerificationLinkExpired(Customer customer);
 
         #endregion
 
