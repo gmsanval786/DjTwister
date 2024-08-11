@@ -94,6 +94,7 @@ namespace Nop.Web.Factories
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly TaxSettings _taxSettings;
         private readonly VendorSettings _vendorSettings;
+        private readonly IPackageService _packageService;
 
         #endregion
 
@@ -144,7 +145,8 @@ namespace Nop.Web.Factories
             ShippingSettings shippingSettings,
             ShoppingCartSettings shoppingCartSettings,
             TaxSettings taxSettings,
-            VendorSettings vendorSettings)
+            VendorSettings vendorSettings,
+            IPackageService packageService)
         {
             _addressSettings = addressSettings;
             _captchaSettings = captchaSettings;
@@ -192,6 +194,7 @@ namespace Nop.Web.Factories
             _shoppingCartSettings = shoppingCartSettings;
             _taxSettings = taxSettings;
             _vendorSettings = vendorSettings;
+            _packageService = packageService;
         }
 
         #endregion
@@ -489,6 +492,13 @@ namespace Nop.Web.Factories
             {
                 cartItemModel.Picture = await PrepareCartItemPictureModelAsync(sci,
                     _mediaSettings.CartThumbPictureSize, true, cartItemModel.ProductName);
+            }
+
+            var package = await _packageService.GetPackageByIdAsync(sci.PackageId);            
+            if(package != null)
+            {
+                cartItemModel.Package.PriceVal = await _priceFormatter.FormatPriceAsync(package.Price, true, false);
+                cartItemModel.Package.Description = package.Description;
             }
 
             //item warnings

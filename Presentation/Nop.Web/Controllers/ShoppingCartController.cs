@@ -296,7 +296,7 @@ namespace Nop.Web.Controllers
 
         protected virtual async Task SaveItemAsync(ShoppingCartItem updatecartitem, List<string> addToCartWarnings, Product product,
            ShoppingCartType cartType, string attributes, decimal customerEnteredPriceConverted, DateTime? rentalStartDate,
-           DateTime? rentalEndDate, int quantity)
+           DateTime? rentalEndDate, int quantity, int packageId)
         {
             var customer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
@@ -304,7 +304,7 @@ namespace Nop.Web.Controllers
             {
                 //add to the cart
                 addToCartWarnings.AddRange(await _shoppingCartService.AddToCartAsync(customer,
-                    product, cartType, store.Id,
+                    product, cartType, packageId, store.Id,
                     attributes, customerEnteredPriceConverted,
                     rentalStartDate, rentalEndDate, quantity, true));
             }
@@ -515,7 +515,7 @@ namespace Nop.Web.Controllers
         //add product to cart using AJAX
         //currently we use this method on catalog pages (category/manufacturer/etc)
         [HttpPost]
-        public virtual async Task<IActionResult> AddProductToCart_Catalog(int productId, int shoppingCartTypeId,
+        public virtual async Task<IActionResult> AddProductToCart_Catalog(int productId, int packageId, int shoppingCartTypeId,
             int quantity, bool forceredirection = false)
         {
             var cartType = (ShoppingCartType)shoppingCartTypeId;
@@ -613,6 +613,7 @@ namespace Nop.Web.Controllers
             addToCartWarnings = await _shoppingCartService.AddToCartAsync(customer: customer,
                 product: product,
                 shoppingCartType: cartType,
+                packageId: packageId,
                 storeId: store.Id,
                 attributesXml: attXml,
                 quantity: quantity);
@@ -693,8 +694,8 @@ namespace Nop.Web.Controllers
 
         //add product to cart using AJAX
         //currently we use this method on the product details pages
-        [HttpPost]
-        public virtual async Task<IActionResult> AddProductToCart_Details(int productId, int shoppingCartTypeId, IFormCollection form)
+        [HttpGet]
+        public virtual async Task<IActionResult> AddProductToCart_Details(int productId, int packageId, int shoppingCartTypeId, IFormCollection form)
         {
             var product = await _productService.GetProductByIdAsync(productId);
             if (product == null)
@@ -770,7 +771,7 @@ namespace Nop.Web.Controllers
                 //if the item to update is found, then we ignore the specified "shoppingCartTypeId" parameter
                 updatecartitem.ShoppingCartType;
 
-            await SaveItemAsync(updatecartitem, addToCartWarnings, product, cartType, attributes, customerEnteredPriceConverted, rentalStartDate, rentalEndDate, quantity);
+            await SaveItemAsync(updatecartitem, addToCartWarnings, product, cartType, attributes, customerEnteredPriceConverted, rentalStartDate, rentalEndDate, quantity, packageId);
 
             //return result
             return await GetProductToCartDetailsAsync(addToCartWarnings, cartType, product);
@@ -1590,6 +1591,7 @@ namespace Nop.Web.Controllers
 
                     var warnings = await _shoppingCartService.AddToCartAsync(customer,
                         product, ShoppingCartType.ShoppingCart,
+                        sci.PackageId,
                         store.Id,
                         sci.AttributesXml, sci.CustomerEnteredPrice,
                         sci.RentalStartDateUtc, sci.RentalEndDateUtc, sci.Quantity, true);

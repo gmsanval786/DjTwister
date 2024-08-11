@@ -23,6 +23,11 @@ namespace Nop.Core.Domain.Orders
         public int ProductId { get; set; }
 
         /// <summary>
+        /// Gets or sets the package identifier
+        /// </summary>
+        public int PackageId { get; set; }
+
+        /// <summary>
         /// Gets or sets the quantity
         /// </summary>
         public int Quantity { get; set; }

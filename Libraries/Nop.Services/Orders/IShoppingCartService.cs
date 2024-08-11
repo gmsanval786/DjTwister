@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Irony.Parsing;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Discounts;
@@ -69,7 +70,7 @@ namespace Nop.Services.Orders
         /// The task result contains the shopping Cart
         /// </returns>
         Task<IList<ShoppingCartItem>> GetShoppingCartAsync(Customer customer, ShoppingCartType? shoppingCartType = null,
-            int storeId = 0, int? productId = null, DateTime? createdFromUtc = null, DateTime? createdToUtc = null);
+            int storeId = 0, int? productId = null, int? packageId = null, DateTime? createdFromUtc = null, DateTime? createdToUtc = null);
 
         /// <summary>
         /// Validates shopping cart item attributes
@@ -258,7 +259,7 @@ namespace Nop.Services.Orders
         /// The task result contains the warnings
         /// </returns>
         Task<IList<string>> AddToCartAsync(Customer customer, Product product,
-            ShoppingCartType shoppingCartType, int storeId, string attributesXml = null,
+            ShoppingCartType shoppingCartType, int packageId, int storeId, string attributesXml = null,
             decimal customerEnteredPrice = decimal.Zero,
             DateTime? rentalStartDate = null, DateTime? rentalEndDate = null,
             int quantity = 1, bool addRequiredProducts = true);

@@ -1252,6 +1252,7 @@ namespace Nop.Web.Factories
             {
                 PackageModel packageModel = new PackageModel()
                 {
+                    Id = package.Id,
                     VendorId = package.VendorId,
                     Price = package.Price,
                     Description = package.Description,

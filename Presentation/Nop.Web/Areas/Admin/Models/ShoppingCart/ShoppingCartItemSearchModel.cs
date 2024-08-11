@@ -20,6 +20,7 @@ namespace Nop.Web.Areas.Admin.Models.ShoppingCart
         public DateTime? EndDate { get; set; }
 
         public int ProductId { get; set; }
+        public int PackageId { get; set; }
 
         public int BillingCountryId { get; set; }
 

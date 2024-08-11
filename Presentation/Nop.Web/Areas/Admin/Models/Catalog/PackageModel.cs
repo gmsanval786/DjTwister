@@ -89,8 +89,6 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
 
         [NopResourceDisplayName("Admin.Catalog.Packages.Fields.MetaTitle")]
         public string MetaTitle { get; set; }
-
-        public int Id { get; set; }
         public string Package { get; set; }
 
         public IList<PackageLocalizedModel> Locales { get; set; }

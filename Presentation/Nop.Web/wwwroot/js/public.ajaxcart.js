@@ -52,12 +52,12 @@ var AjaxCart = {
             return;
         }
         this.setLoadWaiting(true);
-
+      
         $.ajax({
             cache: false,
             url: urladd,
             data: $(formselector).serialize(),
-            type: "POST",
+            type: "GET",
             success: this.success_process,
             complete: this.resetLoadWaiting,
             error: this.ajaxFailure

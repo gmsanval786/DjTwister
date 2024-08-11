@@ -8,7 +8,7 @@ using Nop.Core;
 
 namespace Nop.Web.Models.Package
 {
-    public partial record PackageModel : BaseNopModel
+    public partial record PackageModel : BaseNopEntityModel
     {
         public PackageModel()
         {

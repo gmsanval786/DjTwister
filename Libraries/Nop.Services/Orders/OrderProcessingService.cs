@@ -3231,7 +3231,7 @@ namespace Nop.Services.Orders
                 var product = await _productService.GetProductByIdAsync(orderItem.ProductId);
 
                 await _shoppingCartService.AddToCartAsync(customer, product,
-                    ShoppingCartType.ShoppingCart, order.StoreId,
+                    ShoppingCartType.ShoppingCart, orderItem.PackageId, order.StoreId,
                     orderItem.AttributesXml, orderItem.UnitPriceExclTax,
                     orderItem.RentalStartDateUtc, orderItem.RentalEndDateUtc,
                     orderItem.Quantity, false);

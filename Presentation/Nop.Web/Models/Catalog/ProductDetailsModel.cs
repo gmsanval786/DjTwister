@@ -151,6 +151,7 @@ namespace Nop.Web.Models.Catalog
                 AllowedQuantities = new List<SelectListItem>();
             }
             public int ProductId { get; set; }
+            public int PackageId { get; set; }
 
             //qty
             [NopResourceDisplayName("Products.Qty")]

@@ -172,7 +172,7 @@ namespace Nop.Web.Areas.Admin.Factories
                         : await _localizationService.GetResourceAsync("Admin.Customers.Guest");
                     shoppingCartModel.TotalItems = (await _shoppingCartService
                         .GetShoppingCartAsync(customer, searchModel.ShoppingCartType,
-                            searchModel.StoreId, searchModel.ProductId, searchModel.StartDate, searchModel.EndDate))
+                            searchModel.StoreId, searchModel.ProductId, searchModel.PackageId, searchModel.StartDate, searchModel.EndDate))
                         .Sum(item => item.Quantity);
 
                     return shoppingCartModel;
@@ -201,7 +201,7 @@ namespace Nop.Web.Areas.Admin.Factories
 
             //get shopping cart items
             var items = (await _shoppingCartService.GetShoppingCartAsync(customer, searchModel.ShoppingCartType,
-                searchModel.StoreId, searchModel.ProductId, searchModel.StartDate, searchModel.EndDate)).ToPagedList(searchModel);
+                searchModel.StoreId, searchModel.ProductId, searchModel.PackageId, searchModel.StartDate, searchModel.EndDate)).ToPagedList(searchModel);
 
             var isSearchProduct = searchModel.ProductId > 0;
 

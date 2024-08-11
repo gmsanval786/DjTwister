@@ -36,12 +36,12 @@ namespace Nop.Services.Catalog
         /// <summary>
         /// Gets package
         /// </summary>
-        /// <param name="productId">Package identifier</param>
+        /// <param name="packageId">Package identifier</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the package
         /// </returns>
-        Task<Package> GetPackageByIdAsync(int productId);
+        Task<Package> GetPackageByIdAsync(int packageId);
 
         /// <summary>
         /// Gets packages by identifier

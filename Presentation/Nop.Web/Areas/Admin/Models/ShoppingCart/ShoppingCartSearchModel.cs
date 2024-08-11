@@ -41,6 +41,9 @@ namespace Nop.Web.Areas.Admin.Models.ShoppingCart
         [NopResourceDisplayName("Admin.ShoppingCartType.Product")]
         public int ProductId { get; set; }
 
+        [NopResourceDisplayName("Admin.ShoppingCartType.Package")]
+        public int PackageId { get; set; }
+
         [NopResourceDisplayName("Admin.ShoppingCartType.BillingCountry")]
         public int BillingCountryId { get; set; }
 

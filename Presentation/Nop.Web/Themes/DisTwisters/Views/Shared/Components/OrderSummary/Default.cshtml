@@ -1,0 +1,157 @@
+@model ShoppingCartModel
+
+@using Nop.Core
+@using Nop.Core.Domain.Catalog
+@using Nop.Core.Domain.Orders
+@using Nop.Core.Domain.Tax
+
+@inject IWebHelper webHelper
+@inject IWorkContext workContext
+@inject OrderSettings orderSettings
+
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentBefore, additionalData = Model })
+@await Html.PartialAsync("_OrderReviewData", Model.OrderReviewData)
+
+@if (Model.Items.Count > 0)
+{
+    if (Model.Warnings.Count > 0)
+    {
+        <div class="message-error">
+            <ul>
+                @foreach (var warning in Model.Warnings)
+                {
+                    <li>@warning</li>
+                }
+            </ul>
+        </div>
+    }
+    <form asp-route="ShoppingCart" method="post" enctype="multipart/form-data" id="shopping-cart-form">
+        <section class="cart-page-sec py50">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 col-xl-8 mb-5 mb-xl-0">
+                        <div class="cart-table-sec mt-4 table-responsive">
+                            <table class="table packages-table">
+                                <thead class="thead-light cart-thead">
+                                    <tr>
+                                        <th class="">Product</th>
+                                        <th class="">Price</th>
+                                        <th class="">Quantity</th>
+                                        <th class="">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="cart-tbody">
+                                    @foreach (var item in Model.Items)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="cart-product-itm d-flex align-items-center justify-content-between">
+                                                    <div class="cart-product my-2">
+                                                        @if (Model.ShowProductImages)
+                                                        {
+                                                            <a href="@(Url.RouteUrl<Product>(new { SeName = item.ProductSeName }))"><img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" /></a>
+                                                        }
+                                                    </div>
+                                                    <div class="dj-musicno ms-3">
+                                                        @if (Model.ShowVendorName)
+                                                        {
+                                                            <h3 class="fs16 fw600 text-black mb-2">@item.VendorName</h3>
+                                                        }
+                                                        <h3 class="fs16 fw600 text-black mb-2"><a href="@(Url.RouteUrl<Product>(new { SeName = item.ProductSeName }))">@item.ProductName</a></h3>
+                                                        <p class="my-0">@item.Package.Description</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="">
+                                                <h2 class="fs16 fw600 text-black mb-2">@item.Package.PriceVal</h2>
+                                            </td>
+                                            <td class="">
+                                                <div id="field1" class="quantity-plus-minus d-flex align-items-center">
+                                                    @if (Model.IsEditable)
+                                                    {
+                                                        <div class="quantity-control" data-item-id="@item.Id">
+                                                            <button type="button" class="sub">-</button>
+                                                            <input class="button-input" name="itemquantity@(item.Id)" id="itemquantity@(item.Id)" type="button" value="@item.Quantity" min="1" max="5" />
+                                                            <button type="button" class="add">+</button>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="button-input" name="itemquantity@(item.Id)" id="itemquantity@(item.Id)" type="button" value="@item.Quantity" />
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td class="">
+                                                <h2 class="fs16 fw600 text-black mb-2">@item.SubTotal</h2>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="col-lg-12 col-xl-4">
+                            <form class="coupon-code-cmn-box">
+                                <div class="cart-total-right-box coupon-code-box mb-3">
+                                    <h2 class="fs24 fw500 text-black">Coupon-code</h2>
+                                    <p class="p-text fs14 fw400 my-2 description">
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing eilt, sed do eiusmod tempor incididunt ut labore et
+                                        dolore magna aliqua. Design by Fluttertop
+                                    </p>
+                                    @await Html.PartialAsync("_DiscountBox", Model.DiscountBox)
+                                </div>
+                                <div class="cart-total-right-box">
+                                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryTotals, additionalData = Model })
+                                    @await Component.InvokeAsync(typeof(OrderTotalsViewComponent), new { isEditable = Model.IsEditable })
+
+                                    <div class="forgotandlogin-cmn">
+                                        <!-- <a class="fs16 fw500 a-color a-color-h mt-3" href="forgot-password.html">Forgot Password?</a> -->
+                                        <button class="loginbtn w-100 mt-4" onclick="window.location.href='checkout.html'" type="button">Proceed to checkout</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    </form>
+}
+else
+{
+    <div class="no-data">
+        @T("ShoppingCart.CartIsEmpty")
+    </div>
+}
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentAfter, additionalData = Model })
+
+<script asp-location="Footer">
+
+    $(document).ready(function () {
+
+        $('.sub').on('click', function () {
+            var $control = $(this).closest('.quantity-control');
+            var itemId = $control.data('item-id');
+            var $input = $('#itemquantity' + itemId);
+            var currentValue = parseInt($input.val(), 10);
+
+            if (currentValue > parseInt($input.attr('min'), 10)) {  
+                $input.val(currentValue - 1);
+            }
+        });
+
+        $('.add').on('click', function () {
+            var $control = $(this).closest('.quantity-control');
+            var itemId = $control.data('item-id');
+            var $input = $('#itemquantity' + itemId);
+            var currentValue = parseInt($input.val(), 10);
+
+            if (currentValue < parseInt($input.attr('max'), 10)) {  
+                $input.val(currentValue + 1);
+            }
+        });
+    });
+
+</script>

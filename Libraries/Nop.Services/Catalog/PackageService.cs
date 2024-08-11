@@ -115,14 +115,14 @@ namespace Nop.Services.Catalog
         /// <summary>
         /// Gets package
         /// </summary>
-        /// <param name="productId">Package identifier</param>
+        /// <param name="packageId">Package identifier</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the package
         /// </returns>
-        public virtual async Task<Package> GetPackageByIdAsync(int productId)
+        public virtual async Task<Package> GetPackageByIdAsync(int packageId)
         {
-            return await _packageRepository.GetByIdAsync(productId, cache => default);
+            return await _packageRepository.GetByIdAsync(packageId, cache => default);
         }
 
         /// <summary>

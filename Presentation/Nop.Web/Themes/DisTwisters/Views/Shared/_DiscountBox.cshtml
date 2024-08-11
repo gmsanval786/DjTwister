@@ -1,0 +1,22 @@
+﻿@model ShoppingCartModel.DiscountBoxModel
+@if (Model.Display)
+{
+    <div class="form-group mt-4 ">
+        <input class="input-text" type="text" placeholder="Coupon Code" name="coupon-code" name="discountcouponcode" 
+        id="discountcouponcode" class="form-control">
+    </div>
+    <div class="forgotandlogin-cmn">
+        <button class="loginbtn w-100 mt-4" type="submit" name="applydiscountcouponcode" id="applydiscountcouponcode">Apply</button>
+    </div>
+
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            $('#discountcouponcode').on('keydown', function (event) {
+                if (event.keyCode == 13) {
+                    $('#applydiscountcouponcode').trigger("click");
+                    return false;
+                }
+            });
+        });
+    </script>
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -729,7 +730,7 @@ namespace Nop.Services.Orders
         /// The task result contains the shopping Cart
         /// </returns>
         public virtual async Task<IList<ShoppingCartItem>> GetShoppingCartAsync(Customer customer, ShoppingCartType? shoppingCartType = null,
-            int storeId = 0, int? productId = null, DateTime? createdFromUtc = null, DateTime? createdToUtc = null)
+            int storeId = 0, int? productId = null, int? packageId = null, DateTime ? createdFromUtc = null, DateTime? createdToUtc = null)
         {
             if (customer == null)
                 throw new ArgumentNullException(nameof(customer));
@@ -747,6 +748,10 @@ namespace Nop.Services.Orders
             //filter shopping cart items by product
             if (productId > 0)
                 items = items.Where(item => item.ProductId == productId);
+
+            //filter shopping cart items by package
+            if (packageId > 0)
+                items = items.Where(item => item.PackageId == packageId);
 
             //filter shopping cart items by date
             if (createdFromUtc.HasValue)
@@ -1532,7 +1537,7 @@ namespace Nop.Services.Orders
         /// The task result contains the warnings
         /// </returns>
         public virtual async Task<IList<string>> AddToCartAsync(Customer customer, Product product,
-            ShoppingCartType shoppingCartType, int storeId, string attributesXml = null,
+            ShoppingCartType shoppingCartType, int packageId, int storeId, string attributesXml = null,
             decimal customerEnteredPrice = decimal.Zero,
             DateTime? rentalStartDate = null, DateTime? rentalEndDate = null,
             int quantity = 1, bool addRequiredProducts = true)
@@ -1646,6 +1651,7 @@ namespace Nop.Services.Orders
                     ShoppingCartType = shoppingCartType,
                     StoreId = storeId,
                     ProductId = product.Id,
+                    PackageId = packageId,
                     AttributesXml = attributesXml,
                     CustomerEnteredPrice = customerEnteredPrice,
                     Quantity = quantity,
@@ -1694,7 +1700,7 @@ namespace Nop.Services.Orders
                     if (addRequiredProducts && product.AutomaticallyAddRequiredProducts)
                     {
                         //do not add required products to prevent circular references
-                        var addToCartWarnings = await AddToCartAsync(customer, requiredProduct.Product, shoppingCartType, storeId,
+                        var addToCartWarnings = await AddToCartAsync(customer, requiredProduct.Product, shoppingCartType, packageId, storeId,
                             quantity: quantityToAdd, addRequiredProducts: requiredProduct.Product.AutomaticallyAddRequiredProducts);
 
                         if (addToCartWarnings.Any())
@@ -1807,8 +1813,8 @@ namespace Nop.Services.Orders
                 var sci = fromCart[i];
                 var product = await _productService.GetProductByIdAsync(sci.ProductId);
 
-                await AddToCartAsync(toCustomer, product, sci.ShoppingCartType, sci.StoreId,
-                    sci.AttributesXml, sci.CustomerEnteredPrice,
+                await AddToCartAsync(toCustomer, product, sci.ShoppingCartType, sci.PackageId, 
+                    sci.StoreId, sci.AttributesXml, sci.CustomerEnteredPrice,
                     sci.RentalStartDateUtc, sci.RentalEndDateUtc, sci.Quantity, false);
             }
 

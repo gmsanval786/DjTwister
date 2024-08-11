@@ -28,6 +28,11 @@ namespace Nop.Core.Domain.Orders
         public int ProductId { get; set; }
 
         /// <summary>
+        /// Gets or sets the package identifier
+        /// </summary>
+        public int PackageId { get; set; }
+
+        /// <summary>
         /// Gets or sets the product attributes in XML format
         /// </summary>
         public string AttributesXml { get; set; }

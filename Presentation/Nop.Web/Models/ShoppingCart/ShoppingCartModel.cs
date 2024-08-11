@@ -5,6 +5,7 @@ using Nop.Core.Domain.Catalog;
 using Nop.Web.Framework.Models;
 using Nop.Web.Models.Common;
 using Nop.Web.Models.Media;
+using Nop.Web.Models.Package;
 
 namespace Nop.Web.Models.ShoppingCart
 {
@@ -55,6 +56,7 @@ namespace Nop.Web.Models.ShoppingCart
                 Picture = new PictureModel();
                 AllowedQuantities = new List<SelectListItem>();
                 Warnings = new List<string>();
+                Package = new PackageModel();
             }
 
             public string Sku { get; set; }
@@ -93,6 +95,8 @@ namespace Nop.Web.Models.ShoppingCart
             public bool DisableRemoval { get; set; }
 
             public IList<string> Warnings { get; set; }
+
+            public PackageModel Package { get; set; }
         }
 
         public partial record CheckoutAttributeModel : BaseNopEntityModel
