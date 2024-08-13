@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Packaging;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -53,6 +52,7 @@ namespace Nop.Services.Orders
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductService _productService;
+        private readonly IPackageService _packageService;
         private readonly IRepository<ShoppingCartItem> _sciRepository;
         private readonly IShippingService _shippingService;
         private readonly IStaticCacheManager _staticCacheManager;
@@ -96,7 +96,8 @@ namespace Nop.Services.Orders
             IUrlRecordService urlRecordService,
             IWorkContext workContext,
             OrderSettings orderSettings,
-            ShoppingCartSettings shoppingCartSettings)
+            ShoppingCartSettings shoppingCartSettings,
+            IPackageService packageService)
         {
             _catalogSettings = catalogSettings;
             _aclService = aclService;
@@ -126,6 +127,7 @@ namespace Nop.Services.Orders
             _workContext = workContext;
             _orderSettings = orderSettings;
             _shoppingCartSettings = shoppingCartSettings;
+            _packageService = packageService;
         }
 
         #endregion
@@ -1362,6 +1364,7 @@ namespace Nop.Services.Orders
             var customer = await _customerService.GetCustomerByIdAsync(shoppingCartItem.CustomerId);
             var product = await _productService.GetProductByIdAsync(shoppingCartItem.ProductId);
             var store = await _storeService.GetStoreByIdAsync(shoppingCartItem.StoreId);
+            var package = await _packageService.GetPackageByIdAsync(shoppingCartItem.PackageId);
 
             return await GetUnitPriceAsync(product,
                 customer,
@@ -1372,7 +1375,8 @@ namespace Nop.Services.Orders
                 shoppingCartItem.CustomerEnteredPrice,
                 shoppingCartItem.RentalStartDateUtc,
                 shoppingCartItem.RentalEndDateUtc,
-                includeDiscounts);
+                includeDiscounts,
+                package);
         }
 
         /// <summary>
@@ -1400,7 +1404,8 @@ namespace Nop.Services.Orders
             string attributesXml,
             decimal customerEnteredPrice,
             DateTime? rentalStartDate, DateTime? rentalEndDate,
-            bool includeDiscounts)
+            bool includeDiscounts,
+            Package package = null)
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
@@ -1476,7 +1481,8 @@ namespace Nop.Services.Orders
                         includeDiscounts,
                         qty,
                         product.IsRental ? rentalStartDate : null,
-                        product.IsRental ? rentalEndDate : null);
+                        product.IsRental ? rentalEndDate : null,
+                        package);
                 }
             }
 

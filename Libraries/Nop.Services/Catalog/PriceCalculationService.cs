@@ -303,10 +303,11 @@ namespace Nop.Services.Catalog
             bool includeDiscounts,
             int quantity,
             DateTime? rentalStartDate,
-            DateTime? rentalEndDate)
+            DateTime? rentalEndDate,
+            Package package = null)
         {
             return await GetFinalPriceAsync(product, customer, store, null, additionalCharge, includeDiscounts, quantity,
-                rentalStartDate, rentalEndDate);
+                rentalStartDate, rentalEndDate, package);
         }
 
         /// <summary>
@@ -333,7 +334,8 @@ namespace Nop.Services.Catalog
             bool includeDiscounts,
             int quantity,
             DateTime? rentalStartDate,
-            DateTime? rentalEndDate)
+            DateTime? rentalEndDate,
+            Package package = null)
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
@@ -361,9 +363,13 @@ namespace Nop.Services.Catalog
             {
                 var discounts = new List<Discount>();
                 var appliedDiscountAmount = decimal.Zero;
+                var price = decimal.Zero;
 
                 //initial price
-                var price = overriddenProductPrice ?? product.Price;
+                if (package != null)
+                    price = package.Price;
+                else
+                    price = overriddenProductPrice ?? product.Price;
 
                 //tier prices
                 var tierPrice = await _productService.GetPreferredTierPriceAsync(product, customer, store, quantity);

@@ -962,7 +962,8 @@ namespace Nop.Web.Controllers
                             Email = customer.Email,
                             Description = model.Bio,
                             Active = true,
-                            LevelId = model.VendorLevelId
+                            LevelId = model.VendorLevelId,
+                            AllowCustomersToSelectPageSize = true
                         };
 
                         await _vendorService.InsertVendorAsync(vendor);

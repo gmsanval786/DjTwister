@@ -381,12 +381,17 @@ namespace Nop.Web.Factories
                 throw new ArgumentNullException(nameof(sci));
 
             var product = await _productService.GetProductByIdAsync(sci.ProductId);
+            var package = await _packageService.GetPackageByIdAsync(sci.PackageId);
+            var vendor = await _vendorService.GetVendorByProductIdAsync(sci.ProductId);
 
             var cartItemModel = new ShoppingCartModel.ShoppingCartItemModel
             {
                 Id = sci.Id,
                 Sku = await _productService.FormatSkuAsync(product, sci.AttributesXml),
-                VendorName = _vendorSettings.ShowVendorOnOrderDetailsPage ? (await _vendorService.GetVendorByProductIdAsync(product.Id))?.Name : string.Empty,
+                VendorName = _vendorSettings.ShowVendorOnOrderDetailsPage ? vendor.Name : string.Empty,
+                VendorDescription = _vendorSettings.ShowVendorOnOrderDetailsPage ? vendor.Description : string.Empty,
+                PackgeName = Enum.GetName(typeof(PackageType), package.PackageTypeId),
+                PackgePrice = await _priceFormatter.FormatPriceAsync(package.Price, true, false),
                 ProductId = sci.ProductId,
                 ProductName = await _localizationService.GetLocalizedAsync(product, x => x.Name),
                 ProductSeName = await _urlRecordService.GetSeNameAsync(product),
@@ -492,14 +497,7 @@ namespace Nop.Web.Factories
             {
                 cartItemModel.Picture = await PrepareCartItemPictureModelAsync(sci,
                     _mediaSettings.CartThumbPictureSize, true, cartItemModel.ProductName);
-            }
-
-            var package = await _packageService.GetPackageByIdAsync(sci.PackageId);            
-            if(package != null)
-            {
-                cartItemModel.Package.PriceVal = await _priceFormatter.FormatPriceAsync(package.Price, true, false);
-                cartItemModel.Package.Description = package.Description;
-            }
+            }        
 
             //item warnings
             var itemWarnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(
@@ -1500,10 +1498,13 @@ namespace Nop.Web.Factories
 
             var model = await _staticCacheManager.GetAsync(pictureCacheKey, async () =>
             {
-                var product = await _productService.GetProductByIdAsync(sci.ProductId);
+                //var product = await _productService.GetProductByIdAsync(sci.ProductId);
 
                 //shopping cart item picture
-                var sciPicture = await _pictureService.GetProductPictureAsync(product, sci.AttributesXml);
+                //var sciPicture = await _pictureService.GetProductPictureAsync(product, sci.AttributesXml);
+
+                var vendor = await _vendorService.GetVendorByProductIdAsync(sci.ProductId);
+                var sciPicture = await _pictureService.GetPictureByIdAsync(vendor.PictureId);
 
                 return new PictureModel
                 {

@@ -2,12 +2,25 @@
 @if (Model.Display)
 {
     <div class="form-group mt-4 ">
-        <input class="input-text" type="text" placeholder="Coupon Code" name="coupon-code" name="discountcouponcode" 
+        <input class="input-text" type="text" placeholder="Coupon Code" name="discountcouponcode" 
         id="discountcouponcode" class="form-control">
     </div>
     <div class="forgotandlogin-cmn">
         <button class="loginbtn w-100 mt-4" type="submit" name="applydiscountcouponcode" id="applydiscountcouponcode">Apply</button>
     </div>
+    <div id="messages-container" style="display: none;">
+        @foreach (var message in Model.Messages)
+        {
+            <div class="message @((Model.IsApplied ? "message-success" : "message-failure"))" data-message="@message"></div>
+        }
+    </div>
+    @foreach (var discount in Model.AppliedDiscountsWithCodes)
+    {
+        <div class="current-code mt-3">
+            <span class="fs24 fw200 text-black">@string.Format(T("ShoppingCart.DiscountCouponCode.CurrentCode").Text, discount.CouponCode)</span>
+            <button type="submit" name="removediscount-@discount.Id" class="loginbtn w-100 mt-4"></button>
+        </div>
+    }
 
     <script asp-location="Footer">
         $(document).ready(function () {
@@ -18,5 +31,31 @@
                 }
             });
         });
+
+        $('#messages-container .message').each(function () {
+            var message = $(this).data('message');
+            var isSuccess = $(this).hasClass('message-success');
+
+            // Show alert with the message
+            $.alert({
+                title: isSuccess ? 'Success' : 'Error',
+                content: message,
+                animation: 'scale',
+                theme: 'modern',
+                type: isSuccess ? 'green' : 'red',
+                closeAnimation: 'bottom',
+                backgroundDismiss: false,
+                buttons: {
+                    okay: {
+                        text: 'Okay',
+                        btnClass: isSuccess ? 'btn-green' : 'btn-red',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        });
+
+        $('#messages-container').remove();
     </script>
 }

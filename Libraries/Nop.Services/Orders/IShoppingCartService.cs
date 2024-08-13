@@ -205,7 +205,8 @@ namespace Nop.Services.Orders
             string attributesXml,
             decimal customerEnteredPrice,
             DateTime? rentalStartDate, DateTime? rentalEndDate,
-            bool includeDiscounts);
+            bool includeDiscounts,
+            Package package = null);
 
         /// <summary>
         /// Gets the shopping cart item sub total

@@ -56,7 +56,8 @@ namespace Nop.Services.Catalog
             bool includeDiscounts,
             int quantity,
             DateTime? rentalStartDate,
-            DateTime? rentalEndDate);
+            DateTime? rentalEndDate,
+            Package package = null);
 
         /// <summary>
         /// Gets the final price
@@ -82,7 +83,8 @@ namespace Nop.Services.Catalog
             bool includeDiscounts,
             int quantity,
             DateTime? rentalStartDate,
-            DateTime? rentalEndDate);
+            DateTime? rentalEndDate,
+            Package package = null);
 
         /// <summary>
         /// Gets the product cost (one item)

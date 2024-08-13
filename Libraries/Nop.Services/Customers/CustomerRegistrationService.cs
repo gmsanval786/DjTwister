@@ -19,6 +19,7 @@ using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Security;
 using Nop.Services.Stores;
+using Nop.Services.Vendors;
 
 namespace Nop.Services.Customers
 {
@@ -50,6 +51,7 @@ namespace Nop.Services.Customers
         private readonly IWorkContext _workContext;
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly RewardPointsSettings _rewardPointsSettings;
+        private readonly IVendorService _vendorService;
 
         #endregion
 
@@ -75,7 +77,8 @@ namespace Nop.Services.Customers
             IUrlHelperFactory urlHelperFactory,
             IWorkContext workContext,
             IWorkflowMessageService workflowMessageService,
-            RewardPointsSettings rewardPointsSettings)
+            RewardPointsSettings rewardPointsSettings,
+            IVendorService vendorService)
         {
             _customerSettings = customerSettings;
             _actionContextAccessor = actionContextAccessor;
@@ -98,6 +101,7 @@ namespace Nop.Services.Customers
             _workContext = workContext;
             _workflowMessageService = workflowMessageService;
             _rewardPointsSettings = rewardPointsSettings;
+            _vendorService = vendorService;
         }
 
         #endregion
